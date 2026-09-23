@@ -1,0 +1,106 @@
+{
+  "case_id": "B-05",
+  "trigger": "risk_score>0.5",
+  "card1": 15000,
+  "prior_prob": 0.55,
+  "final_prob": 0.1964,
+  "typology": "none",
+  "exposure": 780.46,
+  "stop_reason": "confidence 20% has crossed a policy threshold (exposure $780) - enough to act; further checks would add cost without changing the decision",
+  "nba_initial": {
+    "name": "monitor",
+    "approval_route": "L1",
+    "reason": "confidence 55% elevated but below block threshold; monitor"
+  },
+  "nba_final": {
+    "name": "allow",
+    "approval_route": "auto",
+    "reason": "confidence 20% <= 20% clear threshold"
+  },
+  "actions": [
+    {
+      "name": "allow",
+      "approval_route": "auto",
+      "reason": "confidence 20% <= 20% clear threshold"
+    }
+  ],
+  "evidence_timeline": [
+    {
+      "step": 1,
+      "key": "similar_cases",
+      "label": "Outcome of most-similar past cases",
+      "chosen_because": "graph query 'similar_cases' has the highest chance (40%) of settling the decision at cost 1.5",
+      "observed": [
+        {
+          "case_id": "C-1005",
+          "similarity": 0.979,
+          "outcome": "cleared",
+          "typology": "none",
+          "action_taken": "allow",
+          "note": "High risk score but customer validated purchase; no ring."
+        },
+        {
+          "case_id": "C-1006",
+          "similarity": 0.979,
+          "outcome": "cleared",
+          "typology": "none",
+          "action_taken": "allow",
+          "note": "Travel purchase, distance anomaly explained; step-up passed."
+        },
+        {
+          "case_id": "C-1007",
+          "similarity": 0.979,
+          "outcome": "cleared",
+          "typology": "none",
+          "action_taken": "allow",
+          "note": "Single device, long-tenured card, no shared attributes."
+        }
+      ],
+      "bucket": "mostly_cleared",
+      "likelihood_ratio": 0.4,
+      "cost": 1.5,
+      "prob_before": 0.55,
+      "prob_after": 0.3284
+    },
+    {
+      "step": 2,
+      "key": "path_to_fraud",
+      "label": "Hops to a known-fraud entity",
+      "chosen_because": "graph query 'path_to_fraud' has the highest chance (70%) of settling the decision at cost 1.2",
+      "observed": null,
+      "bucket": "far",
+      "likelihood_ratio": 0.5,
+      "cost": 1.2,
+      "prob_before": 0.3284,
+      "prob_after": 0.1964
+    }
+  ],
+  "similar_cases": [
+    {
+      "case_id": "C-1005",
+      "similarity": 0.979,
+      "outcome": "cleared",
+      "typology": "none",
+      "action_taken": "allow",
+      "note": "High risk score but customer validated purchase; no ring."
+    },
+    {
+      "case_id": "C-1006",
+      "similarity": 0.979,
+      "outcome": "cleared",
+      "typology": "none",
+      "action_taken": "allow",
+      "note": "Travel purchase, distance anomaly explained; step-up passed."
+    },
+    {
+      "case_id": "C-1007",
+      "similarity": 0.979,
+      "outcome": "cleared",
+      "typology": "none",
+      "action_taken": "allow",
+      "note": "Single device, long-tenured card, no shared attributes."
+    }
+  ],
+  "sar": null,
+  "narrative": "Investigation B-05: started from 'risk_score>0.5' on card1=15000\nat a prior fraud confidence of 55%. The agent gathered evidence\nby value-of-information: outcome of most-similar past cases was C-1005(cleared,sim=0.979), C-1006(cleared,sim=0.979), C-1007(cleared,sim=0.979); hops to a known-fraud entity was None. Confidence moved to 20%.\nConfidence 20% has crossed a policy threshold (exposure $780) - enough to act; further checks would add cost without changing the decision. Assessed typology: none.\nRecommended next action: allow (approval route: auto) - confidence 20% <= 20% clear threshold."
+}

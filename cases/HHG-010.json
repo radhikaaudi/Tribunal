@@ -1,0 +1,139 @@
+{
+  "case_id": "HHG-010",
+  "debate": {
+    "prosecution": [
+      "Bank model risk score 0.9 on the flagged transaction (a reason to look, not a verdict)",
+      "Flagged transaction is unusual: amount $1000.03 exceeds the card's 95th-pct $670.01",
+      "Flagged transaction from a device marked New for this account",
+      "Customer states they did not make the transaction"
+    ],
+    "defense": [],
+    "conclusion": "The fraud hypothesis survived its strongest defense.",
+    "missing_evidence": [
+      "customer_validation"
+    ]
+  },
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.926,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3506725"
+    ],
+    "first_suspicious_txn_id": "3506725",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "Windows | Windows 10 | edge 16.0 | 1366x768"
+    ],
+    "exposure_usd": 1000.03,
+    "evidence": [
+      {
+        "claim": "Bank model risk score 0.9 on the flagged transaction (a reason to look, not a verdict)",
+        "source": "graph",
+        "ref": "field:risk_score",
+        "entity_ids": [
+          "3506725"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Flagged transaction is unusual: amount $1000.03 exceeds the card's 95th-pct $670.01",
+        "source": "graph",
+        "ref": "query:history(C10434)",
+        "entity_ids": [
+          "3506725"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Flagged transaction from a device marked New for this account",
+        "source": "graph",
+        "ref": "query:identity(3506725)",
+        "entity_ids": [
+          "3506725"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Customer states they did not make the transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": [],
+        "side": "prosecution"
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0232",
+      "CC-4398",
+      "CC-3501"
+    ],
+    "summary": "Card C10434-K1 (customer C10434), trigger risk_score. Assessed fraud at 93% confidence, pattern card_not_present_new_device, exposure $1,000.03. Nearest prior case: CC-0232. The fraud hypothesis survived its strongest defense.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-6725"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 3,
+      "assumed_response": "Customer states they did not make the transaction"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single/weak signal below 0.70, verify before blocking"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: open a case on a dispute / evidence request / prob >= 0.30"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: uncertain and exposed over $500"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: unauthorized use confirmed"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2/3a: open and record the case"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R2/R6: confirmed fraud meeting SAR criteria"
+      }
+    ],
+    "what_changed": "The simulated customer response moved confidence from 61% to 93%, which changed the recommended action."
+  },
+  "sar": {
+    "file": true,
+    "reason": "R2/R6: fraud card_not_present_new_device with exposure $1,000.03",
+    "narrative": "On the dates in question, card C10434-K1 held by customer C10434 was involved in 1 transaction(s) between 2016-12-02 and 2016-12-02 totaling $1,000.03, flagged as suspicious. The activity comprised online transactions in billing region 469.0 ($1000.03). The pattern observed is card-not-present purchases from a device newly seen on the account. The transactions share the device profile 'Windows | Windows 10 | edge 16.0 | 1366x768'. The cardholder, contacted during the investigation, did not confirm the activity. The activity is suspicious because it is inconsistent with the cardholder's established behaviour and matches a known fraud typology (card_not_present_new_device). The card has been recommended for blocking and reissue; connected cards, where present, were placed under monitoring. Total suspicious amount: $1,000.03.",
+    "subjects": [
+      "C10434",
+      "C10434-K1",
+      "Windows | Windows 10 | edge 16.0 | 1366x768"
+    ],
+    "total_amount_usd": 1000.03,
+    "activity_dates": [
+      "2016-12-02",
+      "2016-12-02"
+    ]
+  },
+  "stop_reason": "Fraud probability 93% at/above 0.85 with 3 independent graph evidence items; further steps would not change the decision (policy 6).",
+  "tool_calls": 14,
+  "tokens": 0,
+  "latency_s": 0.017
+}

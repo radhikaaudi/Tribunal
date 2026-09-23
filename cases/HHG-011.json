@@ -1,0 +1,246 @@
+{
+  "case_id": "HHG-011",
+  "debate": {
+    "prosecution": [
+      "Cardholder reports they did not make the flagged purchase",
+      "Flagged transaction is unusual: amount $131.30 exceeds the card's 95th-pct $108.06",
+      "7 online authorizations under $5 within an hour, then a $102.12 purchase",
+      "Flagged transaction from a device marked New for this account",
+      "Distinctive device profile shared with 3 other card(s) within 30 days (C03938-K1, C05595-K1, C05678-K1)",
+      "Shares a device with known-fraud customer(s) ['c05595', 'c05678']"
+    ],
+    "defense": [
+      "Disputed amount $131.30 matches 8 prior charges to the same merchant domain \u2014 a recurring pattern",
+      "Purchaser domain gmail.com was used on 3978 prior transactions by this cardholder",
+      "On verification the cardholder recognises the charge as their own recurring payment"
+    ],
+    "conclusion": "The fraud hypothesis survived its strongest defense.",
+    "missing_evidence": [
+      "customer_validation"
+    ]
+  },
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.968,
+    "pattern": "card_testing",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3152170",
+      "3152171",
+      "3152184",
+      "3152187",
+      "3152198",
+      "3152231",
+      "3152397",
+      "3152862",
+      "3153331",
+      "3153876"
+    ],
+    "first_suspicious_txn_id": "3152170",
+    "connected_card_ids": [
+      "C03938-K1",
+      "C05595-K1",
+      "C05678-K1"
+    ],
+    "connected_device_profiles": [
+      "SM-G610F Build/NRD90M | ? | chrome 66.0 for android | ?"
+    ],
+    "exposure_usd": 298.09,
+    "evidence": [
+      {
+        "claim": "Cardholder reports they did not make the flagged purchase",
+        "source": "customer",
+        "ref": "trigger:customer_report",
+        "entity_ids": [
+          "3583368"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Flagged transaction is unusual: amount $131.30 exceeds the card's 95th-pct $108.06",
+        "source": "graph",
+        "ref": "query:history(C11923)",
+        "entity_ids": [
+          "3583368"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "7 online authorizations under $5 within an hour, then a $102.12 purchase",
+        "source": "graph",
+        "ref": "query:card_window(C11923-K2,1h)",
+        "entity_ids": [
+          "3152170",
+          "3152171",
+          "3152184",
+          "3152187",
+          "3152198",
+          "3152231",
+          "3152397",
+          "3152862",
+          "3153331",
+          "3153876"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Flagged transaction from a device marked New for this account",
+        "source": "graph",
+        "ref": "query:identity(3583368)",
+        "entity_ids": [
+          "3583368"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Distinctive device profile shared with 3 other card(s) within 30 days (C03938-K1, C05595-K1, C05678-K1)",
+        "source": "graph",
+        "ref": "query:device_neighbors('SM-G610F Build/NRD90M | ? | chrome 66.0 ...')",
+        "entity_ids": [
+          "C03938",
+          "C05595",
+          "C05678"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Shares a device with known-fraud customer(s) ['c05595', 'c05678']",
+        "source": "graph",
+        "ref": "query:link_to_known_fraud",
+        "entity_ids": [
+          "C05595",
+          "C05678"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Disputed amount $131.30 matches 8 prior charges to the same merchant domain \u2014 a recurring pattern",
+        "source": "graph",
+        "ref": "query:recurring(C11923)",
+        "entity_ids": [
+          "3193355",
+          "3215582",
+          "3377879",
+          "3389493",
+          "3389533"
+        ],
+        "side": "defense"
+      },
+      {
+        "claim": "Purchaser domain gmail.com was used on 3978 prior transactions by this cardholder",
+        "source": "graph",
+        "ref": "query:merchant_history(C11923)",
+        "entity_ids": [
+          "3000008",
+          "3000041",
+          "3000127",
+          "3000172",
+          "3000190"
+        ],
+        "side": "defense"
+      },
+      {
+        "claim": "On verification the cardholder recognises the charge as their own recurring payment",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": [],
+        "side": "defense"
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-4225",
+      "CC-4058",
+      "CC-0137"
+    ],
+    "summary": "Card C11923-K2 (customer C11923), trigger customer_report. Assessed fraud at 97% confidence, pattern card_testing, exposure $298.09, linked to other cards by shared origin. Nearest prior case: CC-4225. The fraud hypothesis survived its strongest defense.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-83368"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 8,
+      "assumed_response": "On verification the cardholder recognises the charge as their own recurring payment"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "DECLINE_TRANSACTION",
+        "route": "L1",
+        "reason": "R5: card-testing sequence observed"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R5: purchase over $100 already cleared"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2/3a: open and record the case"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R2/R6: confirmed fraud meeting SAR criteria"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: monitor cards sharing the origin"
+      }
+    ],
+    "final": [
+      {
+        "action": "DECLINE_TRANSACTION",
+        "route": "L1",
+        "reason": "R5: card-testing sequence observed"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R5: purchase over $100 already cleared"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2/3a: open and record the case"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R2/R6: confirmed fraud meeting SAR criteria"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: monitor cards sharing the origin"
+      }
+    ],
+    "what_changed": "The simulated customer response moved confidence from 100% to 97%, which changed the recommended action."
+  },
+  "sar": {
+    "file": true,
+    "reason": "R2/R6: fraud card_testing with exposure $298.09 and shared-origin links to other cards",
+    "narrative": "On the dates in question, card C11923-K2 held by customer C11923 was involved in 10 transaction(s) between 2016-08-07 and 2016-08-07 totaling $298.09, flagged as suspicious. The activity comprised online transactions ($3.77, $3.65, $3.73, $3.81, $3.77, $3.77). The pattern observed is a sequence of small authorizations followed by a larger purchase, consistent with testing of a stolen card number before use. The transactions share the device profile 'SM-G610F Build/NRD90M | ? | chrome 66.0 for android | ?'. This device profile also appears on other card(s): C03938-K1, C05595-K1, C05678-K1, indicating a common actor across cardholders. The cardholder, contacted during the investigation, did not confirm the activity. The activity is suspicious because it is inconsistent with the cardholder's established behaviour and matches a known fraud typology (card_testing). The card has been recommended for blocking and reissue; connected cards, where present, were placed under monitoring. Total suspicious amount: $298.09.",
+    "subjects": [
+      "C11923",
+      "C11923-K2",
+      "C03938-K1",
+      "C05595-K1",
+      "C05678-K1",
+      "SM-G610F Build/NRD90M | ? | chrome 66.0 for android | ?"
+    ],
+    "total_amount_usd": 298.09,
+    "activity_dates": [
+      "2016-08-07",
+      "2016-08-07"
+    ]
+  },
+  "stop_reason": "Fraud probability 97% at/above 0.85 with 7 independent graph evidence items; further steps would not change the decision (policy 6).",
+  "tool_calls": 14,
+  "tokens": 0,
+  "latency_s": 0.078
+}

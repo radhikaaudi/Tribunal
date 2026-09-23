@@ -1,0 +1,236 @@
+TransactionID,id_01,id_02,id_05,id_06,id_11,id_12,id_15,id_30,id_31,id_33,DeviceType,DeviceInfo
+3000001,-48,87673,7,-6,92.9,Found,New,Windows 10,firefox 57.0,2208x1242,desktop,Windows
+3000008,-28,85080,16,-18,96.8,NotFound,New,Windows 10,ie 11.0 for desktop,1334x750,desktop,MacOS
+3000023,-9,13978,26,-15,96.2,NotFound,New,Mac OS X 10_13,mobile safari 11.0,1280x800,desktop,rv:11.0
+3000024,-17,15896,23,-28,94.8,NotFound,Unknown,Windows 10,firefox 57.0,1334x750,desktop,rv:11.0
+3000027,-18,74233,26,-9,98.1,Found,Found,Windows 10,firefox 57.0,1920x1080,mobile,iOS Device
+3000028,-2,86918,2,-25,99.5,NotFound,Found,Android 7.0,ie 11.0 for desktop,2208x1242,mobile,iOS Device
+3000029,-46,44213,3,-13,96.8,NotFound,Found,iOS 11.1.2,ie 11.0 for desktop,1920x1080,desktop,MacOS
+3000031,-25,66799,11,-23,93.9,Found,Found,iOS 11.1.2,chrome 62.0,2208x1242,desktop,Windows
+3000032,-26,62621,1,-10,93.9,NotFound,Found,Windows 10,ie 11.0 for desktop,1920x1080,desktop,Windows
+3000035,-49,48303,17,-12,93.7,Found,Unknown,Windows 10,chrome 62.0,2208x1242,desktop,rv:11.0
+3000037,-11,55805,7,0,98.7,Found,Found,Mac OS X 10_13,mobile safari 11.0,1334x750,desktop,rv:11.0
+3000039,-38,3482,14,-20,94.2,NotFound,Unknown,iOS 11.1.2,firefox 57.0,1280x800,desktop,Windows
+3000042,-21,41213,5,-18,96.9,NotFound,Unknown,Windows 10,ie 11.0 for desktop,2208x1242,desktop,Windows
+3000043,-13,10572,1,-17,93.4,Found,Unknown,Windows 10,chrome 62.0,1280x800,mobile,iOS Device
+3000044,-22,79352,21,-8,98.7,Found,Unknown,Windows 10,firefox 57.0,1280x800,desktop,Windows
+3000048,-9,44420,18,-3,99.7,Found,New,iOS 11.1.2,firefox 57.0,2208x1242,desktop,rv:11.0
+3000059,-1,10567,0,-12,90.7,NotFound,New,Windows 10,chrome 62.0,1280x800,desktop,rv:11.0
+3000062,-18,18499,20,-4,93.9,Found,Found,iOS 11.1.2,mobile safari 11.0,2208x1242,desktop,Windows
+3000074,-24,44426,11,-22,95.9,NotFound,New,Android 7.0,chrome 62.0,1920x1080,desktop,MacOS
+3000076,-47,16176,13,-16,93.8,NotFound,Found,iOS 11.1.2,mobile safari 11.0,1920x1080,desktop,Windows
+3000078,-20,64979,3,-2,94.1,Found,New,Mac OS X 10_13,ie 11.0 for desktop,1920x1080,mobile,iOS Device
+3000081,-7,46258,29,-9,91.3,Found,Unknown,Mac OS X 10_13,chrome 62.0,2208x1242,desktop,MacOS
+3000089,-14,20249,1,-25,92.6,Found,Unknown,Android 7.0,chrome 62.0,2208x1242,desktop,Windows
+3000090,-36,64192,25,-6,93.8,Found,Found,iOS 11.1.2,ie 11.0 for desktop,1280x800,desktop,rv:11.0
+3000095,-20,2276,5,-17,95.0,NotFound,Found,Mac OS X 10_13,ie 11.0 for desktop,1920x1080,mobile,iOS Device
+3000099,-1,52435,2,-13,94.7,Found,Found,Android 7.0,chrome 62.0,1920x1080,desktop,MacOS
+3000100,-7,82087,10,-1,99.7,Found,New,Mac OS X 10_13,mobile safari 11.0,1920x1080,desktop,Windows
+3000102,-16,51506,6,-24,95.3,Found,Unknown,iOS 11.1.2,firefox 57.0,1920x1080,mobile,iOS Device
+3000104,-22,79005,18,-14,90.9,NotFound,Found,Android 7.0,mobile safari 11.0,1334x750,desktop,rv:11.0
+3000119,-8,58243,4,-28,91.4,NotFound,Found,Android 7.0,mobile safari 11.0,1280x800,desktop,rv:11.0
+3000120,-4,74886,8,-29,96.3,Found,Unknown,Windows 10,ie 11.0 for desktop,1920x1080,desktop,MacOS
+3000122,-47,78874,21,-2,98.4,Found,Unknown,Windows 10,chrome 62.0,1334x750,desktop,Windows
+3000123,-14,33846,24,-16,90.2,NotFound,New,Windows 10,chrome 62.0,1280x800,desktop,Windows
+3000124,-49,78718,7,-15,93.9,NotFound,Found,Android 7.0,chrome 62.0,1920x1080,mobile,iOS Device
+3000127,-44,32079,23,-17,98.7,NotFound,New,Windows 10,firefox 57.0,1280x800,mobile,iOS Device
+3000129,-2,36361,22,0,96.1,Found,Unknown,Windows 10,ie 11.0 for desktop,1920x1080,desktop,rv:11.0
+3000131,-32,7202,4,-19,92.8,Found,Unknown,iOS 11.1.2,ie 11.0 for desktop,1334x750,desktop,MacOS
+3000134,-19,9745,19,-7,93.6,NotFound,Unknown,Android 7.0,ie 11.0 for desktop,1280x800,desktop,MacOS
+3000142,-24,35987,26,-21,96.5,NotFound,Unknown,iOS 11.1.2,firefox 57.0,1334x750,mobile,iOS Device
+3000143,-37,19910,3,-25,92.1,NotFound,Found,Android 7.0,ie 11.0 for desktop,1920x1080,desktop,rv:11.0
+3000145,-14,30423,0,0,90.2,Found,New,Android 7.0,mobile safari 11.0,2208x1242,desktop,rv:11.0
+3000146,-30,53108,21,-24,97.1,NotFound,Unknown,Mac OS X 10_13,chrome 62.0,1920x1080,mobile,iOS Device
+3000147,-47,25762,4,-29,92.3,Found,Found,Mac OS X 10_13,mobile safari 11.0,1280x800,desktop,rv:11.0
+3000153,-46,45267,13,-27,96.2,Found,Unknown,iOS 11.1.2,firefox 57.0,2208x1242,desktop,Windows
+3000156,-22,40054,18,-7,90.1,NotFound,New,iOS 11.1.2,ie 11.0 for desktop,2208x1242,desktop,Windows
+3000160,-33,73623,30,-12,96.8,Found,Unknown,iOS 11.1.2,ie 11.0 for desktop,1280x800,desktop,Windows
+3000165,-13,58127,16,0,96.5,NotFound,Found,iOS 11.1.2,mobile safari 11.0,1280x800,desktop,MacOS
+3000166,-27,2296,2,-19,90.3,Found,New,Mac OS X 10_13,firefox 57.0,1334x750,desktop,Windows
+3000168,-17,47081,7,-12,90.4,NotFound,Found,Android 7.0,firefox 57.0,1280x800,desktop,rv:11.0
+3000170,-29,75647,30,-16,96.4,NotFound,New,iOS 11.1.2,chrome 62.0,1334x750,desktop,Windows
+3000179,-34,54581,14,-10,99.1,Found,Unknown,iOS 11.1.2,chrome 62.0,2208x1242,mobile,iOS Device
+3000187,-33,2292,3,-18,99.8,Found,Found,Windows 10,chrome 62.0,1334x750,mobile,iOS Device
+3000192,-9,7770,9,-27,92.7,NotFound,Found,Android 7.0,mobile safari 11.0,2208x1242,desktop,rv:11.0
+3000193,-15,34099,28,-2,97.6,NotFound,Found,Android 7.0,chrome 62.0,1280x800,desktop,rv:11.0
+3000195,-45,66006,5,-16,91.9,Found,New,Android 7.0,mobile safari 11.0,2208x1242,desktop,rv:11.0
+3000196,-10,72252,3,-30,98.2,Found,Unknown,Mac OS X 10_13,chrome 62.0,1280x800,desktop,MacOS
+3000198,-41,73286,29,-1,94.2,Found,New,Windows 10,mobile safari 11.0,1920x1080,desktop,rv:11.0
+3000200,-14,64413,1,-29,93.1,NotFound,New,Mac OS X 10_13,ie 11.0 for desktop,1280x800,desktop,Windows
+3000201,-15,12425,15,-27,94.5,Found,Found,iOS 11.1.2,chrome 62.0,2208x1242,desktop,MacOS
+3000203,-39,8044,2,-2,99.0,NotFound,Found,iOS 11.1.2,mobile safari 11.0,2208x1242,desktop,MacOS
+3000206,-2,83223,29,-22,98.4,Found,Found,iOS 11.1.2,chrome 62.0,1920x1080,desktop,rv:11.0
+3000211,-46,35567,10,-8,96.1,NotFound,Found,iOS 11.1.2,mobile safari 11.0,1280x800,desktop,MacOS
+3000214,-29,60666,4,0,90.1,NotFound,Found,Mac OS X 10_13,chrome 62.0,1334x750,mobile,iOS Device
+3000215,-36,87424,4,-19,95.0,Found,Unknown,Android 7.0,ie 11.0 for desktop,1334x750,desktop,rv:11.0
+3000225,-48,31815,22,-16,96.5,NotFound,New,Windows 10,firefox 57.0,1920x1080,mobile,iOS Device
+3000228,-13,4346,3,-11,92.1,NotFound,Unknown,Mac OS X 10_13,mobile safari 11.0,1280x800,mobile,iOS Device
+3000233,-5,24345,1,-17,96.9,NotFound,Unknown,iOS 11.1.2,ie 11.0 for desktop,1280x800,mobile,iOS Device
+3000239,-33,24373,8,-12,91.0,NotFound,Found,Mac OS X 10_13,firefox 57.0,1334x750,mobile,iOS Device
+3000241,-45,55994,26,-3,91.2,NotFound,Unknown,Windows 10,ie 11.0 for desktop,1920x1080,mobile,iOS Device
+3000242,-13,83132,30,-30,97.7,Found,New,Mac OS X 10_13,firefox 57.0,1920x1080,desktop,MacOS
+3000246,-26,89509,26,-15,90.3,NotFound,New,iOS 11.1.2,firefox 57.0,1920x1080,desktop,MacOS
+3000253,-2,33077,24,-22,93.4,NotFound,Found,Android 7.0,ie 11.0 for desktop,2208x1242,desktop,rv:11.0
+3000263,-48,71710,12,-6,96.0,Found,New,Windows 10,chrome 62.0,2208x1242,desktop,rv:11.0
+3000265,-44,30769,14,-4,91.1,NotFound,New,Mac OS X 10_13,ie 11.0 for desktop,1280x800,mobile,iOS Device
+3000270,-5,79377,29,-2,96.6,NotFound,New,Mac OS X 10_13,ie 11.0 for desktop,1280x800,desktop,Windows
+3000274,-31,39198,3,-19,96.8,Found,New,Android 7.0,mobile safari 11.0,1334x750,desktop,Windows
+3000277,-45,73712,27,-15,92.0,Found,Found,Android 7.0,chrome 62.0,1920x1080,mobile,iOS Device
+3000279,-41,6577,14,-17,97.1,Found,Found,iOS 11.1.2,ie 11.0 for desktop,1334x750,desktop,MacOS
+3000281,-40,74618,17,-10,94.7,NotFound,Unknown,iOS 11.1.2,chrome 62.0,1334x750,desktop,rv:11.0
+3000284,-4,89625,18,-3,98.6,NotFound,New,Windows 10,chrome 62.0,1334x750,desktop,MacOS
+3000289,-32,22351,18,-26,93.2,Found,New,Windows 10,ie 11.0 for desktop,1280x800,desktop,rv:11.0
+3000290,-22,21848,3,-6,99.1,NotFound,New,iOS 11.1.2,chrome 62.0,1920x1080,mobile,iOS Device
+3000291,-25,16619,20,-21,94.5,NotFound,Unknown,Android 7.0,mobile safari 11.0,1334x750,desktop,MacOS
+3000297,-46,66807,5,-16,92.7,NotFound,Unknown,Windows 10,ie 11.0 for desktop,1920x1080,desktop,rv:11.0
+3000298,-15,56345,2,-28,90.9,NotFound,Found,Android 7.0,mobile safari 11.0,1334x750,desktop,rv:11.0
+3000302,-10,65167,19,-27,94.8,NotFound,Found,Windows 10,mobile safari 11.0,1334x750,desktop,rv:11.0
+3000303,-11,22711,28,-25,99.2,NotFound,New,Windows 10,mobile safari 11.0,2208x1242,desktop,rv:11.0
+3000308,-49,59767,12,-20,98.0,NotFound,Found,Mac OS X 10_13,ie 11.0 for desktop,2208x1242,desktop,MacOS
+3000312,-22,48022,30,-14,93.1,NotFound,Found,iOS 11.1.2,ie 11.0 for desktop,2208x1242,desktop,rv:11.0
+3000314,-20,55689,29,-16,99.1,Found,Found,iOS 11.1.2,firefox 57.0,2208x1242,desktop,Windows
+3000317,-15,73299,23,-6,93.4,Found,Unknown,Mac OS X 10_13,mobile safari 11.0,2208x1242,desktop,rv:11.0
+3000319,-14,25582,15,-13,92.4,NotFound,New,Android 7.0,mobile safari 11.0,2208x1242,desktop,MacOS
+3000322,-4,41152,23,-6,94.2,NotFound,Unknown,iOS 11.1.2,firefox 57.0,2208x1242,desktop,Windows
+3000326,-46,56328,23,-10,95.5,NotFound,Found,iOS 11.1.2,ie 11.0 for desktop,2208x1242,desktop,rv:11.0
+3000327,-21,4440,1,-11,90.5,NotFound,New,Android 7.0,ie 11.0 for desktop,2208x1242,desktop,rv:11.0
+3000329,-4,89572,11,-20,95.4,Found,Found,iOS 11.1.2,chrome 62.0,1920x1080,mobile,iOS Device
+3000330,-17,62138,23,-2,97.9,Found,Unknown,iOS 11.1.2,mobile safari 11.0,1920x1080,desktop,rv:11.0
+3000332,-35,65536,29,-18,94.3,Found,Unknown,Windows 10,chrome 62.0,1334x750,desktop,MacOS
+3000334,-14,82105,25,-3,91.9,Found,New,Windows 10,mobile safari 11.0,1334x750,desktop,MacOS
+3000336,-11,44888,26,-4,98.5,Found,New,Android 7.0,chrome 62.0,2208x1242,mobile,iOS Device
+3000338,-31,35681,18,-29,97.3,Found,Unknown,Mac OS X 10_13,chrome 62.0,1334x750,desktop,MacOS
+3000340,-17,86367,24,-1,91.7,Found,Found,Android 7.0,firefox 57.0,1920x1080,desktop,Windows
+3000343,-15,52277,11,-19,90.3,NotFound,Unknown,Mac OS X 10_13,firefox 57.0,2208x1242,desktop,Windows
+3000345,-5,45287,16,-20,99.8,NotFound,Unknown,Mac OS X 10_13,firefox 57.0,2208x1242,desktop,rv:11.0
+3000348,-39,21341,18,0,95.7,Found,Unknown,Android 7.0,mobile safari 11.0,1920x1080,mobile,iOS Device
+3000351,-24,62152,24,-9,91.4,Found,Unknown,Windows 10,chrome 62.0,1920x1080,desktop,rv:11.0
+3000353,-20,31252,17,-15,92.8,Found,Unknown,Windows 10,firefox 57.0,1920x1080,mobile,iOS Device
+3000354,-21,57909,0,-27,90.4,Found,New,Windows 10,chrome 62.0,1334x750,desktop,MacOS
+3000355,-39,46735,17,-3,95.3,NotFound,Found,Android 7.0,firefox 57.0,2208x1242,desktop,rv:11.0
+3000356,-48,3575,23,-10,92.6,Found,Unknown,Windows 10,ie 11.0 for desktop,1920x1080,desktop,MacOS
+3000358,-34,40860,17,-26,91.6,Found,Found,Mac OS X 10_13,mobile safari 11.0,1280x800,desktop,rv:11.0
+3000359,-7,73510,17,-23,93.3,NotFound,Found,Windows 10,firefox 57.0,1280x800,desktop,MacOS
+3000363,-12,86991,20,-12,93.0,Found,Found,Mac OS X 10_13,mobile safari 11.0,1920x1080,desktop,Windows
+3000374,-36,45849,13,-22,99.5,NotFound,New,iOS 11.1.2,mobile safari 11.0,2208x1242,desktop,rv:11.0
+3000381,-39,77298,1,-10,91.9,Found,New,iOS 11.1.2,ie 11.0 for desktop,2208x1242,desktop,MacOS
+3000387,-9,73719,22,-20,92.7,Found,New,Windows 10,firefox 57.0,1920x1080,desktop,MacOS
+3000401,-29,52574,27,-19,95.3,NotFound,New,Mac OS X 10_13,ie 11.0 for desktop,1280x800,desktop,rv:11.0
+3000403,-17,21095,19,-5,92.3,Found,New,iOS 11.1.2,ie 11.0 for desktop,1280x800,mobile,iOS Device
+3000404,-21,9926,30,-5,95.8,Found,New,Android 7.0,mobile safari 11.0,1334x750,desktop,MacOS
+3000406,-27,38914,4,-26,91.1,Found,Found,Mac OS X 10_13,ie 11.0 for desktop,1280x800,desktop,Windows
+3000412,-28,25488,14,-7,96.0,Found,Unknown,Android 7.0,ie 11.0 for desktop,1920x1080,mobile,iOS Device
+3000413,-29,43749,7,-11,92.7,NotFound,Unknown,Windows 10,firefox 57.0,2208x1242,mobile,iOS Device
+3000415,-37,7019,21,-19,97.2,NotFound,New,Mac OS X 10_13,mobile safari 11.0,1920x1080,desktop,Windows
+3000420,-36,28512,26,-18,91.4,NotFound,Found,Android 7.0,ie 11.0 for desktop,2208x1242,desktop,MacOS
+3000423,-6,70614,10,-4,95.4,Found,Unknown,Windows 10,chrome 62.0,2208x1242,desktop,Windows
+3000424,-32,33256,12,0,96.8,Found,Unknown,iOS 11.1.2,mobile safari 11.0,1280x800,desktop,rv:11.0
+3000429,-45,25839,24,-6,90.3,NotFound,New,iOS 11.1.2,chrome 62.0,1920x1080,desktop,rv:11.0
+3000433,-38,60866,23,-4,95.8,NotFound,Unknown,Windows 10,firefox 57.0,1920x1080,desktop,rv:11.0
+3000435,-1,74402,30,-26,95.5,NotFound,New,Windows 10,firefox 57.0,1920x1080,desktop,Windows
+3000448,-43,38873,8,-4,95.5,Found,New,Mac OS X 10_13,mobile safari 11.0,1920x1080,desktop,MacOS
+3000449,-40,74819,8,-5,94.4,Found,Unknown,Windows 10,mobile safari 11.0,1920x1080,desktop,rv:11.0
+3000458,-5,13994,12,-19,92.8,NotFound,New,iOS 11.1.2,firefox 57.0,1334x750,mobile,iOS Device
+3000460,-47,40940,15,-3,96.5,NotFound,Unknown,Windows 10,ie 11.0 for desktop,1334x750,desktop,rv:11.0
+3000463,-21,1796,17,-17,98.2,NotFound,Unknown,Mac OS X 10_13,mobile safari 11.0,1280x800,desktop,Windows
+3000465,-15,23787,20,-3,97.7,NotFound,Unknown,Mac OS X 10_13,chrome 62.0,1920x1080,desktop,rv:11.0
+3000468,-24,53186,2,0,94.5,NotFound,New,iOS 11.1.2,ie 11.0 for desktop,1280x800,desktop,rv:11.0
+3000474,-19,6579,16,-7,99.6,NotFound,New,iOS 11.1.2,chrome 62.0,1920x1080,desktop,rv:11.0
+3000478,-49,59673,0,-21,94.5,Found,Found,Android 7.0,chrome 62.0,1334x750,desktop,rv:11.0
+3000481,-19,87486,2,-11,95.9,Found,Unknown,Windows 10,firefox 57.0,2208x1242,desktop,MacOS
+3000482,-47,32200,12,-5,90.3,NotFound,New,Mac OS X 10_13,mobile safari 11.0,2208x1242,desktop,MacOS
+3000487,-49,80785,24,-3,92.8,Found,New,Mac OS X 10_13,chrome 62.0,1280x800,mobile,iOS Device
+3000505,-28,30439,21,0,95.0,Found,Found,iOS 11.1.2,firefox 57.0,1920x1080,desktop,Windows
+3000506,-12,15271,14,-26,97.5,NotFound,New,iOS 11.1.2,firefox 57.0,2208x1242,mobile,iOS Device
+3000508,-47,63659,18,-9,91.0,Found,New,Android 7.0,chrome 62.0,1920x1080,desktop,rv:11.0
+3000513,-2,17547,25,-6,95.1,Found,Unknown,Mac OS X 10_13,ie 11.0 for desktop,1280x800,desktop,MacOS
+3000517,-13,21564,16,-29,93.0,NotFound,New,iOS 11.1.2,mobile safari 11.0,1920x1080,mobile,iOS Device
+3000518,-9,83250,14,-16,99.2,Found,Found,Mac OS X 10_13,firefox 57.0,2208x1242,desktop,rv:11.0
+3000528,-42,42817,4,-8,97.3,NotFound,New,Windows 10,chrome 62.0,1920x1080,desktop,MacOS
+3000531,-48,5506,22,-2,97.3,Found,New,Android 7.0,chrome 62.0,1920x1080,desktop,Windows
+3000548,-8,50909,30,-28,93.0,NotFound,Found,iOS 11.1.2,firefox 57.0,1280x800,desktop,MacOS
+3000559,-8,39342,8,-12,98.9,Found,New,Mac OS X 10_13,mobile safari 11.0,2208x1242,desktop,rv:11.0
+3000569,-6,51127,20,-18,96.9,Found,New,Windows 10,mobile safari 11.0,1334x750,desktop,Windows
+3000572,-37,44158,3,-6,97.2,NotFound,Unknown,Mac OS X 10_13,mobile safari 11.0,1334x750,desktop,Windows
+3000587,-14,4287,17,-8,95.1,NotFound,Found,Windows 10,mobile safari 11.0,1334x750,desktop,rv:11.0
+3000588,-45,64692,22,-30,91.9,NotFound,Found,Android 7.0,chrome 62.0,2208x1242,desktop,rv:11.0
+3000590,-41,22812,12,-9,95.8,NotFound,Unknown,Mac OS X 10_13,ie 11.0 for desktop,1920x1080,desktop,rv:11.0
+3000594,-39,70084,15,-21,93.4,Found,New,Windows 10,mobile safari 11.0,1334x750,desktop,Windows
+3000596,-14,85861,27,-24,97.5,NotFound,Unknown,iOS 11.1.2,chrome 62.0,2208x1242,desktop,MacOS
+3000601,-7,28288,1,-25,99.9,NotFound,Found,Windows 10,mobile safari 11.0,1334x750,mobile,SAMSUNG SM-G960F
+3000602,-27,12482,4,-20,92.3,Found,Found,Windows 10,chrome 62.0,1334x750,mobile,SAMSUNG SM-G960F
+3000603,-42,2213,27,-6,90.0,NotFound,New,Mac OS X 10_13,chrome 62.0,2208x1242,mobile,SAMSUNG SM-G960F
+3000604,-4,47178,2,-14,98.2,NotFound,Found,Windows 10,ie 11.0 for desktop,1920x1080,mobile,SAMSUNG SM-G960F
+3000605,-12,72909,6,-17,94.6,Found,Found,Android 7.0,firefox 57.0,2208x1242,mobile,SAMSUNG SM-G960F
+3000606,-49,89736,6,-27,93.8,NotFound,New,iOS 11.1.2,firefox 57.0,1920x1080,mobile,SAMSUNG SM-G960F
+3000607,-32,30281,10,-25,96.2,Found,New,Android 7.0,ie 11.0 for desktop,1920x1080,mobile,SAMSUNG SM-G960F
+3000608,-3,6698,26,-22,91.0,Found,Unknown,Windows 10,ie 11.0 for desktop,1920x1080,mobile,SAMSUNG SM-G960F
+3000609,-35,61558,2,-21,93.7,Found,New,Windows 10,chrome 62.0,1334x750,mobile,SAMSUNG SM-G960F
+3000610,-29,12262,22,-8,92.3,NotFound,Unknown,Windows 10,firefox 57.0,1920x1080,mobile,SAMSUNG SM-G960F
+3000611,-13,81404,29,-14,94.5,Found,New,Windows 10,mobile safari 11.0,1280x800,mobile,SAMSUNG SM-G960F
+3000612,-15,50620,24,-10,96.4,NotFound,Unknown,Mac OS X 10_13,chrome 62.0,1280x800,mobile,SAMSUNG SM-G960F
+3000613,-36,31456,7,-9,96.6,NotFound,Unknown,Android 7.0,ie 11.0 for desktop,2208x1242,mobile,SAMSUNG SM-G960F
+3000614,-29,87671,7,-4,96.2,NotFound,Unknown,Android 7.0,firefox 57.0,1920x1080,mobile,SAMSUNG SM-G960F
+3000615,-30,48267,15,-30,98.5,Found,Unknown,iOS 11.1.2,ie 11.0 for desktop,1334x750,mobile,SAMSUNG SM-G960F
+3000616,-7,73881,16,-26,96.6,Found,Unknown,Mac OS X 10_13,firefox 57.0,1920x1080,mobile,SAMSUNG SM-G960F
+3000617,-34,16252,22,-10,94.4,Found,Found,iOS 11.1.2,ie 11.0 for desktop,1920x1080,mobile,SAMSUNG SM-G960F
+3000618,-18,15806,27,-2,91.2,NotFound,New,iOS 11.1.2,chrome 62.0,1280x800,mobile,SAMSUNG SM-G960F
+3000619,-50,23965,19,-20,93.4,NotFound,Found,iOS 11.1.2,firefox 57.0,1334x750,mobile,SAMSUNG SM-G960F
+3000620,-18,20156,18,0,91.7,NotFound,Unknown,iOS 11.1.2,firefox 57.0,1334x750,mobile,SAMSUNG SM-G960F
+3000621,-29,12976,21,-8,90.2,NotFound,New,Windows 10,chrome 62.0,2208x1242,mobile,SAMSUNG SM-G960F
+3000622,-50,33601,6,-3,90.0,NotFound,Found,Mac OS X 10_13,chrome 62.0,1920x1080,mobile,SAMSUNG SM-G960F
+3000623,-40,18453,21,-5,99.8,Found,Found,iOS 11.1.2,firefox 57.0,1280x800,mobile,SAMSUNG SM-G960F
+3000624,-5,78726,15,-27,98.4,NotFound,New,Mac OS X 10_13,mobile safari 11.0,1334x750,mobile,SAMSUNG SM-G960F
+3000625,-48,15290,28,-19,96.6,Found,New,Windows 10,mobile safari 11.0,1334x750,mobile,SAMSUNG SM-G960F
+3000626,-15,81579,16,-18,95.1,Found,Unknown,Mac OS X 10_13,mobile safari 11.0,1280x800,mobile,SAMSUNG SM-G960F
+3000627,-35,45680,18,-10,99.2,Found,Unknown,Mac OS X 10_13,chrome 62.0,1280x800,mobile,SAMSUNG SM-G960F
+3000628,-40,20478,6,-24,97.2,NotFound,Found,Windows 10,mobile safari 11.0,1334x750,mobile,SAMSUNG SM-G960F
+3000629,-6,60176,1,-1,99.8,Found,New,Android 7.0,chrome 62.0,1280x800,desktop,MacOS
+3000630,-29,77104,10,-29,91.3,NotFound,New,Mac OS X 10_13,firefox 57.0,1920x1080,desktop,MacOS
+3000631,-7,15131,5,-29,90.6,Found,Found,Mac OS X 10_13,chrome 62.0,1280x800,desktop,MacOS
+3000632,-30,65355,23,-13,95.4,NotFound,New,iOS 11.1.2,chrome 62.0,1280x800,desktop,rv:11.0
+3000633,-6,80429,8,-17,93.2,NotFound,Found,Windows 10,firefox 57.0,1920x1080,desktop,Windows
+3000634,-41,62107,18,-14,91.9,Found,New,Mac OS X 10_13,mobile safari 11.0,2208x1242,mobile,iOS Device
+3000635,-8,8039,10,-28,90.9,Found,New,Android 7.0,chrome 62.0,1920x1080,desktop,Windows
+3000636,-40,8360,9,-28,94.0,Found,Found,iOS 11.1.2,firefox 57.0,2208x1242,mobile,iOS Device
+3000637,-48,89321,11,-16,92.6,NotFound,New,Android 7.0,mobile safari 11.0,1334x750,mobile,iOS Device
+3000638,-19,87861,29,-26,90.1,NotFound,Found,iOS 11.1.2,firefox 57.0,1920x1080,desktop,rv:11.0
+3000639,-13,72009,16,-16,99.4,NotFound,Found,Mac OS X 10_13,ie 11.0 for desktop,2208x1242,desktop,rv:11.0
+3000640,-25,18839,22,-26,97.0,Found,New,Android 7.0,chrome 62.0,1280x800,mobile,iOS Device
+3000641,-25,55551,2,-20,97.0,NotFound,Found,Mac OS X 10_13,firefox 57.0,1280x800,desktop,Windows
+3000642,-2,22965,6,-7,91.6,Found,New,Android 7.0,firefox 57.0,1280x800,desktop,Windows
+3000643,-23,23738,6,0,96.5,NotFound,Found,Windows 10,chrome 62.0,2208x1242,desktop,Windows
+3000644,0,38419,12,-3,96.4,Found,Unknown,Android 7.0,ie 11.0 for desktop,1280x800,desktop,Windows
+3000645,-36,33104,18,-14,90.3,Found,New,Android 7.0,chrome 62.0,1280x800,desktop,Windows
+3000646,-14,45991,19,-12,93.7,NotFound,New,Mac OS X 10_13,ie 11.0 for desktop,1334x750,desktop,Windows
+3000647,-42,63073,20,-18,97.7,NotFound,Found,iOS 11.1.2,chrome 62.0,1334x750,desktop,Windows
+3000648,-9,32020,28,-26,93.2,NotFound,New,Windows 10,chrome 62.0,1920x1080,desktop,Windows
+3000649,-17,79950,1,-13,95.5,Found,Unknown,Android 7.0,firefox 57.0,2208x1242,desktop,Windows
+3000650,0,21825,0,-6,98.9,Found,Found,Mac OS X 10_13,ie 11.0 for desktop,1280x800,desktop,Windows
+3000651,-49,2791,11,-11,96.1,NotFound,Unknown,Android 7.0,firefox 57.0,1334x750,desktop,Windows
+3000652,-14,65603,5,-26,95.2,NotFound,Unknown,iOS 11.1.2,ie 11.0 for desktop,2208x1242,desktop,Windows
+3000653,-25,31262,15,-6,90.9,Found,Found,iOS 11.1.2,chrome 62.0,1280x800,desktop,Windows
+3000654,-29,83653,8,-18,99.7,NotFound,New,Android 7.0,mobile safari 11.0,1280x800,desktop,Windows
+3000655,-4,59329,23,-3,98.0,NotFound,Unknown,iOS 11.1.2,ie 11.0 for desktop,1920x1080,desktop,Windows
+3000656,-39,78845,30,-19,92.6,NotFound,Found,Mac OS X 10_13,ie 11.0 for desktop,1334x750,desktop,Windows
+3000657,-47,12861,14,-30,94.7,Found,New,Mac OS X 10_13,ie 11.0 for desktop,1280x800,desktop,Windows
+3000658,-42,9486,26,-14,98.7,NotFound,New,Mac OS X 10_13,chrome 62.0,1920x1080,desktop,Windows
+3000659,-2,86170,23,-6,95.5,Found,Unknown,iOS 11.1.2,mobile safari 11.0,1280x800,desktop,Windows
+3000660,-23,77027,7,-25,90.4,Found,Unknown,iOS 11.1.2,ie 11.0 for desktop,2208x1242,desktop,Windows
+3000661,-41,8996,5,-17,99.7,NotFound,Unknown,iOS 11.1.2,chrome 62.0,1334x750,desktop,Windows
+3000662,-28,28517,12,-7,99.2,NotFound,Unknown,iOS 11.1.2,mobile safari 11.0,1334x750,desktop,Windows
+3000663,-16,68454,6,-13,92.8,NotFound,Unknown,Windows 10,mobile safari 11.0,2208x1242,desktop,Windows
+3000664,-12,57187,16,-14,93.6,Found,Found,iOS 11.1.2,mobile safari 11.0,1920x1080,desktop,Windows
+3000665,-35,19654,17,-12,93.6,Found,Unknown,Windows 10,mobile safari 11.0,2208x1242,desktop,Windows
+3000666,-21,27741,12,-9,93.8,Found,Found,Android 7.0,firefox 57.0,1334x750,desktop,Windows
+3000667,-8,4042,19,-24,95.0,NotFound,Found,Mac OS X 10_13,chrome 62.0,1920x1080,desktop,Windows
+3000668,-25,67599,10,-11,92.1,Found,Found,iOS 11.1.2,ie 11.0 for desktop,1920x1080,desktop,Windows
+3000669,-47,28779,15,-18,92.6,NotFound,Found,Android 7.0,chrome 62.0,1920x1080,desktop,Windows
+3000670,-38,68981,0,-27,99.9,Found,New,iOS 11.1.2,ie 11.0 for desktop,2208x1242,desktop,Windows
+3000671,-15,48925,0,-15,99.2,Found,Unknown,Android 7.0,chrome 62.0,1334x750,desktop,Windows
+3000672,-27,10624,13,-20,94.9,Found,New,Windows 10,chrome 62.0,1280x800,desktop,Windows
+3000673,-13,51712,20,-27,95.7,NotFound,Unknown,Windows 10,ie 11.0 for desktop,2208x1242,desktop,Trident/7.0
+3000674,-25,2514,18,-9,98.1,NotFound,Unknown,Windows 10,firefox 57.0,1334x750,desktop,Trident/7.0
+3000675,-44,52215,30,-3,99.7,NotFound,New,Android 7.0,chrome 62.0,1280x800,desktop,MacOS
+3000676,-40,9245,28,-19,98.2,NotFound,New,iOS 11.1.2,chrome 62.0,1334x750,desktop,MacOS
+3000677,-35,20585,4,-7,97.2,Found,New,Windows 10,mobile safari 11.0,2208x1242,desktop,MacOS

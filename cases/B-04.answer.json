@@ -1,0 +1,58 @@
+{
+  "case_id": "B-04",
+  "trigger": "analyst_request",
+  "card1": 80002,
+  "prior_prob": 0.58,
+  "final_prob": 0.9431,
+  "typology": "identity_mismatch",
+  "exposure": 1250.0,
+  "stop_reason": "confidence 94% has crossed a policy threshold (exposure $1,250) - enough to act; further checks would add cost without changing the decision",
+  "nba_initial": {
+    "name": "monitor",
+    "approval_route": "L1",
+    "reason": "confidence 58% elevated but below block threshold; monitor"
+  },
+  "nba_final": {
+    "name": "freeze_account",
+    "approval_route": "L2",
+    "reason": "confidence 94% >= 85% block threshold"
+  },
+  "actions": [
+    {
+      "name": "freeze_account",
+      "approval_route": "L2",
+      "reason": "confidence 94% >= 85% block threshold"
+    },
+    {
+      "name": "file_sar",
+      "approval_route": "L2",
+      "reason": "policy: confidence + typology require a SAR"
+    }
+  ],
+  "evidence_timeline": [
+    {
+      "step": 1,
+      "key": "path_to_fraud",
+      "label": "Hops to a known-fraud entity",
+      "chosen_because": "graph query 'path_to_fraud' has the highest chance (45%) of settling the decision at cost 1.2",
+      "observed": 1,
+      "bucket": "h1",
+      "likelihood_ratio": 12.0,
+      "cost": 1.2,
+      "prob_before": 0.58,
+      "prob_after": 0.9431
+    }
+  ],
+  "similar_cases": [],
+  "sar": {
+    "who": "card1=80002",
+    "what": "Suspected identity mismatch",
+    "when": "case B-04",
+    "where": "card-not-present transactions in graph",
+    "why": "fraud confidence 94% >= 85%",
+    "how": "Hops to a known-fraud entity=1 (LR 12.0)",
+    "confidence": 0.943,
+    "exposure_usd": 1250.0
+  },
+  "narrative": "Investigation B-04: started from 'analyst_request' on card1=80002\nat a prior fraud confidence of 58%. The agent gathered evidence\nby value-of-information: hops to a known-fraud entity was 1. Confidence moved to 94%.\nConfidence 94% has crossed a policy threshold (exposure $1,250) - enough to act; further checks would add cost without changing the decision. Assessed typology: identity_mismatch.\nRecommended next action: freeze_account (approval route: L2) - confidence 94% >= 85% block threshold."
+}

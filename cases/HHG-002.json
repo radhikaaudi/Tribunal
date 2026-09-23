@@ -1,0 +1,123 @@
+{
+  "case_id": "HHG-002",
+  "debate": {
+    "prosecution": [
+      "Bank model risk score 0.79 on the flagged transaction (a reason to look, not a verdict)",
+      "Flagged transaction is unusual: amount $292.36 exceeds the card's 95th-pct $93.00"
+    ],
+    "defense": [
+      "Purchaser domain hotmail.com was used on 7 prior transactions by this cardholder",
+      "Customer confirms they made the transaction"
+    ],
+    "conclusion": "A legitimate explanation accounts for the alert; the fraud hypothesis did not survive.",
+    "missing_evidence": [
+      "customer_validation"
+    ]
+  },
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.036,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Bank model risk score 0.79 on the flagged transaction (a reason to look, not a verdict)",
+        "source": "graph",
+        "ref": "field:risk_score",
+        "entity_ids": [
+          "3478782"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Flagged transaction is unusual: amount $292.36 exceeds the card's 95th-pct $93.00",
+        "source": "graph",
+        "ref": "query:history(C11891)",
+        "entity_ids": [
+          "3478782"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Purchaser domain hotmail.com was used on 7 prior transactions by this cardholder",
+        "source": "graph",
+        "ref": "query:merchant_history(C11891)",
+        "entity_ids": [
+          "3004451",
+          "3043555",
+          "3189049",
+          "3272926",
+          "3273763"
+        ],
+        "side": "defense"
+      },
+      {
+        "claim": "Customer confirms they made the transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": [],
+        "side": "defense"
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0003",
+      "CC-0009",
+      "CC-0010"
+    ],
+    "summary": "Card C11891-K1 (customer C11891), trigger risk_score. Assessed legitimate at 4% confidence. Evidence did not support fraud; recommended to close/monitor per policy. A legitimate explanation accounts for the alert; the fraud hypothesis did not survive.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-78782"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 3,
+      "assumed_response": "Customer confirms they made the transaction"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single/weak signal below 0.70, verify before blocking"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: open a case on a dispute / evidence request / prob >= 0.30"
+      }
+    ],
+    "final": [
+      {
+        "action": "ALLOW_TRANSACTION",
+        "route": "auto",
+        "reason": "evidence does not support fraud"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: cleared as legitimate"
+      }
+    ],
+    "what_changed": "The simulated customer response moved confidence from 42% to 4%, which changed the recommended action."
+  },
+  "sar": {
+    "file": false,
+    "reason": "No report: activity not confirmed or strongly suspected as fraud.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "Fraud probability 4% at/below 0.15; cleared as legitimate (policy 6).",
+  "tool_calls": 14,
+  "tokens": 0,
+  "latency_s": 0.012
+}

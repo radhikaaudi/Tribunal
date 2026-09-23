@@ -1,0 +1,6 @@
+bench_id,card1,reason,hint
+B-01,50005,risk_score>0.5,device farm (Ring A)
+B-02,60004,risk_score>0.5,email ring (Ring B)
+B-03,70002,velocity_alert,card testing (Burst C)
+B-04,80002,analyst_request,identity mismatch (Case D)
+B-05,15000,risk_score>0.5,benign / should clear

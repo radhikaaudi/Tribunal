@@ -1,0 +1,9 @@
+case_id,card1,typology,outcome,action_taken,note
+C-1001,50001,account_farming,confirmed_fraud,block_card,"8 cards on one device, anonymous email; ring confirmed."
+C-1002,50002,account_farming,confirmed_fraud,freeze_account,Shared device SM-G960F; step-up failed.
+C-1003,60001,shared_email_ring,confirmed_fraud,block_card,Multiple cards under anonymous.com.
+C-1004,70001,card_testing,confirmed_fraud,block_card,"Micro-amount burst, 16 txns in 3h."
+C-1005,12000,none,cleared,allow,High risk score but customer validated purchase; no ring.
+C-1006,13500,none,cleared,allow,"Travel purchase, distance anomaly explained; step-up passed."
+C-1007,14200,none,cleared,allow,"Single device, long-tenured card, no shared attributes."
+C-1008,80001,identity_mismatch,confirmed_fraud,escalate,Name/address mismatch + 870mi distance; ATO confirmed.

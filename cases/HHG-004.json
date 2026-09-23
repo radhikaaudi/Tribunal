@@ -1,0 +1,135 @@
+{
+  "case_id": "HHG-004",
+  "debate": {
+    "prosecution": [
+      "Cardholder reports they did not make the flagged purchase",
+      "Flagged transaction is unusual: amount $128.33 exceeds the card's 95th-pct $96.40",
+      "Flagged transaction from a device marked New for this account",
+      "Cardholder reaffirms they did not make the purchase and still holds the card"
+    ],
+    "defense": [
+      "Purchaser domain hotmail.com was used on 95 prior transactions by this cardholder"
+    ],
+    "conclusion": "The fraud hypothesis survived its strongest defense.",
+    "missing_evidence": [
+      "customer_validation"
+    ]
+  },
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.948,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3583227"
+    ],
+    "first_suspicious_txn_id": "3583227",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 128.33,
+    "evidence": [
+      {
+        "claim": "Cardholder reports they did not make the flagged purchase",
+        "source": "customer",
+        "ref": "trigger:customer_report",
+        "entity_ids": [
+          "3583227"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Flagged transaction is unusual: amount $128.33 exceeds the card's 95th-pct $96.40",
+        "source": "graph",
+        "ref": "query:history(C08106)",
+        "entity_ids": [
+          "3583227"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Flagged transaction from a device marked New for this account",
+        "source": "graph",
+        "ref": "query:identity(3583227)",
+        "entity_ids": [
+          "3583227"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Purchaser domain hotmail.com was used on 95 prior transactions by this cardholder",
+        "source": "graph",
+        "ref": "query:merchant_history(C08106)",
+        "entity_ids": [
+          "3032354",
+          "3041451",
+          "3041580",
+          "3044424",
+          "3053646"
+        ],
+        "side": "defense"
+      },
+      {
+        "claim": "Cardholder reaffirms they did not make the purchase and still holds the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": [],
+        "side": "prosecution"
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-3764",
+      "CC-3532",
+      "CC-4098"
+    ],
+    "summary": "Card C08106-K1 (customer C08106), trigger customer_report. Assessed fraud at 95% confidence, pattern card_not_present_new_device, exposure $128.33. Nearest prior case: CC-3764. The fraud hypothesis survived its strongest defense.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-83227"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "Cardholder reaffirms they did not make the purchase and still holds the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: unauthorized use confirmed"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2/3a: open and record the case"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: unauthorized use confirmed"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2/3a: open and record the case"
+      }
+    ],
+    "what_changed": "The simulated customer response moved confidence from 75% to 95%, which changed the recommended action."
+  },
+  "sar": {
+    "file": false,
+    "reason": "No report: confirmed fraud but exposure $128.33 is under $1,000 and no shared origin (3a).",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "Fraud probability 95% at/above 0.85 with 3 independent graph evidence items; further steps would not change the decision (policy 6).",
+  "tool_calls": 14,
+  "tokens": 0,
+  "latency_s": 0.017
+}

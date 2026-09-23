@@ -1,0 +1,6 @@
+bench_id,card1,hint,prior,final,typology,nba_initial,nba_final,approval,steps,sar
+B-01,50005,device farm (Ring A),0.66,0.96,account_farming,monitor,freeze_account,L2,1,True
+B-02,60004,email ring (Ring B),0.58,0.94,shared_email_ring,monitor,block_card,L2,2,True
+B-03,70002,card testing (Burst C),0.55,0.88,card_testing,monitor,block_card,L2,1,True
+B-04,80002,identity mismatch (Case D),0.58,0.94,identity_mismatch,monitor,freeze_account,L2,1,True
+B-05,15000,benign / should clear,0.55,0.2,none,monitor,allow,auto,2,False

@@ -1,0 +1,48 @@
+// ============================================================================
+// CLARA graph schema for TigerGraph 4.2+ (Community Edition or Savanna).
+// Follows the HHGOA dataset's suggested schema. Investigation is at the Customer
+// level; shared DeviceProfile / BillingRegion make rings a short traversal; a native
+// VECTOR on ClosedCase powers hybrid case-memory retrieval.
+// ============================================================================
+
+CREATE VERTEX Customer      (PRIMARY_ID customer_id STRING)
+  WITH primary_id_as_attribute="true";
+CREATE VERTEX Card          (PRIMARY_ID card_id STRING, network STRING, ctype STRING)
+  WITH primary_id_as_attribute="true";
+CREATE VERTEX Transaction   (PRIMARY_ID tid STRING, ts DATETIME, amt DOUBLE, product STRING,
+                             channel STRING, risk_score DOUBLE, addr1 STRING, f_flags INT,
+                             id_15 STRING, id_23 STRING)
+  WITH primary_id_as_attribute="true";
+CREATE VERTEX DeviceProfile (PRIMARY_ID profile STRING, is_generic BOOL DEFAULT false, n_cust INT DEFAULT 0)
+  WITH primary_id_as_attribute="true";
+CREATE VERTEX EmailDomain   (PRIMARY_ID domain STRING)
+  WITH primary_id_as_attribute="true";
+CREATE VERTEX BillingRegion (PRIMARY_ID addr1 STRING)
+  WITH primary_id_as_attribute="true";
+CREATE VERTEX ClosedCase    (PRIMARY_ID case_id STRING, customer_id STRING, card_id STRING,
+                             pattern STRING, outcome STRING, exposure_usd DOUBLE,
+                             report_filed STRING, notes STRING)
+  WITH primary_id_as_attribute="true";
+// investigations CLARA creates and writes back (case memory grows)
+CREATE VERTEX Case          (PRIMARY_ID case_id STRING, verdict STRING, pattern STRING,
+                             fraud_probability DOUBLE, exposure_usd DOUBLE)
+  WITH primary_id_as_attribute="true";
+
+CREATE UNDIRECTED EDGE OWNS            (FROM Customer, TO Card);
+CREATE DIRECTED   EDGE MADE            (FROM Card, TO Transaction);
+CREATE DIRECTED   EDGE NEXT            (FROM Transaction, TO Transaction);          // order by ts within a card
+CREATE UNDIRECTED EDGE FROM_DEVICE     (FROM Transaction, TO DeviceProfile);        // online only
+CREATE UNDIRECTED EDGE PURCHASER_EMAIL (FROM Transaction, TO EmailDomain);
+CREATE UNDIRECTED EDGE BILLED_IN       (FROM Transaction, TO BillingRegion);
+CREATE UNDIRECTED EDGE CC_INVOLVES     (FROM ClosedCase, TO Transaction);
+CREATE UNDIRECTED EDGE CC_ON_CARD      (FROM ClosedCase, TO Card);
+CREATE UNDIRECTED EDGE CC_CONNECTED_TO (FROM ClosedCase, TO Card);
+CREATE UNDIRECTED EDGE CASE_ON_CARD    (FROM Case, TO Card);
+
+CREATE GRAPH CLARA (Customer, Card, Transaction, DeviceProfile, EmailDomain, BillingRegion,
+                    ClosedCase, Case,
+                    OWNS, MADE, NEXT, FROM_DEVICE, PURCHASER_EMAIL, BILLED_IN,
+                    CC_INVOLVES, CC_ON_CARD, CC_CONNECTED_TO, CASE_ON_CARD);
+
+// Hybrid case-memory: embed each closed case's signature; retrieve with vectorSearch (TG 4.2+)
+ALTER VERTEX ClosedCase ADD VECTOR ATTRIBUTE sig_vec(DIMENSION=8, METRIC="COSINE", INDEXTYPE="HNSW");

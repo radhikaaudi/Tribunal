@@ -1,0 +1,58 @@
+{
+  "case_id": "B-01",
+  "trigger": "risk_score>0.5",
+  "card1": 50005,
+  "prior_prob": 0.657,
+  "final_prob": 0.9583,
+  "typology": "account_farming",
+  "exposure": 2106.93,
+  "stop_reason": "confidence 96% has crossed a policy threshold (exposure $2,107) - enough to act; further checks would add cost without changing the decision",
+  "nba_initial": {
+    "name": "monitor",
+    "approval_route": "L1",
+    "reason": "confidence 66% elevated but below block threshold; monitor"
+  },
+  "nba_final": {
+    "name": "freeze_account",
+    "approval_route": "L2",
+    "reason": "confidence 96% >= 85% block threshold"
+  },
+  "actions": [
+    {
+      "name": "freeze_account",
+      "approval_route": "L2",
+      "reason": "confidence 96% >= 85% block threshold"
+    },
+    {
+      "name": "file_sar",
+      "approval_route": "L2",
+      "reason": "policy: confidence + typology require a SAR"
+    }
+  ],
+  "evidence_timeline": [
+    {
+      "step": 1,
+      "key": "path_to_fraud",
+      "label": "Hops to a known-fraud entity",
+      "chosen_because": "graph query 'path_to_fraud' has the highest chance (45%) of settling the decision at cost 1.2",
+      "observed": 1,
+      "bucket": "h1",
+      "likelihood_ratio": 12.0,
+      "cost": 1.2,
+      "prob_before": 0.657,
+      "prob_after": 0.9583
+    }
+  ],
+  "similar_cases": [],
+  "sar": {
+    "who": "card1=50005",
+    "what": "Suspected account farming",
+    "when": "case B-01",
+    "where": "card-not-present transactions in graph",
+    "why": "fraud confidence 96% >= 85%",
+    "how": "Hops to a known-fraud entity=1 (LR 12.0)",
+    "confidence": 0.958,
+    "exposure_usd": 2106.93
+  },
+  "narrative": "Investigation B-01: started from 'risk_score>0.5' on card1=50005\nat a prior fraud confidence of 66%. The agent gathered evidence\nby value-of-information: hops to a known-fraud entity was 1. Confidence moved to 96%.\nConfidence 96% has crossed a policy threshold (exposure $2,107) - enough to act; further checks would add cost without changing the decision. Assessed typology: account_farming.\nRecommended next action: freeze_account (approval route: L2) - confidence 96% >= 85% block threshold."
+}

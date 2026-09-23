@@ -1,0 +1,180 @@
+{
+  "case_id": "HHG-006",
+  "debate": {
+    "prosecution": [
+      "Cardholder reports they did not make the flagged purchase",
+      "Flagged transaction is unusual: amount $482.12 exceeds the card's 95th-pct $369.92",
+      "4 online purchases within a 48h window around the flagged one",
+      "Flagged transaction from a device marked New for this account",
+      "Cardholder reaffirms they did not make the purchase and still holds the card"
+    ],
+    "defense": [
+      "This device has been used on the account for 132 days (marked 'New') \u2014 it is not new to the cardholder",
+      "Purchaser domain gmail.com was used on 96 prior transactions by this cardholder"
+    ],
+    "conclusion": "The fraud hypothesis survived its strongest defense.",
+    "missing_evidence": [
+      "customer_validation"
+    ]
+  },
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.936,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3476602",
+      "3476633",
+      "3476665",
+      "3476682"
+    ],
+    "first_suspicious_txn_id": "3476602",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080"
+    ],
+    "exposure_usd": 1906.07,
+    "evidence": [
+      {
+        "claim": "Cardholder reports they did not make the flagged purchase",
+        "source": "customer",
+        "ref": "trigger:customer_report",
+        "entity_ids": [
+          "3476682"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Flagged transaction is unusual: amount $482.12 exceeds the card's 95th-pct $369.92",
+        "source": "graph",
+        "ref": "query:history(C07297)",
+        "entity_ids": [
+          "3476682"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "4 online purchases within a 48h window around the flagged one",
+        "source": "graph",
+        "ref": "query:window(C07297-K1,48h)",
+        "entity_ids": [
+          "3476602",
+          "3476633",
+          "3476665",
+          "3476682"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Flagged transaction from a device marked New for this account",
+        "source": "graph",
+        "ref": "query:identity(3476682)",
+        "entity_ids": [
+          "3476682"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "This device has been used on the account for 132 days (marked 'New') \u2014 it is not new to the cardholder",
+        "source": "graph",
+        "ref": "query:device_history(C07297)",
+        "entity_ids": [
+          "3476682"
+        ],
+        "side": "defense"
+      },
+      {
+        "claim": "Purchaser domain gmail.com was used on 96 prior transactions by this cardholder",
+        "source": "graph",
+        "ref": "query:merchant_history(C07297)",
+        "entity_ids": [
+          "3012743",
+          "3015809",
+          "3015958",
+          "3021030",
+          "3021986"
+        ],
+        "side": "defense"
+      },
+      {
+        "claim": "Cardholder reaffirms they did not make the purchase and still holds the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": [],
+        "side": "prosecution"
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0347",
+      "CC-5124",
+      "CC-2580"
+    ],
+    "summary": "Card C07297-K1 (customer C07297), trigger customer_report. Assessed fraud at 94% confidence, pattern card_not_present_new_device, exposure $1,906.07. Nearest prior case: CC-0347. The fraud hypothesis survived its strongest defense.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-76682"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 6,
+      "assumed_response": "Cardholder reaffirms they did not make the purchase and still holds the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: unauthorized use confirmed"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2/3a: open and record the case"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R2/R6: confirmed fraud meeting SAR criteria"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: unauthorized use confirmed"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2/3a: open and record the case"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R2/R6: confirmed fraud meeting SAR criteria"
+      }
+    ],
+    "what_changed": "The simulated customer response moved confidence from 71% to 94%, which changed the recommended action."
+  },
+  "sar": {
+    "file": true,
+    "reason": "R2/R6: fraud card_not_present_new_device with exposure $1,906.07",
+    "narrative": "On the dates in question, card C07297-K1 held by customer C07297 was involved in 4 transaction(s) between 2016-11-21 and 2016-11-21 totaling $1,906.07, flagged as suspicious. The activity comprised online transactions in billing region 264.0 ($478.95, $456.96, $488.04, $482.12). The pattern observed is card-not-present purchases from a device newly seen on the account. The transactions share the device profile 'Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080'. The cardholder, contacted during the investigation, did not confirm the activity. The activity is suspicious because it is inconsistent with the cardholder's established behaviour and matches a known fraud typology (card_not_present_new_device). The card has been recommended for blocking and reissue; connected cards, where present, were placed under monitoring. Total suspicious amount: $1,906.07.",
+    "subjects": [
+      "C07297",
+      "C07297-K1",
+      "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080"
+    ],
+    "total_amount_usd": 1906.07,
+    "activity_dates": [
+      "2016-11-21",
+      "2016-11-21"
+    ]
+  },
+  "stop_reason": "Fraud probability 94% at/above 0.85 with 5 independent graph evidence items; further steps would not change the decision (policy 6).",
+  "tool_calls": 14,
+  "tokens": 0,
+  "latency_s": 0.027
+}

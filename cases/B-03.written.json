@@ -1,0 +1,109 @@
+{
+  "_note": "MOCK write-back (would be graph vertices in TigerGraph)",
+  "case_id": "B-03",
+  "trigger": "velocity_alert",
+  "card1": 70002,
+  "prior_prob": 0.546,
+  "final_prob": 0.8783,
+  "typology": "card_testing",
+  "exposure": 78.99,
+  "stop_reason": "confidence 88% has crossed a policy threshold (exposure $79) - enough to act; further checks would add cost without changing the decision",
+  "nba_initial": {
+    "name": "monitor",
+    "approval_route": "L1",
+    "reason": "confidence 55% elevated but below block threshold; monitor"
+  },
+  "nba_final": {
+    "name": "block_card",
+    "approval_route": "L2",
+    "reason": "confidence 88% >= 85% block threshold"
+  },
+  "actions": [
+    {
+      "name": "block_card",
+      "approval_route": "L2",
+      "reason": "confidence 88% >= 85% block threshold"
+    },
+    {
+      "name": "file_sar",
+      "approval_route": "L2",
+      "reason": "policy: confidence + typology require a SAR"
+    }
+  ],
+  "evidence_timeline": [
+    {
+      "step": 1,
+      "key": "similar_cases",
+      "label": "Outcome of most-similar past cases",
+      "chosen_because": "graph query 'similar_cases' has the highest chance (40%) of settling the decision at cost 1.5",
+      "observed": [
+        {
+          "case_id": "C-1004",
+          "similarity": 1.0,
+          "outcome": "confirmed_fraud",
+          "typology": "card_testing",
+          "action_taken": "block_card",
+          "note": "Micro-amount burst, 16 txns in 3h."
+        },
+        {
+          "case_id": "C-1005",
+          "similarity": 0.287,
+          "outcome": "cleared",
+          "typology": "none",
+          "action_taken": "allow",
+          "note": "High risk score but customer validated purchase; no ring."
+        },
+        {
+          "case_id": "C-1006",
+          "similarity": 0.287,
+          "outcome": "cleared",
+          "typology": "none",
+          "action_taken": "allow",
+          "note": "Travel purchase, distance anomaly explained; step-up passed."
+        }
+      ],
+      "bucket": "mostly_fraud",
+      "likelihood_ratio": 6.0,
+      "cost": 1.5,
+      "prob_before": 0.546,
+      "prob_after": 0.8783
+    }
+  ],
+  "similar_cases": [
+    {
+      "case_id": "C-1004",
+      "similarity": 1.0,
+      "outcome": "confirmed_fraud",
+      "typology": "card_testing",
+      "action_taken": "block_card",
+      "note": "Micro-amount burst, 16 txns in 3h."
+    },
+    {
+      "case_id": "C-1005",
+      "similarity": 0.287,
+      "outcome": "cleared",
+      "typology": "none",
+      "action_taken": "allow",
+      "note": "High risk score but customer validated purchase; no ring."
+    },
+    {
+      "case_id": "C-1006",
+      "similarity": 0.287,
+      "outcome": "cleared",
+      "typology": "none",
+      "action_taken": "allow",
+      "note": "Travel purchase, distance anomaly explained; step-up passed."
+    }
+  ],
+  "sar": {
+    "who": "card1=70002",
+    "what": "Suspected card testing",
+    "when": "case B-03",
+    "where": "card-not-present transactions in graph",
+    "why": "fraud confidence 88% >= 85%",
+    "how": "Outcome of most-similar past cases=[{'case_id': 'C-1004', 'similarity': 1.0, 'outcome': 'confirmed_fraud', 'typology': 'card_testing', 'action_taken': 'block_card', 'note': 'Micro-amount burst, 16 txns in 3h.'}, {'case_id': 'C-1005', 'similarity': 0.287, 'outcome': 'cleared', 'typology': 'none', 'action_taken': 'allow', 'note': 'High risk score but customer validated purchase; no ring.'}, {'case_id': 'C-1006', 'similarity': 0.287, 'outcome': 'cleared', 'typology': 'none', 'action_taken': 'allow', 'note': 'Travel purchase, distance anomaly explained; step-up passed.'}] (LR 6.0)",
+    "confidence": 0.878,
+    "exposure_usd": 78.99
+  },
+  "narrative": "Investigation B-03: started from 'velocity_alert' on card1=70002\nat a prior fraud confidence of 55%. The agent gathered evidence\nby value-of-information: outcome of most-similar past cases was C-1004(confirmed_fraud,sim=1.0), C-1005(cleared,sim=0.287), C-1006(cleared,sim=0.287). Confidence moved to 88%.\nConfidence 88% has crossed a policy threshold (exposure $79) - enough to act; further checks would add cost without changing the decision. Assessed typology: card_testing.\nRecommended next action: block_card (approval route: L2) - confidence 88% >= 85% block threshold."
+}

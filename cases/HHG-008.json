@@ -1,0 +1,157 @@
+{
+  "case_id": "HHG-008",
+  "debate": {
+    "prosecution": [
+      "Cardholder reports they did not make the flagged purchase"
+    ],
+    "defense": [
+      "Flagged transaction is consistent with the card's history",
+      "Disputed amount $55.68 matches 8 prior charges to the same merchant domain \u2014 a recurring pattern",
+      "Purchaser domain hotmail.com was used on 358 prior transactions by this cardholder",
+      "Amount $55.68 and product sit within the cardholder's normal range ($10\u2013$161)",
+      "On verification the cardholder recognises the charge as their own recurring payment"
+    ],
+    "conclusion": "A legitimate explanation accounts for the alert; the fraud hypothesis did not survive.",
+    "missing_evidence": [
+      "customer_validation"
+    ]
+  },
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.023,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Cardholder reports they did not make the flagged purchase",
+        "source": "customer",
+        "ref": "trigger:customer_report",
+        "entity_ids": [
+          "3558054"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Flagged transaction is consistent with the card's history",
+        "source": "graph",
+        "ref": "query:history(C13171)",
+        "entity_ids": [
+          "3558054"
+        ],
+        "side": "defense"
+      },
+      {
+        "claim": "Disputed amount $55.68 matches 8 prior charges to the same merchant domain \u2014 a recurring pattern",
+        "source": "graph",
+        "ref": "query:recurring(C13171)",
+        "entity_ids": [
+          "3081517",
+          "3087851",
+          "3136051",
+          "3205271",
+          "3255815"
+        ],
+        "side": "defense"
+      },
+      {
+        "claim": "Purchaser domain hotmail.com was used on 358 prior transactions by this cardholder",
+        "source": "graph",
+        "ref": "query:merchant_history(C13171)",
+        "entity_ids": [
+          "3003521",
+          "3005005",
+          "3005024",
+          "3005101",
+          "3005123"
+        ],
+        "side": "defense"
+      },
+      {
+        "claim": "Amount $55.68 and product sit within the cardholder's normal range ($10\u2013$161)",
+        "source": "graph",
+        "ref": "query:history(C13171)",
+        "entity_ids": [
+          "3558054"
+        ],
+        "side": "defense"
+      },
+      {
+        "claim": "On verification the cardholder recognises the charge as their own recurring payment",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": [],
+        "side": "defense"
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0003",
+      "CC-0009",
+      "CC-0010"
+    ],
+    "summary": "Card C13171-K2 (customer C13171), trigger customer_report. Assessed legitimate at 2% confidence. Evidence did not support fraud; recommended to close/monitor per policy. A legitimate explanation accounts for the alert; the fraud hypothesis did not survive.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-58054"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "On verification the cardholder recognises the charge as their own recurring payment"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R7: dispute logged for the record"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: confirm the recurring charge with the cardholder"
+      },
+      {
+        "action": "WARN_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: charge matches the cardholder's recurring pattern"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R7: dispute logged for the record"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: confirm the recurring charge with the cardholder"
+      },
+      {
+        "action": "WARN_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: charge matches the cardholder's recurring pattern"
+      }
+    ],
+    "what_changed": "The simulated customer response moved confidence from 14% to 2%, which changed the recommended action."
+  },
+  "sar": {
+    "file": false,
+    "reason": "No report: activity not confirmed or strongly suspected as fraud.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "Fraud probability 2% at/below 0.15; cleared as legitimate (policy 6).",
+  "tool_calls": 14,
+  "tokens": 0,
+  "latency_s": 0.022
+}

@@ -1,0 +1,120 @@
+{
+  "case_id": "B-02",
+  "trigger": "risk_score>0.5",
+  "card1": 60004,
+  "prior_prob": 0.58,
+  "final_prob": 0.9431,
+  "typology": "shared_email_ring",
+  "exposure": 600.22,
+  "stop_reason": "confidence 94% has crossed a policy threshold (exposure $600) - enough to act; further checks would add cost without changing the decision",
+  "nba_initial": {
+    "name": "monitor",
+    "approval_route": "L1",
+    "reason": "confidence 58% elevated but below block threshold; monitor"
+  },
+  "nba_final": {
+    "name": "block_card",
+    "approval_route": "L2",
+    "reason": "confidence 94% >= 85% block threshold"
+  },
+  "actions": [
+    {
+      "name": "block_card",
+      "approval_route": "L2",
+      "reason": "confidence 94% >= 85% block threshold"
+    },
+    {
+      "name": "file_sar",
+      "approval_route": "L2",
+      "reason": "policy: confidence + typology require a SAR"
+    }
+  ],
+  "evidence_timeline": [
+    {
+      "step": 1,
+      "key": "similar_cases",
+      "label": "Outcome of most-similar past cases",
+      "chosen_because": "graph query 'similar_cases' has the highest chance (40%) of settling the decision at cost 1.5",
+      "observed": [
+        {
+          "case_id": "C-1003",
+          "similarity": 0.999,
+          "outcome": "confirmed_fraud",
+          "typology": "shared_email_ring",
+          "action_taken": "block_card",
+          "note": "Multiple cards under anonymous.com."
+        },
+        {
+          "case_id": "C-1005",
+          "similarity": 0.409,
+          "outcome": "cleared",
+          "typology": "none",
+          "action_taken": "allow",
+          "note": "High risk score but customer validated purchase; no ring."
+        },
+        {
+          "case_id": "C-1006",
+          "similarity": 0.409,
+          "outcome": "cleared",
+          "typology": "none",
+          "action_taken": "allow",
+          "note": "Travel purchase, distance anomaly explained; step-up passed."
+        }
+      ],
+      "bucket": "mixed",
+      "likelihood_ratio": 1.0,
+      "cost": 1.5,
+      "prob_before": 0.58,
+      "prob_after": 0.58
+    },
+    {
+      "step": 2,
+      "key": "path_to_fraud",
+      "label": "Hops to a known-fraud entity",
+      "chosen_because": "graph query 'path_to_fraud' has the highest chance (30%) of settling the decision at cost 1.2",
+      "observed": 1,
+      "bucket": "h1",
+      "likelihood_ratio": 12.0,
+      "cost": 1.2,
+      "prob_before": 0.58,
+      "prob_after": 0.9431
+    }
+  ],
+  "similar_cases": [
+    {
+      "case_id": "C-1003",
+      "similarity": 0.999,
+      "outcome": "confirmed_fraud",
+      "typology": "shared_email_ring",
+      "action_taken": "block_card",
+      "note": "Multiple cards under anonymous.com."
+    },
+    {
+      "case_id": "C-1005",
+      "similarity": 0.409,
+      "outcome": "cleared",
+      "typology": "none",
+      "action_taken": "allow",
+      "note": "High risk score but customer validated purchase; no ring."
+    },
+    {
+      "case_id": "C-1006",
+      "similarity": 0.409,
+      "outcome": "cleared",
+      "typology": "none",
+      "action_taken": "allow",
+      "note": "Travel purchase, distance anomaly explained; step-up passed."
+    }
+  ],
+  "sar": {
+    "who": "card1=60004",
+    "what": "Suspected shared email ring",
+    "when": "case B-02",
+    "where": "card-not-present transactions in graph",
+    "why": "fraud confidence 94% >= 85%",
+    "how": "Hops to a known-fraud entity=1 (LR 12.0); Outcome of most-similar past cases=[{'case_id': 'C-1003', 'similarity': 0.999, 'outcome': 'confirmed_fraud', 'typology': 'shared_email_ring', 'action_taken': 'block_card', 'note': 'Multiple cards under anonymous.com.'}, {'case_id': 'C-1005', 'similarity': 0.409, 'outcome': 'cleared', 'typology': 'none', 'action_taken': 'allow', 'note': 'High risk score but customer validated purchase; no ring.'}, {'case_id': 'C-1006', 'similarity': 0.409, 'outcome': 'cleared', 'typology': 'none', 'action_taken': 'allow', 'note': 'Travel purchase, distance anomaly explained; step-up passed.'}] (LR 1.0)",
+    "confidence": 0.943,
+    "exposure_usd": 600.22
+  },
+  "narrative": "Investigation B-02: started from 'risk_score>0.5' on card1=60004\nat a prior fraud confidence of 58%. The agent gathered evidence\nby value-of-information: outcome of most-similar past cases was C-1003(confirmed_fraud,sim=0.999), C-1005(cleared,sim=0.409), C-1006(cleared,sim=0.409); hops to a known-fraud entity was 1. Confidence moved to 94%.\nConfidence 94% has crossed a policy threshold (exposure $600) - enough to act; further checks would add cost without changing the decision. Assessed typology: shared_email_ring.\nRecommended next action: block_card (approval route: L2) - confidence 94% >= 85% block threshold."
+}

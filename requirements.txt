@@ -1,0 +1,14 @@
+# Core
+pandas>=2.0
+numpy>=1.24
+python-dotenv>=1.0
+
+# UI
+streamlit>=1.30
+
+# Graph (real path). Mock path needs none of these.
+pyTigerGraph>=1.6
+
+# LLM narrative (provider-agnostic; install what you use)
+anthropic>=0.40        # default provider
+# openai>=1.40         # uncomment if using OpenAI

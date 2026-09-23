@@ -1,0 +1,147 @@
+{
+  "case_id": "HHG-016",
+  "debate": {
+    "prosecution": [
+      "Cardholder reports they did not make the flagged purchase",
+      "Flagged transaction from a device marked New for this account",
+      "Cardholder reaffirms they did not make the purchase and still holds the card"
+    ],
+    "defense": [
+      "Flagged transaction is consistent with the card's history",
+      "Purchaser domain hotmail.com was used on 16 prior transactions by this cardholder",
+      "Amount $59.67 and product sit within the cardholder's normal range ($9\u2013$88)"
+    ],
+    "conclusion": "The fraud hypothesis survived its strongest defense.",
+    "missing_evidence": [
+      "customer_validation"
+    ]
+  },
+  "case": {
+    "status": "open",
+    "verdict": "fraud",
+    "fraud_probability": 0.805,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3534820"
+    ],
+    "first_suspicious_txn_id": "3534820",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "Windows | ? | edge 16.0 | ?"
+    ],
+    "exposure_usd": 59.67,
+    "evidence": [
+      {
+        "claim": "Cardholder reports they did not make the flagged purchase",
+        "source": "customer",
+        "ref": "trigger:customer_report",
+        "entity_ids": [
+          "3534820"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Flagged transaction is consistent with the card's history",
+        "source": "graph",
+        "ref": "query:history(C09988)",
+        "entity_ids": [
+          "3534820"
+        ],
+        "side": "defense"
+      },
+      {
+        "claim": "Flagged transaction from a device marked New for this account",
+        "source": "graph",
+        "ref": "query:identity(3534820)",
+        "entity_ids": [
+          "3534820"
+        ],
+        "side": "prosecution"
+      },
+      {
+        "claim": "Purchaser domain hotmail.com was used on 16 prior transactions by this cardholder",
+        "source": "graph",
+        "ref": "query:merchant_history(C09988)",
+        "entity_ids": [
+          "3244254",
+          "3266021",
+          "3266022",
+          "3285143",
+          "3285152"
+        ],
+        "side": "defense"
+      },
+      {
+        "claim": "Amount $59.67 and product sit within the cardholder's normal range ($9\u2013$88)",
+        "source": "graph",
+        "ref": "query:history(C09988)",
+        "entity_ids": [
+          "3534820"
+        ],
+        "side": "defense"
+      },
+      {
+        "claim": "Cardholder reaffirms they did not make the purchase and still holds the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": [],
+        "side": "prosecution"
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-4243",
+      "CC-4956",
+      "CC-0420"
+    ],
+    "summary": "Card C09988-K1 (customer C09988), trigger customer_report. Assessed fraud at 81% confidence, pattern card_not_present_fraud, exposure $59.67. Nearest prior case: CC-4243. The fraud hypothesis survived its strongest defense.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-34820"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Cardholder reaffirms they did not make the purchase and still holds the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single/weak signal below 0.70, verify before blocking"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: open a case on a dispute / evidence request / prob >= 0.30"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: unauthorized use confirmed"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2/3a: open and record the case"
+      }
+    ],
+    "what_changed": "The simulated customer response moved confidence from 41% to 81%, which changed the recommended action."
+  },
+  "sar": {
+    "file": false,
+    "reason": "No report: confirmed fraud but exposure $59.67 is under $1,000 and no shared origin (3a).",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "A verification response settled the question (policy 6).",
+  "tool_calls": 14,
+  "tokens": 0,
+  "latency_s": 0.013
+}
