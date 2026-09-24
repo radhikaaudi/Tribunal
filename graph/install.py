@@ -40,6 +40,35 @@ def run_gsql_file(conn, path):
         print(conn.gsql(f.read()))
 
 
+def _upsert_vectors(conn, verts):
+    """Upsert native HNSW vectors on Case.sig_vec. Tries the pyTigerGraph batch API
+    first, then the TG 4.2 REST vector endpoint; returns how many succeeded so a
+    partial/older instance degrades loudly instead of silently."""
+    try:
+        conn.upsertVertices("Case", verts)
+        return len(verts)
+    except Exception as e:
+        print(f"  batch vertex-vector upsert unavailable ({e}); trying REST /restpp/vector")
+    import json
+    import urllib.request
+    ok = 0
+    host = os.getenv("TG_HOST", "http://localhost").rstrip("/")
+    port = os.getenv("TG_RESTPP_PORT", "9000")
+    token = getattr(conn, "apiToken", None) or os.getenv("TG_TOKEN", "")
+    for cid, attrs in verts:
+        body = {"vertices": {"Case": {cid: {"sig_vec": {"value": attrs["sig_vec"]}}}}}
+        req = urllib.request.Request(
+            f"{host}:{port}/restpp/graph/TRIBUNAL", data=json.dumps(body).encode(),
+            headers={"Content-Type": "application/json",
+                     **({"Authorization": f"Bearer {token}"} if token else {})})
+        try:
+            urllib.request.urlopen(req, timeout=15)
+            ok += 1
+        except Exception as e:
+            print(f"  vector upsert failed for {cid}: {e}")
+    return ok
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--reset", action="store_true", help="drop graph first")
@@ -114,13 +143,12 @@ def main():
         attributes={"card1": "card1", "outcome": "outcome", "typology": "typology",
                     "action": "action_taken", "note": "note"})
     conn.upsertEdgeDataFrame(cases, "Case", "CASE_OF", "Card", "case_id", "card1", attributes={})
-    # vector upsert (TG 4.2 REST /vector/upsert or MCP upsert_vectors). Example via pyTG:
-    for r in cases.itertuples():
-        vec = mock._case_signatures[int(r.card1)]
-        try:
-            conn.upsertVertices("Case", [(r.case_id, {"sig_vec": vec})])
-        except Exception as e:
-            print(f"  vector upsert for {r.case_id} needs the 4.2 vector endpoint / MCP: {e}")
+    # ---- native-vector upsert of each case signature (TG 4.2+ HNSW `sig_vec`) ----
+    # Case memory retrieval uses vectorSearch over these; see queries/evidence.gsql.
+    verts = [(str(r.case_id), {"sig_vec": mock._case_signatures[int(r.card1)]})
+             for r in cases.itertuples()]
+    upserted = _upsert_vectors(conn, verts)
+    print(f">> vectors: upserted sig_vec for {upserted}/{len(verts)} Case vertices")
 
     print(">> queries")
     run_gsql_file(conn, os.path.join(HERE, "queries", "evidence.gsql"))

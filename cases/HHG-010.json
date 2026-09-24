@@ -13,6 +13,367 @@
       "customer_validation"
     ]
   },
+  "agent_reasoning": {
+    "provider": "anthropic",
+    "tool_plan": [
+      {
+        "tool": "history_summary",
+        "why": "customer transaction history baseline",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_flagged_anomaly",
+        "why": "is the flagged purchase off the customer's pattern?",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_card_testing",
+        "why": "small-amount authorization burst (R5)",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_cnp_burst",
+        "why": "card-not-present burst",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_new_device",
+        "why": "device newly seen on this account",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_out_of_region",
+        "why": "billing region with no history",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_account_takeover",
+        "why": "identity match-flag / distance anomaly",
+        "kind": "graph"
+      },
+      {
+        "tool": "similar_cases",
+        "why": "case-memory vector retrieval of prior outcomes",
+        "kind": "vector"
+      }
+    ],
+    "reasoning": "Investigating card C10434-K1 (customer C10434), triggered by risk_score. Evidence for fraud: Bank model risk score 0.9 on the flagged transaction (a reason to look, not a verdict); Flagged transaction is unusual: amount $1000.03 exceeds the card's 95th-pct $670.01; Flagged transaction from a device marked New for this account; Customer states they did not make the transaction. Evidence against: none of weight. Assessed fraud at 93% (card_not_present_new_device). Confidence 93% \u2014 at/above the 0.85 stop line or supported by a hard signal; the fraud hypothesis survived its strongest defence, so the decision is settled. Grounded in README.md \u00a7 3\\. Rules, README.md \u00a7 The five known fraud patterns, README.md \u00a7 `pattern` values.",
+    "uncertainty": "Confidence 93% \u2014 at/above the 0.85 stop line or supported by a hard signal; the fraud hypothesis survived its strongest defence, so the decision is settled.",
+    "grounded_on": [
+      "README.md \u00a7 3\\. Rules",
+      "README.md \u00a7 The five known fraud patterns",
+      "README.md \u00a7 `pattern` values",
+      "README.md \u00a7 Regulatory references",
+      "README.md \u00a7 Suggested graph schema"
+    ],
+    "tokens": 0
+  },
+  "graphrag": {
+    "backend": "offline",
+    "query": "card not present new device proxy R2 block unauthorized device trigger risk_score Bank model risk score 0.9 on the flagged transaction (a reason to look, not a verdict) Flagged transaction is unusual:",
+    "retrieved": [
+      {
+        "source": "README.md",
+        "heading": "Suggested graph schema",
+        "text": "- `Customer` \u2192 `OWNS` \u2192 `Card`  \n- `Card` \u2192 `MADE` \u2192 `Transaction`  \n- `Transaction` \u2192 `FROM_DEVICE` \u2192 `DeviceProfile` (online only, from `identity.csv`)  \n- `Transaction` \u2192 `PURCHASER_EMAIL` \u2192 `EmailDomain`  \n- `Transaction` \u2192 `BILLED_IN` \u2192 `BillingRegion` (from `addr1`)  \n- `Transaction` \u2192 `NEXT` \u2192 `Transaction` (order by `ts` within a card)  \n- `ClosedCase` \u2192 `INVOLVES` \u2192 `Transaction`, `ClosedCase` \u2192 `ON_CARD` \u2192 `Card`, `ClosedCase` \u2192 `CONNECTED_TO` \u2192 `Card`",
+        "score": 0.298,
+        "citation": "README.md \u00a7 Suggested graph schema"
+      },
+      {
+        "source": "README.md",
+        "heading": "The case pack",
+        "text": "`case_id`, `opened_at`, `trigger_type` (`risk_score` / `customer_report` / `analyst_request`), `trigger_text`, `flagged_txn_id`, `card_id`, `customer_id`, `risk_score` (filled only for risk-score triggers)",
+        "score": 0.297,
+        "citation": "README.md \u00a7 The case pack"
+      },
+      {
+        "source": "README.md",
+        "heading": "The five known fraud patterns",
+        "text": "**3\\. Card-not-present fraud from a new device.** Same as above, with the identity record marking the device as `New` for this account, sometimes behind a proxy. Stronger than pattern 2, still not proof: people buy new phones.",
+        "score": 0.283,
+        "citation": "README.md \u00a7 The five known fraud patterns"
+      },
+      {
+        "source": "README.md",
+        "heading": "`pattern` values",
+        "text": "`card_testing` \u00b7 `card_not_present_fraud` \u00b7 `card_not_present_new_device` \u00b7 `out_of_region_use` \u00b7 `account_takeover` \u00b7 `undocumented` \u00b7 `none`",
+        "score": 0.26,
+        "citation": "README.md \u00a7 `pattern` values"
+      }
+    ],
+    "policy": [
+      {
+        "source": "README.md",
+        "heading": "3\\. Rules",
+        "text": "**R2. Customer denies the transaction.** Recommend `BLOCK_CARD` and `CREATE_CASE`. Add `FILE_REPORT` if exposure exceeds $1,000 or the case connects to a shared device profile or another card's fraud.",
+        "score": 0.356,
+        "citation": "README.md \u00a7 3\\. Rules"
+      },
+      {
+        "source": "README.md",
+        "heading": "The five known fraud patterns",
+        "text": "**3\\. Card-not-present fraud from a new device.** Same as above, with the identity record marking the device as `New` for this account, sometimes behind a proxy. Stronger than pattern 2, still not proof: people buy new phones.",
+        "score": 0.354,
+        "citation": "README.md \u00a7 The five known fraud patterns"
+      }
+    ],
+    "typology": [
+      {
+        "source": "README.md",
+        "heading": "`pattern` values",
+        "text": "`card_testing` \u00b7 `card_not_present_fraud` \u00b7 `card_not_present_new_device` \u00b7 `out_of_region_use` \u00b7 `account_takeover` \u00b7 `undocumented` \u00b7 `none`",
+        "score": 0.445,
+        "citation": "README.md \u00a7 `pattern` values"
+      },
+      {
+        "source": "README.md",
+        "heading": "The five known fraud patterns",
+        "text": "**3\\. Card-not-present fraud from a new device.** Same as above, with the identity record marking the device as `New` for this account, sometimes behind a proxy. Stronger than pattern 2, still not proof: people buy new phones.",
+        "score": 0.337,
+        "citation": "README.md \u00a7 The five known fraud patterns"
+      }
+    ],
+    "regulatory": [
+      {
+        "source": "README.md",
+        "heading": "Regulatory references",
+        "text": "- [SAR Filing FAQs, October 2025](https://www.fincen.gov/system/files/2025-10/SAR-FAQs-October-2025.pdf)  \n- [SAR Narrative Guidance](https://www.fincen.gov/system/files/shared/sar_guidance_narrative.pdf): the standard for your `sar.narrative`  \n- [Preparing a Complete and Sufficient SAR Narrative](https://www.fincen.gov/system/files/shared/sarnarrcompletguidfinal_112003.pdf)  \n- [SAR Supporting Documentation (FIN-2007-G003)](https://www.fincen.gov/system/files/shared/fin-2007-g003.pdf)  \n- [SAR Activity Review: Trends, Tips and Issues](https://www.fincen.gov/sites/default/files/sar_report/sar_tti_19.pdf)  \n- [Advisory on Account Takeover Activity](https://www.fincen.gov/resources/advisories/fincen-advisory-fin-2011-a016)  \n- [Advisory on Imposter Scams and Money Mule Schemes](https://www.fincen.gov/system/files/advisory/2020-07-07/Advisory_%20Imposter_and_Money_Mule_COVID_19_508_FINAL.p",
+        "score": 0.312,
+        "citation": "README.md \u00a7 Regulatory references"
+      },
+      {
+        "source": "README.md",
+        "heading": "Regulatory references",
+        "text": "Public documents from US and international regulators on fraud typologies, red flags, and how investigations and suspicious activity reports must be written. Load the ones you find useful into TigerGraph's vector store alongside the closed cases and the policy.",
+        "score": 0.246,
+        "citation": "README.md \u00a7 Regulatory references"
+      }
+    ],
+    "graph_context": [
+      "Subject: card C10434-K1 / customer C10434, trigger=risk_score.",
+      "[graph] Bank model risk score 0.9 on the flagged transaction (a reason to look, not a verdict) (ref field:risk_score)",
+      "[graph] Flagged transaction is unusual: amount $1000.03 exceeds the card's 95th-pct $670.01 (ref query:history(C10434))",
+      "[graph] Flagged transaction from a device marked New for this account (ref query:identity(3506725))",
+      "[memory] Prior case CC-0232: card_not_present_new_device -> confirmed_fraud ($1,000).",
+      "[memory] Prior case CC-4398: card_not_present_new_device -> confirmed_fraud ($1,000).",
+      "[memory] Prior case CC-3501: card_not_present_new_device -> confirmed_fraud ($1,000)."
+    ],
+    "prompt_context": "# GROUNDING CONTEXT (retrieved by relevance \u2014 cite these, do not invent)\n\n## Fraud policy (governing rules)\n- (README.md \u00a7 3\\. Rules) **R2. Customer denies the transaction.** Recommend `BLOCK_CARD` and `CREATE_CASE`. Add `FILE_REPORT` if exposure exceeds $1,000 or the case connects to a shared device profile or another card's fraud.\n- (README.md \u00a7 The five known fraud patterns) **3\\. Card-not-present fraud from a new device.** Same as above, with the identity record marking the device as `New` for this account, sometimes behind a proxy. Stronger than pattern 2, still not proof: people buy new phones.\n\n## Known typologies\n- (README.md \u00a7 `pattern` values) `card_testing` \u00b7 `card_not_present_fraud` \u00b7 `card_not_present_new_device` \u00b7 `out_of_region_use` \u00b7 `account_takeover` \u00b7 `undocumented` \u00b7 `none`\n- (README.md \u00a7 The five known fraud patterns) **3\\. Card-not-present fraud from a new device.** Same as above, with the identity record marking the device as `New` for this account, sometimes behind a proxy. Stronger than pattern 2, still not proof: people buy new phones.\n\n## Regulatory references\n- (README.md \u00a7 Regulatory references) - [SAR Filing FAQs, October 2025](https://www.fincen.gov/system/files/2025-10/SAR-FAQs-October-2025.pdf)  \n- [SAR Narrative Guidance](https://www.fincen.gov/system/files/shared/sar_guidance_narrative.pdf): the standard for your `sar.narrative`  \n- [Preparing a Complete and Sufficient SAR Narrative](https://www.fincen.gov/system/files/shared/sarnarrcompletguidfinal_112003.pdf)  \n- [SAR Supporting D\n- (README.md \u00a7 Regulatory references) Public documents from US and international regulators on fraud typologies, red flags, and how investigations and suspicious activity reports must be written. Load the ones you find useful into TigerGraph's vector store alongside the closed cases and the policy.\n\n## Connected graph evidence\nSubject: card C10434-K1 / customer C10434, trigger=risk_score.\n[graph] Bank model risk score 0.9 on the flagged transaction (a reason to look, not a verdict) (ref field:risk_score)\n[graph] Flagged transaction is unusual: amount $1000.03 exceeds the card's 95th-pct $670.01 (ref query:history(C10434))\n[graph] Flagged transaction from a device marked New for this account (ref query:identity(3506725))\n[memory] Prior case CC-0232: card_not_present_new_device -> confirmed_fraud ($1,000).\n[memory] Prior case CC-4398: card_not_present_new_device -> confirmed_fraud ($1,000).\n[memory] Prior case CC-3501: card_not_present_new_device -> confirmed_fraud ($1,000).",
+    "citations": [
+      "README.md \u00a7 3\\. Rules",
+      "README.md \u00a7 The five known fraud patterns",
+      "README.md \u00a7 `pattern` values",
+      "README.md \u00a7 Regulatory references",
+      "README.md \u00a7 Suggested graph schema"
+    ]
+  },
+  "case_progression": {
+    "case_id": "CASE-2016-6725",
+    "opened_at": "2016-12-02 15:18:27",
+    "status": "closed_fraud",
+    "status_history": [
+      "OPEN",
+      "EVIDENCE_REQUESTED",
+      "CLOSED_FRAUD"
+    ],
+    "resolved": true,
+    "n_events": 10,
+    "timeline": [
+      {
+        "seq": 1,
+        "event": "case_opened",
+        "actor": "agent",
+        "detail": "Case CASE-2016-6725 opened on trigger 'risk_score' for card C10434-K1.",
+        "confidence": 0.375
+      },
+      {
+        "seq": 2,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] Bank model risk score 0.9 on the flagged transaction (a reason to look, not a verdict)",
+        "confidence": null
+      },
+      {
+        "seq": 3,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] Flagged transaction is unusual: amount $1000.03 exceeds the card's 95th-pct $670.01",
+        "confidence": null
+      },
+      {
+        "seq": 4,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] Flagged transaction from a device marked New for this account",
+        "confidence": null
+      },
+      {
+        "seq": 5,
+        "event": "evidence_added",
+        "actor": "customer",
+        "detail": "[prosecution] Customer states they did not make the transaction",
+        "confidence": null
+      },
+      {
+        "seq": 6,
+        "event": "evidence_requested",
+        "actor": "agent",
+        "detail": "Requested customer_validation (after step 3): Customer states they did not make the transaction",
+        "confidence": null
+      },
+      {
+        "seq": 7,
+        "event": "assessed",
+        "actor": "agent",
+        "detail": "Assessed fraud at 93%.",
+        "confidence": 0.926
+      },
+      {
+        "seq": 8,
+        "event": "recommendation_initial",
+        "actor": "agent",
+        "detail": "Initial next-best-action: VERIFY_WITH_CUSTOMER(auto) | CREATE_CASE(auto) | ESCALATE_TO_ANALYST(auto)",
+        "confidence": null
+      },
+      {
+        "seq": 9,
+        "event": "recommendation_final",
+        "actor": "agent",
+        "detail": "Final next-best-action: BLOCK_CARD(L1) | CREATE_CASE(auto) | FILE_REPORT(L2)",
+        "confidence": null
+      },
+      {
+        "seq": 10,
+        "event": "case_closed_fraud",
+        "actor": "agent",
+        "detail": "Case resolved to status 'closed_fraud'.",
+        "confidence": 0.926
+      }
+    ],
+    "belief_trajectory": [
+      {
+        "stage": "risk score",
+        "confidence": 0.375
+      },
+      {
+        "stage": "flagged_anomaly",
+        "confidence": 0.545
+      },
+      {
+        "stage": "new_device",
+        "confidence": 0.609
+      },
+      {
+        "stage": "customer_validation",
+        "confidence": 0.926
+      }
+    ],
+    "written_to_graph": true
+  },
+  "case_memory": {
+    "retrieved": [
+      {
+        "case_id": "CC-2660",
+        "pattern": "card_not_present_new_device",
+        "outcome": "confirmed_fraud",
+        "exposure_usd": 925.06,
+        "similarity": 1.0,
+        "kind": "closed",
+        "note": "Case CC-2660: cardholder C07338 reported unrecognized activity on card C07338-K1. 3 transaction(s) between 2016-08-25 and 2016-08-26 totaling $925.06 were confirmed fraudulent. Online purchases from a device not previously seen on this acco"
+      },
+      {
+        "case_id": "CC-3219",
+        "pattern": "card_not_present_new_device",
+        "outcome": "confirmed_fraud",
+        "exposure_usd": 924.84,
+        "similarity": 1.0,
+        "kind": "closed",
+        "note": "Case CC-3219: cardholder C03738 reported unrecognized activity on card C03738-K2. 3 transaction(s) between 2016-09-06 and 2016-09-08 totaling $924.84 were confirmed fraudulent. Online purchases from a device not previously seen on this acco"
+      },
+      {
+        "case_id": "CC-4451",
+        "pattern": "card_not_present_new_device",
+        "outcome": "confirmed_fraud",
+        "exposure_usd": 914.05,
+        "similarity": 1.0,
+        "kind": "closed",
+        "note": "Case CC-4451: cardholder C01935 reported unrecognized activity on card C01935-K1. 3 transaction(s) between 2016-10-03 and 2016-10-05 totaling $914.05 were confirmed fraudulent. Online purchases from a device not previously seen on this acco"
+      }
+    ],
+    "recurring_entities": {
+      "device_profiles": [
+        {
+          "profile": "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080",
+          "cases": 2
+        },
+        {
+          "profile": "Windows | Windows 10 | edge 16.0 | 1366x768",
+          "cases": 2
+        }
+      ],
+      "connected_cards": [
+        {
+          "card": "C00255-K1",
+          "cases": 4
+        },
+        {
+          "card": "C01935-K1",
+          "cases": 4
+        },
+        {
+          "card": "C03551-K2",
+          "cases": 4
+        },
+        {
+          "card": "C03744-K1",
+          "cases": 4
+        },
+        {
+          "card": "C04311-K1",
+          "cases": 4
+        },
+        {
+          "card": "C06197-K2",
+          "cases": 4
+        },
+        {
+          "card": "C07485-K1",
+          "cases": 4
+        },
+        {
+          "card": "C07762-K1",
+          "cases": 4
+        },
+        {
+          "card": "C08112-K2",
+          "cases": 4
+        },
+        {
+          "card": "C09174-K1",
+          "cases": 4
+        }
+      ]
+    },
+    "memory_size": 5575
+  },
+  "belief_trajectory": [
+    {
+      "stage": "risk score",
+      "confidence": 0.375
+    },
+    {
+      "stage": "flagged_anomaly",
+      "confidence": 0.545
+    },
+    {
+      "stage": "new_device",
+      "confidence": 0.609
+    },
+    {
+      "stage": "customer_validation",
+      "confidence": 0.926
+    }
+  ],
   "case": {
     "status": "closed_fraud",
     "verdict": "fraud",
@@ -71,7 +432,8 @@
     ],
     "summary": "Card C10434-K1 (customer C10434), trigger risk_score. Assessed fraud at 93% confidence, pattern card_not_present_new_device, exposure $1,000.03. Nearest prior case: CC-0232. The fraud hypothesis survived its strongest defense.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-6725"
+    "graph_case_id": "CASE-2016-6725",
+    "graph_writeback": "memory"
   },
   "evidence_requests": [
     {
@@ -133,7 +495,7 @@
     ]
   },
   "stop_reason": "Fraud probability 93% at/above 0.85 with 3 independent graph evidence items; further steps would not change the decision (policy 6).",
-  "tool_calls": 14,
+  "tool_calls": 24,
   "tokens": 0,
-  "latency_s": 0.013
+  "latency_s": 0.026
 }

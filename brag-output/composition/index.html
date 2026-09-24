@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tribunal — Agentic Fraud Investigation</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      body, html {
+        margin: 0; padding: 0; width: 1920px; height: 1080px;
+        background-color: #0b0e13; overflow: hidden;
+        font-family: "Helvetica", Arial, sans-serif;
+      }
+      #master-root { width: 1920px; height: 1080px; position: relative; background: #0b0e13; }
+      .overlay-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="master-root" data-composition-id="master" data-width="1920" data-height="1080"
+         data-start="0" data-duration="20.5">
+
+      <!-- All scenes live in one sub-composition -->
+      <div id="scenes-comp" class="overlay-layer"
+           data-composition-id="scenes" data-composition-src="compositions/scenes.html"
+           data-start="0" data-duration="20.5" data-track-index="1"></div>
+
+      <!-- Music bed -->
+      <audio id="bgm" data-start="0" data-duration="20.5" data-volume="0.6" data-fade-out="2.5"
+             data-has-audio="true"
+             src="assets/music/happy-beats-business-moves-vol-1-by-ende-dot-app.mp3"></audio>
+
+      <script>
+        window.__timelines = window.__timelines || {};
+        window.__timelines["master"] = gsap.timeline({ paused: true });
+      </script>
+    </div>
+  </body>
+</html>

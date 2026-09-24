@@ -267,8 +267,68 @@ class TigerGraphClient(GraphClient):
         self._run("write_case", payload=__import__("json").dumps(case_dict))
 
 
+class TigerGraphMCPClient(TigerGraphClient):
+    """
+    Graph access via **TigerGraph MCP** (the challenge's required integration:
+    https://github.com/tigergraph/tigergraph-mcp). The agent reaches the graph as MCP
+    tools — `run_installed_query` for the installed GSQL evidence queries and
+    `search_top_k_similarity` for native vector case-memory retrieval — instead of a
+    direct DB driver, so the same investigation runs tool-by-tool over MCP.
+
+    If `TG_MCP_URL` is set, calls are issued to the running MCP server over JSON-RPC.
+    If it is not set, calls degrade to the direct pyTigerGraph query of the same name,
+    so the backend still works while you stand the MCP server up.
+    """
+    def __init__(self):
+        super().__init__()
+        self.mcp_url = os.getenv("TG_MCP_URL", "").rstrip("/")
+
+    def _mcp_call(self, tool: str, arguments: dict):
+        if not self.mcp_url:
+            # no separate MCP gateway configured -> run the installed query directly
+            return self._run(arguments.pop("_query", tool), **arguments)
+        import json as _json
+        import urllib.request as _u
+        payload = {"jsonrpc": "2.0", "id": 1, "method": "tools/call",
+                   "params": {"name": tool, "arguments": arguments}}
+        req = _u.Request(f"{self.mcp_url}/mcp", data=_json.dumps(payload).encode(),
+                         headers={"Content-Type": "application/json"})
+        with _u.urlopen(req, timeout=30) as resp:
+            body = _json.loads(resp.read().decode())
+        result = body.get("result", body)
+        # MCP tool results wrap content; unwrap the JSON payload the query returned
+        content = result.get("content", result)
+        if isinstance(content, list) and content and isinstance(content[0], dict):
+            txt = content[0].get("text")
+            return _json.loads(txt) if txt else content
+        return content
+
+    def _run(self, name, **params):
+        # route the installed-query call through MCP's run_installed_query tool
+        if getattr(self, "mcp_url", ""):
+            return self._mcp_call("run_installed_query",
+                                  {"query_name": name, "params": params})
+        return super()._run(name, **params)
+
+    def similar_cases(self, card1, k=3):
+        sig = [
+            min(self.shared_device_count(card1) / 8.0, 1.0),
+            min(self.shared_email_count(card1) / 6.0, 1.0),
+            min(self.velocity_24h(card1) / 16.0, 1.0),
+            self.identity_mismatch_score(card1),
+            0.3,
+        ]
+        if getattr(self, "mcp_url", ""):
+            return self._mcp_call("search_top_k_similarity",
+                                  {"vertex_type": "Case", "vector_attribute": "sig_vec",
+                                   "query_vector": sig, "k": k})
+        return super().similar_cases(card1, k)
+
+
 def make_client() -> GraphClient:
     backend = os.getenv("TRIBUNAL_GRAPH_BACKEND", "mock").lower()
-    if backend == "tigergraph":
+    if backend in ("tigergraph_mcp", "mcp"):
+        return TigerGraphMCPClient()
+    if backend in ("tigergraph", "tiger"):
         return TigerGraphClient()
     return MockGraphClient()

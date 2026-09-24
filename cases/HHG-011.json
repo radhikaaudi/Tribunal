@@ -19,6 +19,442 @@
       "customer_validation"
     ]
   },
+  "agent_reasoning": {
+    "provider": "anthropic",
+    "tool_plan": [
+      {
+        "tool": "history_summary",
+        "why": "customer transaction history baseline",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_flagged_anomaly",
+        "why": "is the flagged purchase off the customer's pattern?",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_new_device",
+        "why": "device newly seen on this account",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_cnp_burst",
+        "why": "card-not-present burst",
+        "kind": "graph"
+      },
+      {
+        "tool": "similar_cases",
+        "why": "case-memory vector retrieval of prior outcomes",
+        "kind": "vector"
+      },
+      {
+        "tool": "ask_customer",
+        "why": "controlled action: customer validation (R1/R2)",
+        "kind": "action"
+      }
+    ],
+    "reasoning": "Investigating card C11923-K2 (customer C11923), triggered by customer_report. Evidence for fraud: Cardholder reports they did not make the flagged purchase; Flagged transaction is unusual: amount $131.30 exceeds the card's 95th-pct $108.06; 7 online authorizations under $5 within an hour, then a $102.12 purchase; Flagged transaction from a device marked New for this account; Distinctive device profile shared with 3 other card(s) within 30 days (C03938-K1, C05595-K1, C05678-K1); Shares a device with known-fraud customer(s) ['c05595', 'c05678']. Evidence against: Disputed amount $131.30 matches 8 prior charges to the same merchant domain \u2014 a recurring pattern; Purchaser domain gmail.com was used on 3978 prior transactions by this cardholder; On verification the cardholder recognises the charge as their own recurring payment. Assessed fraud at 97% (card_testing). Confidence 97% \u2014 at/above the 0.85 stop line or supported by a hard signal; the fraud hypothesis survived its strongest defence, so the decision is settled. Grounded in README.md \u00a7 3\\. Rules, README.md \u00a7 The five known fraud patterns, patterns.md \u00a7 Known Fraud Typologies (synthetic).",
+    "uncertainty": "Confidence 97% \u2014 at/above the 0.85 stop line or supported by a hard signal; the fraud hypothesis survived its strongest defence, so the decision is settled.",
+    "grounded_on": [
+      "README.md \u00a7 3\\. Rules",
+      "README.md \u00a7 The five known fraud patterns",
+      "patterns.md \u00a7 Known Fraud Typologies (synthetic)",
+      "policy.md \u00a7 Suspicious Activity Report (SAR)",
+      "README.md \u00a7 Regulatory references"
+    ],
+    "tokens": 0
+  },
+  "graphrag": {
+    "backend": "offline",
+    "query": "card testing small authorizations velocity stolen card number R5 decline step-up trigger customer_report Cardholder reports they did not make the flagged purchase Flagged transaction is unusual: amoun",
+    "retrieved": [
+      {
+        "source": "README.md",
+        "heading": "3\\. Rules",
+        "text": "**R5. Card testing.** Three or more small online authorizations on one card within an hour, followed by a larger purchase: recommend `DECLINE_TRANSACTION` and `STEP_UP_AUTH`. If a purchase over $100 has already cleared, recommend `BLOCK_CARD`.",
+        "score": 0.288,
+        "citation": "README.md \u00a7 3\\. Rules"
+      },
+      {
+        "source": "README.md",
+        "heading": "3\\. Rules",
+        "text": "**R7. Disputed but legitimate.** When the customer disputes a charge that matches their own recurring pattern (same merchant, same amount, monthly), recommend `CREATE_CASE`, `VERIFY_WITH_CUSTOMER`, and `WARN_CUSTOMER`. Do not block.",
+        "score": 0.256,
+        "citation": "README.md \u00a7 3\\. Rules"
+      },
+      {
+        "source": "README.md",
+        "heading": "The five known fraud patterns",
+        "text": "**1\\. Card testing.** A stolen card number is checked before use: three or more tiny online authorizations, often under $5, then a larger purchase. Confirmed by the sequence itself. Policy R5.",
+        "score": 0.215,
+        "citation": "README.md \u00a7 The five known fraud patterns"
+      },
+      {
+        "source": "README.md",
+        "heading": "The five known fraud patterns",
+        "text": "**2\\. Card-not-present fraud.** The number is used online without the card. Amounts and products that don't fit the cardholder's history, often in a burst of two to four within 48 hours. On its own, one unusual online purchase is ambiguous: verify. Policy R1 to R4.",
+        "score": 0.21,
+        "citation": "README.md \u00a7 The five known fraud patterns"
+      }
+    ],
+    "policy": [
+      {
+        "source": "README.md",
+        "heading": "3\\. Rules",
+        "text": "**R5. Card testing.** Three or more small online authorizations on one card within an hour, followed by a larger purchase: recommend `DECLINE_TRANSACTION` and `STEP_UP_AUTH`. If a purchase over $100 has already cleared, recommend `BLOCK_CARD`.",
+        "score": 0.451,
+        "citation": "README.md \u00a7 3\\. Rules"
+      },
+      {
+        "source": "README.md",
+        "heading": "The five known fraud patterns",
+        "text": "**1\\. Card testing.** A stolen card number is checked before use: three or more tiny online authorizations, often under $5, then a larger purchase. Confirmed by the sequence itself. Policy R5.",
+        "score": 0.347,
+        "citation": "README.md \u00a7 The five known fraud patterns"
+      }
+    ],
+    "typology": [
+      {
+        "source": "patterns.md",
+        "heading": "Known Fraud Typologies (synthetic)",
+        "text": "1. **account_farming** - many distinct cards (card1) transacting from ONE device\n   (DeviceInfo + id_33 fingerprint), often with anonymous email. Graph signal:\n   high shared-device degree.\n2. **shared_email_ring** - many cards under one P_emaildomain. Graph signal: high\n   shared-email degree.\n3. **card_testing** - one card, burst of tiny-amount transactions in a short\n   TransactionDT window (validating stolen card numbers). Signal: velocity spike.\n4. **identity_mismatch / ATO** - M1-M9 match flags = F plus dist1/dist2 anomaly;\n   new device on an existing card. Signal: mismatch + distance.\n5. **(undocumented)** - not every pattern is documented; dense clusters matching\n   none of the above are candidate new typologies.",
+        "score": 0.299,
+        "citation": "patterns.md \u00a7 Known Fraud Typologies (synthetic)"
+      },
+      {
+        "source": "policy.md",
+        "heading": "Suspicious Activity Report (SAR)",
+        "text": "- File a SAR when confidence >= 0.85 AND typology in {account_farming, shared_email_ring,\n  card_testing, identity_mismatch}. SAR must record the 5W1H and cite graph evidence.",
+        "score": 0.29,
+        "citation": "policy.md \u00a7 Suspicious Activity Report (SAR)"
+      }
+    ],
+    "regulatory": [
+      {
+        "source": "README.md",
+        "heading": "Regulatory references",
+        "text": "- [SAR Filing FAQs, October 2025](https://www.fincen.gov/system/files/2025-10/SAR-FAQs-October-2025.pdf)  \n- [SAR Narrative Guidance](https://www.fincen.gov/system/files/shared/sar_guidance_narrative.pdf): the standard for your `sar.narrative`  \n- [Preparing a Complete and Sufficient SAR Narrative](https://www.fincen.gov/system/files/shared/sarnarrcompletguidfinal_112003.pdf)  \n- [SAR Supporting Documentation (FIN-2007-G003)](https://www.fincen.gov/system/files/shared/fin-2007-g003.pdf)  \n- [SAR Activity Review: Trends, Tips and Issues](https://www.fincen.gov/sites/default/files/sar_report/sar_tti_19.pdf)  \n- [Advisory on Account Takeover Activity](https://www.fincen.gov/resources/advisories/fincen-advisory-fin-2011-a016)  \n- [Advisory on Imposter Scams and Money Mule Schemes](https://www.fincen.gov/system/files/advisory/2020-07-07/Advisory_%20Imposter_and_Money_Mule_COVID_19_508_FINAL.p",
+        "score": 0.312,
+        "citation": "README.md \u00a7 Regulatory references"
+      },
+      {
+        "source": "README.md",
+        "heading": "Regulatory references",
+        "text": "Public documents from US and international regulators on fraud typologies, red flags, and how investigations and suspicious activity reports must be written. Load the ones you find useful into TigerGraph's vector store alongside the closed cases and the policy.",
+        "score": 0.246,
+        "citation": "README.md \u00a7 Regulatory references"
+      }
+    ],
+    "graph_context": [
+      "Subject: card C11923-K2 / customer C11923, trigger=customer_report.",
+      "[graph] Flagged transaction is unusual: amount $131.30 exceeds the card's 95th-pct $108.06 (ref query:history(C11923))",
+      "[graph] 7 online authorizations under $5 within an hour, then a $102.12 purchase (ref query:card_window(C11923-K2,1h))",
+      "[graph] Flagged transaction from a device marked New for this account (ref query:identity(3583368))",
+      "[graph] Distinctive device profile shared with 3 other card(s) within 30 days (C03938-K1, C05595-K1, C05678-K1) (ref query:device_neighbors('SM-G610F Build/NRD90M | ? | chrome 66.0 ...'))",
+      "[graph] Shares a device with known-fraud customer(s) ['c05595', 'c05678'] (ref query:link_to_known_fraud)",
+      "[graph] Disputed amount $131.30 matches 8 prior charges to the same merchant domain \u2014 a recurring pattern (ref query:recurring(C11923))",
+      "[graph] Purchaser domain gmail.com was used on 3978 prior transactions by this cardholder (ref query:merchant_history(C11923))",
+      "[graph] Device-neighbour traversal: profile shared by 3 cards -> C03938-K1, C05595-K1, C05678-K1.",
+      "[graph] Path to a confirmed-fraud node found within the shared-attribute graph.",
+      "[memory] Prior case CC-4225: card_testing -> confirmed_fraud ($353).",
+      "[memory] Prior case CC-4058: card_testing -> confirmed_fraud ($390).",
+      "[memory] Prior case CC-0137: card_testing -> confirmed_fraud ($402)."
+    ],
+    "prompt_context": "# GROUNDING CONTEXT (retrieved by relevance \u2014 cite these, do not invent)\n\n## Fraud policy (governing rules)\n- (README.md \u00a7 3\\. Rules) **R5. Card testing.** Three or more small online authorizations on one card within an hour, followed by a larger purchase: recommend `DECLINE_TRANSACTION` and `STEP_UP_AUTH`. If a purchase over $100 has already cleared, recommend `BLOCK_CARD`.\n- (README.md \u00a7 The five known fraud patterns) **1\\. Card testing.** A stolen card number is checked before use: three or more tiny online authorizations, often under $5, then a larger purchase. Confirmed by the sequence itself. Policy R5.\n\n## Known typologies\n- (patterns.md \u00a7 Known Fraud Typologies (synthetic)) 1. **account_farming** - many distinct cards (card1) transacting from ONE device\n   (DeviceInfo + id_33 fingerprint), often with anonymous email. Graph signal:\n   high shared-device degree.\n2. **shared_email_ring** - many cards under one P_emaildomain. Graph signal: high\n   shared-email degree.\n3. **card_testing** - one card, burst of tiny-amount transactions in a short\n   TransactionDT window (va\n- (policy.md \u00a7 Suspicious Activity Report (SAR)) - File a SAR when confidence >= 0.85 AND typology in {account_farming, shared_email_ring,\n  card_testing, identity_mismatch}. SAR must record the 5W1H and cite graph evidence.\n\n## Regulatory references\n- (README.md \u00a7 Regulatory references) - [SAR Filing FAQs, October 2025](https://www.fincen.gov/system/files/2025-10/SAR-FAQs-October-2025.pdf)  \n- [SAR Narrative Guidance](https://www.fincen.gov/system/files/shared/sar_guidance_narrative.pdf): the standard for your `sar.narrative`  \n- [Preparing a Complete and Sufficient SAR Narrative](https://www.fincen.gov/system/files/shared/sarnarrcompletguidfinal_112003.pdf)  \n- [SAR Supporting D\n- (README.md \u00a7 Regulatory references) Public documents from US and international regulators on fraud typologies, red flags, and how investigations and suspicious activity reports must be written. Load the ones you find useful into TigerGraph's vector store alongside the closed cases and the policy.\n\n## Connected graph evidence\nSubject: card C11923-K2 / customer C11923, trigger=customer_report.\n[graph] Flagged transaction is unusual: amount $131.30 exceeds the card's 95th-pct $108.06 (ref query:history(C11923))\n[graph] 7 online authorizations under $5 within an hour, then a $102.12 purchase (ref query:card_window(C11923-K2,1h))\n[graph] Flagged transaction from a device marked New for this account (ref query:identity(3583368))\n[graph] Distinctive device profile shared with 3 other card(s) within 30 days (C03938-K1, C05595-K1, C05678-K1) (ref query:device_neighbors('SM-G610F Build/NRD90M | ? | chrome 66.0 ...'))\n[graph] Shares a device with known-fraud customer(s) ['c05595', 'c05678'] (ref query:link_to_known_fraud)\n[graph] Disputed amount $131.30 matches 8 prior charges to the same merchant domain \u2014 a recurring pattern (ref query:recurring(C11923))\n[graph] Purchaser domain gmail.com was used on 3978 prior transactions by this cardholder (ref query:merchant_history(C11923))\n[graph] Device-neighbour traversal: profile shared by 3 cards -> C03938-K1, C05595-K1, C05678-K1.\n[graph] Path to a confirmed-fraud node found within the shared-attribute graph.\n[memory] Prior case CC-4225: card_testing -> confirmed_fraud ($353).\n[memory] Prior case CC-4058: card_testing -> confirmed_fraud ($390).\n[memory] Prior case CC-0137: card_testing -> confirmed_fraud ($402).",
+    "citations": [
+      "README.md \u00a7 3\\. Rules",
+      "README.md \u00a7 The five known fraud patterns",
+      "patterns.md \u00a7 Known Fraud Typologies (synthetic)",
+      "policy.md \u00a7 Suspicious Activity Report (SAR)",
+      "README.md \u00a7 Regulatory references"
+    ]
+  },
+  "case_progression": {
+    "case_id": "CASE-2016-83368",
+    "opened_at": "2016-12-29 03:27:44",
+    "status": "closed_fraud",
+    "status_history": [
+      "OPEN",
+      "EVIDENCE_REQUESTED",
+      "CLOSED_FRAUD"
+    ],
+    "resolved": true,
+    "n_events": 15,
+    "timeline": [
+      {
+        "seq": 1,
+        "event": "case_opened",
+        "actor": "agent",
+        "detail": "Case CASE-2016-83368 opened on trigger 'customer_report' for card C11923-K2.",
+        "confidence": 0.625
+      },
+      {
+        "seq": 2,
+        "event": "evidence_added",
+        "actor": "customer",
+        "detail": "[prosecution] Cardholder reports they did not make the flagged purchase",
+        "confidence": null
+      },
+      {
+        "seq": 3,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] Flagged transaction is unusual: amount $131.30 exceeds the card's 95th-pct $108.06",
+        "confidence": null
+      },
+      {
+        "seq": 4,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] 7 online authorizations under $5 within an hour, then a $102.12 purchase",
+        "confidence": null
+      },
+      {
+        "seq": 5,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] Flagged transaction from a device marked New for this account",
+        "confidence": null
+      },
+      {
+        "seq": 6,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] Distinctive device profile shared with 3 other card(s) within 30 days (C03938-K1, C05595-K1, C05678-K1)",
+        "confidence": null
+      },
+      {
+        "seq": 7,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] Shares a device with known-fraud customer(s) ['c05595', 'c05678']",
+        "confidence": null
+      },
+      {
+        "seq": 8,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[defense] Disputed amount $131.30 matches 8 prior charges to the same merchant domain \u2014 a recurring pattern",
+        "confidence": null
+      },
+      {
+        "seq": 9,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[defense] Purchaser domain gmail.com was used on 3978 prior transactions by this cardholder",
+        "confidence": null
+      },
+      {
+        "seq": 10,
+        "event": "evidence_added",
+        "actor": "customer",
+        "detail": "[defense] On verification the cardholder recognises the charge as their own recurring payment",
+        "confidence": null
+      },
+      {
+        "seq": 11,
+        "event": "evidence_requested",
+        "actor": "agent",
+        "detail": "Requested customer_validation (after step 8): On verification the cardholder recognises the charge as their own recurring payment",
+        "confidence": null
+      },
+      {
+        "seq": 12,
+        "event": "assessed",
+        "actor": "agent",
+        "detail": "Assessed fraud at 97%.",
+        "confidence": 0.968
+      },
+      {
+        "seq": 13,
+        "event": "recommendation_initial",
+        "actor": "agent",
+        "detail": "Initial next-best-action: DECLINE_TRANSACTION(L1) | BLOCK_CARD(L1) | CREATE_CASE(auto) | FILE_REPORT(L2) | MONITOR_CONNECTED_CARDS(auto)",
+        "confidence": null
+      },
+      {
+        "seq": 14,
+        "event": "recommendation_final",
+        "actor": "agent",
+        "detail": "Final next-best-action: DECLINE_TRANSACTION(L1) | BLOCK_CARD(L1) | CREATE_CASE(auto) | FILE_REPORT(L2) | MONITOR_CONNECTED_CARDS(auto)",
+        "confidence": null
+      },
+      {
+        "seq": 15,
+        "event": "case_closed_fraud",
+        "actor": "agent",
+        "detail": "Case resolved to status 'closed_fraud'.",
+        "confidence": 0.968
+      }
+    ],
+    "belief_trajectory": [
+      {
+        "stage": "customer report",
+        "confidence": 0.625
+      },
+      {
+        "stage": "flagged_anomaly",
+        "confidence": 0.769
+      },
+      {
+        "stage": "card_testing",
+        "confidence": 0.968
+      },
+      {
+        "stage": "new_device",
+        "confidence": 0.975
+      },
+      {
+        "stage": "shared_device",
+        "confidence": 0.995
+      },
+      {
+        "stage": "link_known_fraud",
+        "confidence": 0.999
+      },
+      {
+        "stage": "recurring_match",
+        "confidence": 0.997
+      },
+      {
+        "stage": "familiar_merchant",
+        "confidence": 0.995
+      },
+      {
+        "stage": "customer_validation",
+        "confidence": 0.968
+      }
+    ],
+    "written_to_graph": true
+  },
+  "case_memory": {
+    "retrieved": [
+      {
+        "case_id": "CC-4225",
+        "pattern": "card_testing",
+        "outcome": "confirmed_fraud",
+        "exposure_usd": 352.58,
+        "similarity": 0.952,
+        "kind": "closed",
+        "note": "Case CC-4225: cardholder C05381 reported unrecognized activity on card C05381-K2. 13 transaction(s) between 2016-09-26 and 2016-10-01 totaling $352.58 were confirmed fraudulent. A run of very small online authorizations followed by a larger"
+      },
+      {
+        "case_id": "CC-4058",
+        "pattern": "card_testing",
+        "outcome": "confirmed_fraud",
+        "exposure_usd": 390.38,
+        "similarity": 0.952,
+        "kind": "closed",
+        "note": "Case CC-4058: cardholder C04597 reported unrecognized activity on card C04597-K2. 13 transaction(s) between 2016-09-23 and 2016-09-27 totaling $390.38 were confirmed fraudulent. A run of very small online authorizations followed by a larger"
+      },
+      {
+        "case_id": "CC-0370",
+        "pattern": "card_testing",
+        "outcome": "confirmed_fraud",
+        "exposure_usd": 426.72,
+        "similarity": 0.952,
+        "kind": "closed",
+        "note": "Case CC-0370: cardholder C12982 reported unrecognized activity on card C12982-K1. 10 transaction(s) between 2016-07-10 and 2016-07-10 totaling $426.72 were confirmed fraudulent. A run of very small online authorizations followed by a larger"
+      }
+    ],
+    "recurring_entities": {
+      "device_profiles": [
+        {
+          "profile": "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080",
+          "cases": 2
+        },
+        {
+          "profile": "Windows | Windows 10 | edge 16.0 | 1366x768",
+          "cases": 2
+        },
+        {
+          "profile": "SM-G610F Build/NRD90M | ? | chrome 66.0 for android | ?",
+          "cases": 2
+        }
+      ],
+      "connected_cards": [
+        {
+          "card": "C00255-K1",
+          "cases": 4
+        },
+        {
+          "card": "C01935-K1",
+          "cases": 4
+        },
+        {
+          "card": "C03551-K2",
+          "cases": 4
+        },
+        {
+          "card": "C03744-K1",
+          "cases": 4
+        },
+        {
+          "card": "C04311-K1",
+          "cases": 4
+        },
+        {
+          "card": "C06197-K2",
+          "cases": 4
+        },
+        {
+          "card": "C07485-K1",
+          "cases": 4
+        },
+        {
+          "card": "C07762-K1",
+          "cases": 4
+        },
+        {
+          "card": "C08112-K2",
+          "cases": 4
+        },
+        {
+          "card": "C09174-K1",
+          "cases": 4
+        }
+      ]
+    },
+    "memory_size": 5576
+  },
+  "belief_trajectory": [
+    {
+      "stage": "customer report",
+      "confidence": 0.625
+    },
+    {
+      "stage": "flagged_anomaly",
+      "confidence": 0.769
+    },
+    {
+      "stage": "card_testing",
+      "confidence": 0.968
+    },
+    {
+      "stage": "new_device",
+      "confidence": 0.975
+    },
+    {
+      "stage": "shared_device",
+      "confidence": 0.995
+    },
+    {
+      "stage": "link_known_fraud",
+      "confidence": 0.999
+    },
+    {
+      "stage": "recurring_match",
+      "confidence": 0.997
+    },
+    {
+      "stage": "familiar_merchant",
+      "confidence": 0.995
+    },
+    {
+      "stage": "customer_validation",
+      "confidence": 0.968
+    }
+  ],
   "case": {
     "status": "closed_fraud",
     "verdict": "fraud",
@@ -155,7 +591,8 @@
     ],
     "summary": "Card C11923-K2 (customer C11923), trigger customer_report. Assessed fraud at 97% confidence, pattern card_testing, exposure $298.09, linked to other cards by shared origin. Nearest prior case: CC-4225. The fraud hypothesis survived its strongest defense.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-83368"
+    "graph_case_id": "CASE-2016-83368",
+    "graph_writeback": "memory"
   },
   "evidence_requests": [
     {
@@ -240,7 +677,7 @@
     ]
   },
   "stop_reason": "Fraud probability 97% at/above 0.85 with 7 independent graph evidence items; further steps would not change the decision (policy 6).",
-  "tool_calls": 14,
+  "tool_calls": 22,
   "tokens": 0,
-  "latency_s": 0.068
+  "latency_s": 0.081
 }

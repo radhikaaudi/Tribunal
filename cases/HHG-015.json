@@ -14,6 +14,406 @@
     "conclusion": "The fraud hypothesis survived its strongest defense.",
     "missing_evidence": []
   },
+  "agent_reasoning": {
+    "provider": "anthropic",
+    "tool_plan": [
+      {
+        "tool": "history_summary",
+        "why": "customer transaction history baseline",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_flagged_anomaly",
+        "why": "is the flagged purchase off the customer's pattern?",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_card_testing",
+        "why": "small-amount authorization burst (R5)",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_cnp_burst",
+        "why": "card-not-present burst",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_new_device",
+        "why": "device newly seen on this account",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_out_of_region",
+        "why": "billing region with no history",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_account_takeover",
+        "why": "identity match-flag / distance anomaly",
+        "kind": "graph"
+      },
+      {
+        "tool": "similar_cases",
+        "why": "case-memory vector retrieval of prior outcomes",
+        "kind": "vector"
+      }
+    ],
+    "reasoning": "Investigating card C03042-K1 (customer C03042), triggered by risk_score. Evidence for fraud: Bank model risk score 0.77 on the flagged transaction (a reason to look, not a verdict); Flagged transaction is unusual: amount $599.94 exceeds the card's 95th-pct $450.48; Flagged transaction from a device marked New for this account; Distinctive device profile shared with 1 other card(s) within 30 days (C05704-K2); Shares a device with known-fraud customer(s) ['c01155', 'c05292', 'c05704']. Evidence against: Purchaser domain anonymous.com was used on 17 prior transactions by this cardholder. Assessed fraud at 92% (card_not_present_new_device). Confidence 92% \u2014 at/above the 0.85 stop line or supported by a hard signal; the fraud hypothesis survived its strongest defence, so the decision is settled. Grounded in README.md \u00a7 3\\. Rules, README.md \u00a7 The five known fraud patterns, README.md \u00a7 `pattern` values.",
+    "uncertainty": "Confidence 92% \u2014 at/above the 0.85 stop line or supported by a hard signal; the fraud hypothesis survived its strongest defence, so the decision is settled.",
+    "grounded_on": [
+      "README.md \u00a7 3\\. Rules",
+      "README.md \u00a7 The five known fraud patterns",
+      "README.md \u00a7 `pattern` values",
+      "README.md \u00a7 Regulatory references",
+      "README.md \u00a7 Suggested graph schema"
+    ],
+    "tokens": 0
+  },
+  "graphrag": {
+    "backend": "offline",
+    "query": "card not present new device proxy R2 block unauthorized device trigger risk_score Bank model risk score 0.77 on the flagged transaction (a reason to look, not a verdict) Flagged transaction is unusual",
+    "retrieved": [
+      {
+        "source": "README.md",
+        "heading": "The five known fraud patterns",
+        "text": "**3\\. Card-not-present fraud from a new device.** Same as above, with the identity record marking the device as `New` for this account, sometimes behind a proxy. Stronger than pattern 2, still not proof: people buy new phones.",
+        "score": 0.29,
+        "citation": "README.md \u00a7 The five known fraud patterns"
+      },
+      {
+        "source": "README.md",
+        "heading": "3\\. Rules",
+        "text": "**R2. Customer denies the transaction.** Recommend `BLOCK_CARD` and `CREATE_CASE`. Add `FILE_REPORT` if exposure exceeds $1,000 or the case connects to a shared device profile or another card's fraud.",
+        "score": 0.286,
+        "citation": "README.md \u00a7 3\\. Rules"
+      },
+      {
+        "source": "README.md",
+        "heading": "`pattern` values",
+        "text": "`card_testing` \u00b7 `card_not_present_fraud` \u00b7 `card_not_present_new_device` \u00b7 `out_of_region_use` \u00b7 `account_takeover` \u00b7 `undocumented` \u00b7 `none`",
+        "score": 0.266,
+        "citation": "README.md \u00a7 `pattern` values"
+      },
+      {
+        "source": "README.md",
+        "heading": "Suggested graph schema",
+        "text": "- `Customer` \u2192 `OWNS` \u2192 `Card`  \n- `Card` \u2192 `MADE` \u2192 `Transaction`  \n- `Transaction` \u2192 `FROM_DEVICE` \u2192 `DeviceProfile` (online only, from `identity.csv`)  \n- `Transaction` \u2192 `PURCHASER_EMAIL` \u2192 `EmailDomain`  \n- `Transaction` \u2192 `BILLED_IN` \u2192 `BillingRegion` (from `addr1`)  \n- `Transaction` \u2192 `NEXT` \u2192 `Transaction` (order by `ts` within a card)  \n- `ClosedCase` \u2192 `INVOLVES` \u2192 `Transaction`, `ClosedCase` \u2192 `ON_CARD` \u2192 `Card`, `ClosedCase` \u2192 `CONNECTED_TO` \u2192 `Card`",
+        "score": 0.261,
+        "citation": "README.md \u00a7 Suggested graph schema"
+      }
+    ],
+    "policy": [
+      {
+        "source": "README.md",
+        "heading": "3\\. Rules",
+        "text": "**R2. Customer denies the transaction.** Recommend `BLOCK_CARD` and `CREATE_CASE`. Add `FILE_REPORT` if exposure exceeds $1,000 or the case connects to a shared device profile or another card's fraud.",
+        "score": 0.356,
+        "citation": "README.md \u00a7 3\\. Rules"
+      },
+      {
+        "source": "README.md",
+        "heading": "The five known fraud patterns",
+        "text": "**3\\. Card-not-present fraud from a new device.** Same as above, with the identity record marking the device as `New` for this account, sometimes behind a proxy. Stronger than pattern 2, still not proof: people buy new phones.",
+        "score": 0.354,
+        "citation": "README.md \u00a7 The five known fraud patterns"
+      }
+    ],
+    "typology": [
+      {
+        "source": "README.md",
+        "heading": "`pattern` values",
+        "text": "`card_testing` \u00b7 `card_not_present_fraud` \u00b7 `card_not_present_new_device` \u00b7 `out_of_region_use` \u00b7 `account_takeover` \u00b7 `undocumented` \u00b7 `none`",
+        "score": 0.445,
+        "citation": "README.md \u00a7 `pattern` values"
+      },
+      {
+        "source": "README.md",
+        "heading": "The five known fraud patterns",
+        "text": "**3\\. Card-not-present fraud from a new device.** Same as above, with the identity record marking the device as `New` for this account, sometimes behind a proxy. Stronger than pattern 2, still not proof: people buy new phones.",
+        "score": 0.337,
+        "citation": "README.md \u00a7 The five known fraud patterns"
+      }
+    ],
+    "regulatory": [
+      {
+        "source": "README.md",
+        "heading": "Regulatory references",
+        "text": "- [SAR Filing FAQs, October 2025](https://www.fincen.gov/system/files/2025-10/SAR-FAQs-October-2025.pdf)  \n- [SAR Narrative Guidance](https://www.fincen.gov/system/files/shared/sar_guidance_narrative.pdf): the standard for your `sar.narrative`  \n- [Preparing a Complete and Sufficient SAR Narrative](https://www.fincen.gov/system/files/shared/sarnarrcompletguidfinal_112003.pdf)  \n- [SAR Supporting Documentation (FIN-2007-G003)](https://www.fincen.gov/system/files/shared/fin-2007-g003.pdf)  \n- [SAR Activity Review: Trends, Tips and Issues](https://www.fincen.gov/sites/default/files/sar_report/sar_tti_19.pdf)  \n- [Advisory on Account Takeover Activity](https://www.fincen.gov/resources/advisories/fincen-advisory-fin-2011-a016)  \n- [Advisory on Imposter Scams and Money Mule Schemes](https://www.fincen.gov/system/files/advisory/2020-07-07/Advisory_%20Imposter_and_Money_Mule_COVID_19_508_FINAL.p",
+        "score": 0.312,
+        "citation": "README.md \u00a7 Regulatory references"
+      },
+      {
+        "source": "README.md",
+        "heading": "Regulatory references",
+        "text": "Public documents from US and international regulators on fraud typologies, red flags, and how investigations and suspicious activity reports must be written. Load the ones you find useful into TigerGraph's vector store alongside the closed cases and the policy.",
+        "score": 0.246,
+        "citation": "README.md \u00a7 Regulatory references"
+      }
+    ],
+    "graph_context": [
+      "Subject: card C03042-K1 / customer C03042, trigger=risk_score.",
+      "[graph] Bank model risk score 0.77 on the flagged transaction (a reason to look, not a verdict) (ref field:risk_score)",
+      "[graph] Flagged transaction is unusual: amount $599.94 exceeds the card's 95th-pct $450.48 (ref query:history(C03042))",
+      "[graph] Flagged transaction from a device marked New for this account (ref query:identity(3464869))",
+      "[graph] Distinctive device profile shared with 1 other card(s) within 30 days (C05704-K2) (ref query:device_neighbors('Trident/7.0 | Windows 8.1 | ie 11.0 for ...'))",
+      "[graph] Shares a device with known-fraud customer(s) ['c01155', 'c05292', 'c05704'] (ref query:link_to_known_fraud)",
+      "[graph] Purchaser domain anonymous.com was used on 17 prior transactions by this cardholder (ref query:merchant_history(C03042))",
+      "[graph] Device-neighbour traversal: profile shared by 1 cards -> C05704-K2.",
+      "[graph] Path to a confirmed-fraud node found within the shared-attribute graph.",
+      "[memory] Prior case CC-4140: card_not_present_new_device -> confirmed_fraud ($600).",
+      "[memory] Prior case CC-4295: card_not_present_new_device -> confirmed_fraud ($600).",
+      "[memory] Prior case CC-3887: card_not_present_new_device -> confirmed_fraud ($600)."
+    ],
+    "prompt_context": "# GROUNDING CONTEXT (retrieved by relevance \u2014 cite these, do not invent)\n\n## Fraud policy (governing rules)\n- (README.md \u00a7 3\\. Rules) **R2. Customer denies the transaction.** Recommend `BLOCK_CARD` and `CREATE_CASE`. Add `FILE_REPORT` if exposure exceeds $1,000 or the case connects to a shared device profile or another card's fraud.\n- (README.md \u00a7 The five known fraud patterns) **3\\. Card-not-present fraud from a new device.** Same as above, with the identity record marking the device as `New` for this account, sometimes behind a proxy. Stronger than pattern 2, still not proof: people buy new phones.\n\n## Known typologies\n- (README.md \u00a7 `pattern` values) `card_testing` \u00b7 `card_not_present_fraud` \u00b7 `card_not_present_new_device` \u00b7 `out_of_region_use` \u00b7 `account_takeover` \u00b7 `undocumented` \u00b7 `none`\n- (README.md \u00a7 The five known fraud patterns) **3\\. Card-not-present fraud from a new device.** Same as above, with the identity record marking the device as `New` for this account, sometimes behind a proxy. Stronger than pattern 2, still not proof: people buy new phones.\n\n## Regulatory references\n- (README.md \u00a7 Regulatory references) - [SAR Filing FAQs, October 2025](https://www.fincen.gov/system/files/2025-10/SAR-FAQs-October-2025.pdf)  \n- [SAR Narrative Guidance](https://www.fincen.gov/system/files/shared/sar_guidance_narrative.pdf): the standard for your `sar.narrative`  \n- [Preparing a Complete and Sufficient SAR Narrative](https://www.fincen.gov/system/files/shared/sarnarrcompletguidfinal_112003.pdf)  \n- [SAR Supporting D\n- (README.md \u00a7 Regulatory references) Public documents from US and international regulators on fraud typologies, red flags, and how investigations and suspicious activity reports must be written. Load the ones you find useful into TigerGraph's vector store alongside the closed cases and the policy.\n\n## Connected graph evidence\nSubject: card C03042-K1 / customer C03042, trigger=risk_score.\n[graph] Bank model risk score 0.77 on the flagged transaction (a reason to look, not a verdict) (ref field:risk_score)\n[graph] Flagged transaction is unusual: amount $599.94 exceeds the card's 95th-pct $450.48 (ref query:history(C03042))\n[graph] Flagged transaction from a device marked New for this account (ref query:identity(3464869))\n[graph] Distinctive device profile shared with 1 other card(s) within 30 days (C05704-K2) (ref query:device_neighbors('Trident/7.0 | Windows 8.1 | ie 11.0 for ...'))\n[graph] Shares a device with known-fraud customer(s) ['c01155', 'c05292', 'c05704'] (ref query:link_to_known_fraud)\n[graph] Purchaser domain anonymous.com was used on 17 prior transactions by this cardholder (ref query:merchant_history(C03042))\n[graph] Device-neighbour traversal: profile shared by 1 cards -> C05704-K2.\n[graph] Path to a confirmed-fraud node found within the shared-attribute graph.\n[memory] Prior case CC-4140: card_not_present_new_device -> confirmed_fraud ($600).\n[memory] Prior case CC-4295: card_not_present_new_device -> confirmed_fraud ($600).\n[memory] Prior case CC-3887: card_not_present_new_device -> confirmed_fraud ($600).",
+    "citations": [
+      "README.md \u00a7 3\\. Rules",
+      "README.md \u00a7 The five known fraud patterns",
+      "README.md \u00a7 `pattern` values",
+      "README.md \u00a7 Regulatory references",
+      "README.md \u00a7 Suggested graph schema"
+    ]
+  },
+  "case_progression": {
+    "case_id": "CASE-2016-64869",
+    "opened_at": "2016-11-17 14:03:36",
+    "status": "closed_fraud",
+    "status_history": [
+      "OPEN",
+      "CLOSED_FRAUD"
+    ],
+    "resolved": true,
+    "n_events": 11,
+    "timeline": [
+      {
+        "seq": 1,
+        "event": "case_opened",
+        "actor": "agent",
+        "detail": "Case CASE-2016-64869 opened on trigger 'risk_score' for card C03042-K1.",
+        "confidence": 0.339
+      },
+      {
+        "seq": 2,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] Bank model risk score 0.77 on the flagged transaction (a reason to look, not a verdict)",
+        "confidence": null
+      },
+      {
+        "seq": 3,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] Flagged transaction is unusual: amount $599.94 exceeds the card's 95th-pct $450.48",
+        "confidence": null
+      },
+      {
+        "seq": 4,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] Flagged transaction from a device marked New for this account",
+        "confidence": null
+      },
+      {
+        "seq": 5,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] Distinctive device profile shared with 1 other card(s) within 30 days (C05704-K2)",
+        "confidence": null
+      },
+      {
+        "seq": 6,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] Shares a device with known-fraud customer(s) ['c01155', 'c05292', 'c05704']",
+        "confidence": null
+      },
+      {
+        "seq": 7,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[defense] Purchaser domain anonymous.com was used on 17 prior transactions by this cardholder",
+        "confidence": null
+      },
+      {
+        "seq": 8,
+        "event": "assessed",
+        "actor": "agent",
+        "detail": "Assessed fraud at 92%.",
+        "confidence": 0.921
+      },
+      {
+        "seq": 9,
+        "event": "recommendation_initial",
+        "actor": "agent",
+        "detail": "Initial next-best-action: BLOCK_CARD(L1) | CREATE_CASE(auto) | FILE_REPORT(L2) | MONITOR_CONNECTED_CARDS(auto)",
+        "confidence": null
+      },
+      {
+        "seq": 10,
+        "event": "recommendation_final",
+        "actor": "agent",
+        "detail": "Final next-best-action: BLOCK_CARD(L1) | CREATE_CASE(auto) | FILE_REPORT(L2) | MONITOR_CONNECTED_CARDS(auto)",
+        "confidence": null
+      },
+      {
+        "seq": 11,
+        "event": "case_closed_fraud",
+        "actor": "agent",
+        "detail": "Case resolved to status 'closed_fraud'.",
+        "confidence": 0.921
+      }
+    ],
+    "belief_trajectory": [
+      {
+        "stage": "risk score",
+        "confidence": 0.339
+      },
+      {
+        "stage": "flagged_anomaly",
+        "confidence": 0.507
+      },
+      {
+        "stage": "new_device",
+        "confidence": 0.572
+      },
+      {
+        "stage": "shared_device",
+        "confidence": 0.769
+      },
+      {
+        "stage": "link_known_fraud",
+        "confidence": 0.943
+      },
+      {
+        "stage": "familiar_merchant",
+        "confidence": 0.921
+      }
+    ],
+    "written_to_graph": true
+  },
+  "case_memory": {
+    "retrieved": [
+      {
+        "case_id": "CC-3754",
+        "pattern": "card_not_present_new_device",
+        "outcome": "confirmed_fraud",
+        "exposure_usd": 640.13,
+        "similarity": 0.945,
+        "kind": "closed",
+        "note": "Case CC-3754: cardholder C07612 reported unrecognized activity on card C07612-K1. 6 transaction(s) between 2016-09-17 and 2016-09-19 totaling $640.13 were confirmed fraudulent. Online purchases from a device not previously seen on this acco"
+      },
+      {
+        "case_id": "CC-3450",
+        "pattern": "card_not_present_new_device",
+        "outcome": "confirmed_fraud",
+        "exposure_usd": 510.74,
+        "similarity": 0.945,
+        "kind": "closed",
+        "note": "Case CC-3450: cardholder C06630 reported unrecognized activity on card C06630-K2. 6 transaction(s) between 2016-09-11 and 2016-09-12 totaling $510.74 were confirmed fraudulent. Online purchases from a device not previously seen on this acco"
+      },
+      {
+        "case_id": "CC-2125",
+        "pattern": "card_not_present_new_device",
+        "outcome": "confirmed_fraud",
+        "exposure_usd": 407.26,
+        "similarity": 0.944,
+        "kind": "closed",
+        "note": "Case CC-2125: cardholder C11509 reported unrecognized activity on card C11509-K2. 6 transaction(s) between 2016-08-11 and 2016-08-14 totaling $407.26 were confirmed fraudulent. Online purchases from a device not previously seen on this acco"
+      }
+    ],
+    "recurring_entities": {
+      "device_profiles": [
+        {
+          "profile": "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080",
+          "cases": 2
+        },
+        {
+          "profile": "Windows | Windows 10 | edge 16.0 | 1366x768",
+          "cases": 2
+        },
+        {
+          "profile": "SM-G610F Build/NRD90M | ? | chrome 66.0 for android | ?",
+          "cases": 2
+        },
+        {
+          "profile": "SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080",
+          "cases": 2
+        },
+        {
+          "profile": "Trident/7.0 | Windows 8.1 | ie 11.0 for desktop | 1680x1050",
+          "cases": 2
+        }
+      ],
+      "connected_cards": [
+        {
+          "card": "C00255-K1",
+          "cases": 4
+        },
+        {
+          "card": "C01935-K1",
+          "cases": 4
+        },
+        {
+          "card": "C03551-K2",
+          "cases": 4
+        },
+        {
+          "card": "C03744-K1",
+          "cases": 4
+        },
+        {
+          "card": "C04311-K1",
+          "cases": 4
+        },
+        {
+          "card": "C06197-K2",
+          "cases": 4
+        },
+        {
+          "card": "C07485-K1",
+          "cases": 4
+        },
+        {
+          "card": "C07762-K1",
+          "cases": 4
+        },
+        {
+          "card": "C08112-K2",
+          "cases": 4
+        },
+        {
+          "card": "C09174-K1",
+          "cases": 4
+        }
+      ]
+    },
+    "memory_size": 5580
+  },
+  "belief_trajectory": [
+    {
+      "stage": "risk score",
+      "confidence": 0.339
+    },
+    {
+      "stage": "flagged_anomaly",
+      "confidence": 0.507
+    },
+    {
+      "stage": "new_device",
+      "confidence": 0.572
+    },
+    {
+      "stage": "shared_device",
+      "confidence": 0.769
+    },
+    {
+      "stage": "link_known_fraud",
+      "confidence": 0.943
+    },
+    {
+      "stage": "familiar_merchant",
+      "confidence": 0.921
+    }
+  ],
   "case": {
     "status": "closed_fraud",
     "verdict": "fraud",
@@ -102,7 +502,8 @@
     ],
     "summary": "Card C03042-K1 (customer C03042), trigger risk_score. Assessed fraud at 92% confidence, pattern card_not_present_new_device, exposure $599.94, linked to other cards by shared origin. Nearest prior case: CC-4140. The fraud hypothesis survived its strongest defense.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-64869"
+    "graph_case_id": "CASE-2016-64869",
+    "graph_writeback": "memory"
   },
   "evidence_requests": [],
   "next_best_actions": {
@@ -169,7 +570,7 @@
     ]
   },
   "stop_reason": "Fraud probability 92% at/above 0.85 with 6 independent graph evidence items; further steps would not change the decision (policy 6).",
-  "tool_calls": 14,
+  "tool_calls": 24,
   "tokens": 0,
-  "latency_s": 0.028
+  "latency_s": 0.039
 }

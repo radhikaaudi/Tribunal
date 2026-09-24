@@ -16,6 +16,384 @@
       "customer_validation"
     ]
   },
+  "agent_reasoning": {
+    "provider": "anthropic",
+    "tool_plan": [
+      {
+        "tool": "history_summary",
+        "why": "customer transaction history baseline",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_flagged_anomaly",
+        "why": "is the flagged purchase off the customer's pattern?",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_new_device",
+        "why": "device newly seen on this account",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_cnp_burst",
+        "why": "card-not-present burst",
+        "kind": "graph"
+      },
+      {
+        "tool": "similar_cases",
+        "why": "case-memory vector retrieval of prior outcomes",
+        "kind": "vector"
+      },
+      {
+        "tool": "ask_customer",
+        "why": "controlled action: customer validation (R1/R2)",
+        "kind": "action"
+      }
+    ],
+    "reasoning": "Investigating card C13171-K2 (customer C13171), triggered by customer_report. Evidence for fraud: Cardholder reports they did not make the flagged purchase. Evidence against: Flagged transaction is consistent with the card's history; Disputed amount $55.68 matches 8 prior charges to the same merchant domain \u2014 a recurring pattern; Purchaser domain hotmail.com was used on 358 prior transactions by this cardholder; Amount $55.68 and product sit within the cardholder's normal range ($10\u2013$161); On verification the cardholder recognises the charge as their own recurring payment. Assessed legitimate at 2% (none). Confidence 2% \u2014 at/below the 0.15 clear line; a legitimate explanation accounts for the alert. Grounded in README.md \u00a7 3\\. Rules, README.md \u00a7 2\\. Approval routing, patterns.md \u00a7 Known Fraud Typologies (synthetic).",
+    "uncertainty": "Confidence 2% \u2014 at/below the 0.15 clear line; a legitimate explanation accounts for the alert.",
+    "grounded_on": [
+      "README.md \u00a7 3\\. Rules",
+      "README.md \u00a7 2\\. Approval routing",
+      "patterns.md \u00a7 Known Fraud Typologies (synthetic)",
+      "README.md \u00a7 Regulatory references",
+      "README.md \u00a7 The five known fraud patterns"
+    ],
+    "tokens": 0
+  },
+  "graphrag": {
+    "backend": "offline",
+    "query": "legitimate cleared allow transaction recurring charge R3 false alarm trigger customer_report Cardholder reports they did not make the flagged purchase Flagged transaction is consistent with the card's",
+    "retrieved": [
+      {
+        "source": "README.md",
+        "heading": "3\\. Rules",
+        "text": "**R7. Disputed but legitimate.** When the customer disputes a charge that matches their own recurring pattern (same merchant, same amount, monthly), recommend `CREATE_CASE`, `VERIFY_WITH_CUSTOMER`, and `WARN_CUSTOMER`. Do not block.",
+        "score": 0.359,
+        "citation": "README.md \u00a7 3\\. Rules"
+      },
+      {
+        "source": "README.md",
+        "heading": "The five known fraud patterns",
+        "text": "**2\\. Card-not-present fraud.** The number is used online without the card. Amounts and products that don't fit the cardholder's history, often in a burst of two to four within 48 hours. On its own, one unusual online purchase is ambiguous: verify. Policy R1 to R4.",
+        "score": 0.151,
+        "citation": "README.md \u00a7 The five known fraud patterns"
+      },
+      {
+        "source": "README.md",
+        "heading": "The five known fraud patterns",
+        "text": "**4\\. Out-of-region use.** Card-present purchases in a billing region the cardholder has no history in, while their normal activity continues at home. Several days of purchases in one new region is a trip, not a clone. Policy R2, R3.",
+        "score": 0.14,
+        "citation": "README.md \u00a7 The five known fraud patterns"
+      },
+      {
+        "source": "README.md",
+        "heading": "`closed_cases_history.csv`",
+        "text": "Patterns are the five below, plus `undocumented` for a few cases the analysts confirmed as fraud but could not match to a known pattern. Read those notes carefully. Cleared cases have `pattern` \\= `none` and say why the alert was a false alarm.",
+        "score": 0.119,
+        "citation": "README.md \u00a7 `closed_cases_history.csv`"
+      }
+    ],
+    "policy": [
+      {
+        "source": "README.md",
+        "heading": "3\\. Rules",
+        "text": "**R7. Disputed but legitimate.** When the customer disputes a charge that matches their own recurring pattern (same merchant, same amount, monthly), recommend `CREATE_CASE`, `VERIFY_WITH_CUSTOMER`, and `WARN_CUSTOMER`. Do not block.",
+        "score": 0.248,
+        "citation": "README.md \u00a7 3\\. Rules"
+      },
+      {
+        "source": "README.md",
+        "heading": "2\\. Approval routing",
+        "text": "| Route | Applies to |\n| :---- | :---- |\n| `auto` | `ALLOW_TRANSACTION`, `MONITOR_CARD`, `MONITOR_CONNECTED_CARDS`, `WARN_CUSTOMER`, `VERIFY_WITH_CUSTOMER`, `STEP_UP_AUTH`, `GENERATE_REPORT`, `CREATE_CASE`, `ESCALATE_TO_ANALYST`, `CLOSE_NO_FRAUD` |\n| `L1` (team lead) | `DECLINE_TRANSACTION`; `BLOCK_CARD` when exposure \u2264 $2,500 |\n| `L2` (fraud manager) | `BLOCK_CARD` when exposure \\> $2,500; `BLOCK_ALL_CARDS` always; `FILE_REPORT` always |",
+        "score": 0.236,
+        "citation": "README.md \u00a7 2\\. Approval routing"
+      }
+    ],
+    "typology": [
+      {
+        "source": "patterns.md",
+        "heading": "Known Fraud Typologies (synthetic)",
+        "text": "1. **account_farming** - many distinct cards (card1) transacting from ONE device\n   (DeviceInfo + id_33 fingerprint), often with anonymous email. Graph signal:\n   high shared-device degree.\n2. **shared_email_ring** - many cards under one P_emaildomain. Graph signal: high\n   shared-email degree.\n3. **card_testing** - one card, burst of tiny-amount transactions in a short\n   TransactionDT window (validating stolen card numbers). Signal: velocity spike.\n4. **identity_mismatch / ATO** - M1-M9 match flags = F plus dist1/dist2 anomaly;\n   new device on an existing card. Signal: mismatch + distance.\n5. **(undocumented)** - not every pattern is documented; dense clusters matching\n   none of the above are candidate new typologies.",
+        "score": 0.264,
+        "citation": "patterns.md \u00a7 Known Fraud Typologies (synthetic)"
+      },
+      {
+        "source": "README.md",
+        "heading": "3\\. Rules",
+        "text": "**R1. Verify before you block on a weak signal.** If the case rests on a single signal (including a risk score alone) and your assessed fraud probability is below 0.70, recommend `VERIFY_WITH_CUSTOMER` or `STEP_UP_AUTH` before any block. Blocking a legitimate customer on one signal is a policy breach.",
+        "score": 0.25,
+        "citation": "README.md \u00a7 3\\. Rules"
+      }
+    ],
+    "regulatory": [
+      {
+        "source": "README.md",
+        "heading": "Regulatory references",
+        "text": "- [SAR Filing FAQs, October 2025](https://www.fincen.gov/system/files/2025-10/SAR-FAQs-October-2025.pdf)  \n- [SAR Narrative Guidance](https://www.fincen.gov/system/files/shared/sar_guidance_narrative.pdf): the standard for your `sar.narrative`  \n- [Preparing a Complete and Sufficient SAR Narrative](https://www.fincen.gov/system/files/shared/sarnarrcompletguidfinal_112003.pdf)  \n- [SAR Supporting Documentation (FIN-2007-G003)](https://www.fincen.gov/system/files/shared/fin-2007-g003.pdf)  \n- [SAR Activity Review: Trends, Tips and Issues](https://www.fincen.gov/sites/default/files/sar_report/sar_tti_19.pdf)  \n- [Advisory on Account Takeover Activity](https://www.fincen.gov/resources/advisories/fincen-advisory-fin-2011-a016)  \n- [Advisory on Imposter Scams and Money Mule Schemes](https://www.fincen.gov/system/files/advisory/2020-07-07/Advisory_%20Imposter_and_Money_Mule_COVID_19_508_FINAL.p",
+        "score": 0.312,
+        "citation": "README.md \u00a7 Regulatory references"
+      },
+      {
+        "source": "README.md",
+        "heading": "Regulatory references",
+        "text": "Public documents from US and international regulators on fraud typologies, red flags, and how investigations and suspicious activity reports must be written. Load the ones you find useful into TigerGraph's vector store alongside the closed cases and the policy.",
+        "score": 0.246,
+        "citation": "README.md \u00a7 Regulatory references"
+      }
+    ],
+    "graph_context": [
+      "Subject: card C13171-K2 / customer C13171, trigger=customer_report.",
+      "[graph] Flagged transaction is consistent with the card's history (ref query:history(C13171))",
+      "[graph] Disputed amount $55.68 matches 8 prior charges to the same merchant domain \u2014 a recurring pattern (ref query:recurring(C13171))",
+      "[graph] Purchaser domain hotmail.com was used on 358 prior transactions by this cardholder (ref query:merchant_history(C13171))",
+      "[graph] Amount $55.68 and product sit within the cardholder's normal range ($10\u2013$161) (ref query:history(C13171))",
+      "[memory] Prior case CC-0003: none -> cleared ($0).",
+      "[memory] Prior case CC-0009: none -> cleared ($0).",
+      "[memory] Prior case CC-0010: none -> cleared ($0)."
+    ],
+    "prompt_context": "# GROUNDING CONTEXT (retrieved by relevance \u2014 cite these, do not invent)\n\n## Fraud policy (governing rules)\n- (README.md \u00a7 3\\. Rules) **R7. Disputed but legitimate.** When the customer disputes a charge that matches their own recurring pattern (same merchant, same amount, monthly), recommend `CREATE_CASE`, `VERIFY_WITH_CUSTOMER`, and `WARN_CUSTOMER`. Do not block.\n- (README.md \u00a7 2\\. Approval routing) | Route | Applies to |\n| :---- | :---- |\n| `auto` | `ALLOW_TRANSACTION`, `MONITOR_CARD`, `MONITOR_CONNECTED_CARDS`, `WARN_CUSTOMER`, `VERIFY_WITH_CUSTOMER`, `STEP_UP_AUTH`, `GENERATE_REPORT`, `CREATE_CASE`, `ESCALATE_TO_ANALYST`, `CLOSE_NO_FRAUD` |\n| `L1` (team lead) | `DECLINE_TRANSACTION`; `BLOCK_CARD` when exposure \u2264 $2,500 |\n| `L2` (fraud manager) | `BLOCK_CARD` when exposure \\> $2,500; `BLOCK\n\n## Known typologies\n- (patterns.md \u00a7 Known Fraud Typologies (synthetic)) 1. **account_farming** - many distinct cards (card1) transacting from ONE device\n   (DeviceInfo + id_33 fingerprint), often with anonymous email. Graph signal:\n   high shared-device degree.\n2. **shared_email_ring** - many cards under one P_emaildomain. Graph signal: high\n   shared-email degree.\n3. **card_testing** - one card, burst of tiny-amount transactions in a short\n   TransactionDT window (va\n- (README.md \u00a7 3\\. Rules) **R1. Verify before you block on a weak signal.** If the case rests on a single signal (including a risk score alone) and your assessed fraud probability is below 0.70, recommend `VERIFY_WITH_CUSTOMER` or `STEP_UP_AUTH` before any block. Blocking a legitimate customer on one signal is a policy breach.\n\n## Regulatory references\n- (README.md \u00a7 Regulatory references) - [SAR Filing FAQs, October 2025](https://www.fincen.gov/system/files/2025-10/SAR-FAQs-October-2025.pdf)  \n- [SAR Narrative Guidance](https://www.fincen.gov/system/files/shared/sar_guidance_narrative.pdf): the standard for your `sar.narrative`  \n- [Preparing a Complete and Sufficient SAR Narrative](https://www.fincen.gov/system/files/shared/sarnarrcompletguidfinal_112003.pdf)  \n- [SAR Supporting D\n- (README.md \u00a7 Regulatory references) Public documents from US and international regulators on fraud typologies, red flags, and how investigations and suspicious activity reports must be written. Load the ones you find useful into TigerGraph's vector store alongside the closed cases and the policy.\n\n## Connected graph evidence\nSubject: card C13171-K2 / customer C13171, trigger=customer_report.\n[graph] Flagged transaction is consistent with the card's history (ref query:history(C13171))\n[graph] Disputed amount $55.68 matches 8 prior charges to the same merchant domain \u2014 a recurring pattern (ref query:recurring(C13171))\n[graph] Purchaser domain hotmail.com was used on 358 prior transactions by this cardholder (ref query:merchant_history(C13171))\n[graph] Amount $55.68 and product sit within the cardholder's normal range ($10\u2013$161) (ref query:history(C13171))\n[memory] Prior case CC-0003: none -> cleared ($0).\n[memory] Prior case CC-0009: none -> cleared ($0).\n[memory] Prior case CC-0010: none -> cleared ($0).",
+    "citations": [
+      "README.md \u00a7 3\\. Rules",
+      "README.md \u00a7 2\\. Approval routing",
+      "patterns.md \u00a7 Known Fraud Typologies (synthetic)",
+      "README.md \u00a7 Regulatory references",
+      "README.md \u00a7 The five known fraud patterns"
+    ]
+  },
+  "case_progression": {
+    "case_id": "CASE-2016-58054",
+    "opened_at": "2016-12-19 22:08:56",
+    "status": "closed_legitimate",
+    "status_history": [
+      "OPEN",
+      "EVIDENCE_REQUESTED",
+      "CLOSED_LEGITIMATE"
+    ],
+    "resolved": true,
+    "n_events": 12,
+    "timeline": [
+      {
+        "seq": 1,
+        "event": "case_opened",
+        "actor": "agent",
+        "detail": "Case CASE-2016-58054 opened on trigger 'customer_report' for card C13171-K2.",
+        "confidence": 0.625
+      },
+      {
+        "seq": 2,
+        "event": "evidence_added",
+        "actor": "customer",
+        "detail": "[prosecution] Cardholder reports they did not make the flagged purchase",
+        "confidence": null
+      },
+      {
+        "seq": 3,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[defense] Flagged transaction is consistent with the card's history",
+        "confidence": null
+      },
+      {
+        "seq": 4,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[defense] Disputed amount $55.68 matches 8 prior charges to the same merchant domain \u2014 a recurring pattern",
+        "confidence": null
+      },
+      {
+        "seq": 5,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[defense] Purchaser domain hotmail.com was used on 358 prior transactions by this cardholder",
+        "confidence": null
+      },
+      {
+        "seq": 6,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[defense] Amount $55.68 and product sit within the cardholder's normal range ($10\u2013$161)",
+        "confidence": null
+      },
+      {
+        "seq": 7,
+        "event": "evidence_added",
+        "actor": "customer",
+        "detail": "[defense] On verification the cardholder recognises the charge as their own recurring payment",
+        "confidence": null
+      },
+      {
+        "seq": 8,
+        "event": "evidence_requested",
+        "actor": "agent",
+        "detail": "Requested customer_validation (after step 5): On verification the cardholder recognises the charge as their own recurring payment",
+        "confidence": null
+      },
+      {
+        "seq": 9,
+        "event": "assessed",
+        "actor": "agent",
+        "detail": "Assessed legitimate at 2%.",
+        "confidence": 0.023
+      },
+      {
+        "seq": 10,
+        "event": "recommendation_initial",
+        "actor": "agent",
+        "detail": "Initial next-best-action: CREATE_CASE(auto) | VERIFY_WITH_CUSTOMER(auto) | WARN_CUSTOMER(auto)",
+        "confidence": null
+      },
+      {
+        "seq": 11,
+        "event": "recommendation_final",
+        "actor": "agent",
+        "detail": "Final next-best-action: CREATE_CASE(auto) | VERIFY_WITH_CUSTOMER(auto) | WARN_CUSTOMER(auto)",
+        "confidence": null
+      },
+      {
+        "seq": 12,
+        "event": "case_closed_legitimate",
+        "actor": "agent",
+        "detail": "Case resolved to status 'closed_legitimate'.",
+        "confidence": 0.023
+      }
+    ],
+    "belief_trajectory": [
+      {
+        "stage": "customer report",
+        "confidence": 0.625
+      },
+      {
+        "stage": "flagged_anomaly",
+        "confidence": 0.538
+      },
+      {
+        "stage": "recurring_match",
+        "confidence": 0.259
+      },
+      {
+        "stage": "familiar_merchant",
+        "confidence": 0.197
+      },
+      {
+        "stage": "consistent_amount",
+        "confidence": 0.137
+      },
+      {
+        "stage": "customer_validation",
+        "confidence": 0.023
+      }
+    ],
+    "written_to_graph": true
+  },
+  "case_memory": {
+    "retrieved": [
+      {
+        "case_id": "HHG-005",
+        "pattern": "none",
+        "outcome": "legitimate",
+        "exposure_usd": 0.0,
+        "similarity": 1.0,
+        "kind": "resolved",
+        "note": "Card C02923-K1 (customer C02923), trigger risk_score. Assessed legitimate at 1% confidence. Evidence did not support fraud; recommended to close/monitor per policy."
+      },
+      {
+        "case_id": "HHG-007",
+        "pattern": "none",
+        "outcome": "legitimate",
+        "exposure_usd": 0.0,
+        "similarity": 1.0,
+        "kind": "resolved",
+        "note": "Card C09933-K2 (customer C09933), trigger risk_score. Assessed legitimate at 1% confidence. Evidence did not support fraud; recommended to close/monitor per policy."
+      },
+      {
+        "case_id": "HHG-002",
+        "pattern": "none",
+        "outcome": "legitimate",
+        "exposure_usd": 0.0,
+        "similarity": 1.0,
+        "kind": "resolved",
+        "note": "Card C11891-K1 (customer C11891), trigger risk_score. Assessed legitimate at 4% confidence. Evidence did not support fraud; recommended to close/monitor per policy."
+      }
+    ],
+    "recurring_entities": {
+      "device_profiles": [
+        {
+          "profile": "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080",
+          "cases": 2
+        }
+      ],
+      "connected_cards": [
+        {
+          "card": "C00255-K1",
+          "cases": 4
+        },
+        {
+          "card": "C01935-K1",
+          "cases": 4
+        },
+        {
+          "card": "C03551-K2",
+          "cases": 4
+        },
+        {
+          "card": "C03744-K1",
+          "cases": 4
+        },
+        {
+          "card": "C04311-K1",
+          "cases": 4
+        },
+        {
+          "card": "C06197-K2",
+          "cases": 4
+        },
+        {
+          "card": "C07485-K1",
+          "cases": 4
+        },
+        {
+          "card": "C07762-K1",
+          "cases": 4
+        },
+        {
+          "card": "C08112-K2",
+          "cases": 4
+        },
+        {
+          "card": "C09174-K1",
+          "cases": 4
+        }
+      ]
+    },
+    "memory_size": 5573
+  },
+  "belief_trajectory": [
+    {
+      "stage": "customer report",
+      "confidence": 0.625
+    },
+    {
+      "stage": "flagged_anomaly",
+      "confidence": 0.538
+    },
+    {
+      "stage": "recurring_match",
+      "confidence": 0.259
+    },
+    {
+      "stage": "familiar_merchant",
+      "confidence": 0.197
+    },
+    {
+      "stage": "consistent_amount",
+      "confidence": 0.137
+    },
+    {
+      "stage": "customer_validation",
+      "confidence": 0.023
+    }
+  ],
   "case": {
     "status": "closed_legitimate",
     "verdict": "legitimate",
@@ -96,7 +474,8 @@
     ],
     "summary": "Card C13171-K2 (customer C13171), trigger customer_report. Assessed legitimate at 2% confidence. Evidence did not support fraud; recommended to close/monitor per policy. A legitimate explanation accounts for the alert; the fraud hypothesis did not survive.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-58054"
+    "graph_case_id": "CASE-2016-58054",
+    "graph_writeback": "memory"
   },
   "evidence_requests": [
     {
@@ -151,7 +530,7 @@
     "activity_dates": []
   },
   "stop_reason": "Fraud probability 2% at/below 0.15; cleared as legitimate (policy 6).",
-  "tool_calls": 14,
+  "tool_calls": 22,
   "tokens": 0,
-  "latency_s": 0.018
+  "latency_s": 0.031
 }

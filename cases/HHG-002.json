@@ -14,6 +14,358 @@
       "customer_validation"
     ]
   },
+  "agent_reasoning": {
+    "provider": "anthropic",
+    "tool_plan": [
+      {
+        "tool": "history_summary",
+        "why": "customer transaction history baseline",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_flagged_anomaly",
+        "why": "is the flagged purchase off the customer's pattern?",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_card_testing",
+        "why": "small-amount authorization burst (R5)",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_cnp_burst",
+        "why": "card-not-present burst",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_new_device",
+        "why": "device newly seen on this account",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_out_of_region",
+        "why": "billing region with no history",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_account_takeover",
+        "why": "identity match-flag / distance anomaly",
+        "kind": "graph"
+      },
+      {
+        "tool": "similar_cases",
+        "why": "case-memory vector retrieval of prior outcomes",
+        "kind": "vector"
+      }
+    ],
+    "reasoning": "Investigating card C11891-K1 (customer C11891), triggered by risk_score. Evidence for fraud: Bank model risk score 0.79 on the flagged transaction (a reason to look, not a verdict); Flagged transaction is unusual: amount $292.36 exceeds the card's 95th-pct $93.00. Evidence against: Purchaser domain hotmail.com was used on 7 prior transactions by this cardholder; Customer confirms they made the transaction. Assessed legitimate at 4% (none). Confidence 4% \u2014 at/below the 0.15 clear line; a legitimate explanation accounts for the alert. Grounded in README.md \u00a7 3\\. Rules, README.md \u00a7 2\\. Approval routing, patterns.md \u00a7 Known Fraud Typologies (synthetic).",
+    "uncertainty": "Confidence 4% \u2014 at/below the 0.15 clear line; a legitimate explanation accounts for the alert.",
+    "grounded_on": [
+      "README.md \u00a7 3\\. Rules",
+      "README.md \u00a7 2\\. Approval routing",
+      "patterns.md \u00a7 Known Fraud Typologies (synthetic)",
+      "README.md \u00a7 Regulatory references",
+      "README.md \u00a7 Suggested graph schema"
+    ],
+    "tokens": 0
+  },
+  "graphrag": {
+    "backend": "offline",
+    "query": "legitimate cleared allow transaction recurring charge R3 false alarm trigger risk_score Bank model risk score 0.79 on the flagged transaction (a reason to look, not a verdict) Flagged transaction is u",
+    "retrieved": [
+      {
+        "source": "README.md",
+        "heading": "Suggested graph schema",
+        "text": "- `Customer` \u2192 `OWNS` \u2192 `Card`  \n- `Card` \u2192 `MADE` \u2192 `Transaction`  \n- `Transaction` \u2192 `FROM_DEVICE` \u2192 `DeviceProfile` (online only, from `identity.csv`)  \n- `Transaction` \u2192 `PURCHASER_EMAIL` \u2192 `EmailDomain`  \n- `Transaction` \u2192 `BILLED_IN` \u2192 `BillingRegion` (from `addr1`)  \n- `Transaction` \u2192 `NEXT` \u2192 `Transaction` (order by `ts` within a card)  \n- `ClosedCase` \u2192 `INVOLVES` \u2192 `Transaction`, `ClosedCase` \u2192 `ON_CARD` \u2192 `Card`, `ClosedCase` \u2192 `CONNECTED_TO` \u2192 `Card`",
+        "score": 0.288,
+        "citation": "README.md \u00a7 Suggested graph schema"
+      },
+      {
+        "source": "README.md",
+        "heading": "0\\. What the agent starts with",
+        "text": "Every transaction carries a `risk_score` between 0 and 1 from the bank's detection model. The model is useful and imperfect: many high scores are legitimate, and some fraud scores low. A score is a reason to look, never a verdict. The only confirmed outcomes are in the closed cases.",
+        "score": 0.273,
+        "citation": "README.md \u00a7 0\\. What the agent starts with"
+      },
+      {
+        "source": "README.md",
+        "heading": "The case pack",
+        "text": "`case_id`, `opened_at`, `trigger_type` (`risk_score` / `customer_report` / `analyst_request`), `trigger_text`, `flagged_txn_id`, `card_id`, `customer_id`, `risk_score` (filled only for risk-score triggers)",
+        "score": 0.266,
+        "citation": "README.md \u00a7 The case pack"
+      },
+      {
+        "source": "README.md",
+        "heading": "3\\. Rules",
+        "text": "**R3. Customer confirms the transaction.** Recommend `CLOSE_NO_FRAUD`. Note the confirmation in the case file.",
+        "score": 0.226,
+        "citation": "README.md \u00a7 3\\. Rules"
+      }
+    ],
+    "policy": [
+      {
+        "source": "README.md",
+        "heading": "3\\. Rules",
+        "text": "**R7. Disputed but legitimate.** When the customer disputes a charge that matches their own recurring pattern (same merchant, same amount, monthly), recommend `CREATE_CASE`, `VERIFY_WITH_CUSTOMER`, and `WARN_CUSTOMER`. Do not block.",
+        "score": 0.248,
+        "citation": "README.md \u00a7 3\\. Rules"
+      },
+      {
+        "source": "README.md",
+        "heading": "2\\. Approval routing",
+        "text": "| Route | Applies to |\n| :---- | :---- |\n| `auto` | `ALLOW_TRANSACTION`, `MONITOR_CARD`, `MONITOR_CONNECTED_CARDS`, `WARN_CUSTOMER`, `VERIFY_WITH_CUSTOMER`, `STEP_UP_AUTH`, `GENERATE_REPORT`, `CREATE_CASE`, `ESCALATE_TO_ANALYST`, `CLOSE_NO_FRAUD` |\n| `L1` (team lead) | `DECLINE_TRANSACTION`; `BLOCK_CARD` when exposure \u2264 $2,500 |\n| `L2` (fraud manager) | `BLOCK_CARD` when exposure \\> $2,500; `BLOCK_ALL_CARDS` always; `FILE_REPORT` always |",
+        "score": 0.236,
+        "citation": "README.md \u00a7 2\\. Approval routing"
+      }
+    ],
+    "typology": [
+      {
+        "source": "patterns.md",
+        "heading": "Known Fraud Typologies (synthetic)",
+        "text": "1. **account_farming** - many distinct cards (card1) transacting from ONE device\n   (DeviceInfo + id_33 fingerprint), often with anonymous email. Graph signal:\n   high shared-device degree.\n2. **shared_email_ring** - many cards under one P_emaildomain. Graph signal: high\n   shared-email degree.\n3. **card_testing** - one card, burst of tiny-amount transactions in a short\n   TransactionDT window (validating stolen card numbers). Signal: velocity spike.\n4. **identity_mismatch / ATO** - M1-M9 match flags = F plus dist1/dist2 anomaly;\n   new device on an existing card. Signal: mismatch + distance.\n5. **(undocumented)** - not every pattern is documented; dense clusters matching\n   none of the above are candidate new typologies.",
+        "score": 0.264,
+        "citation": "patterns.md \u00a7 Known Fraud Typologies (synthetic)"
+      },
+      {
+        "source": "README.md",
+        "heading": "3\\. Rules",
+        "text": "**R1. Verify before you block on a weak signal.** If the case rests on a single signal (including a risk score alone) and your assessed fraud probability is below 0.70, recommend `VERIFY_WITH_CUSTOMER` or `STEP_UP_AUTH` before any block. Blocking a legitimate customer on one signal is a policy breach.",
+        "score": 0.25,
+        "citation": "README.md \u00a7 3\\. Rules"
+      }
+    ],
+    "regulatory": [
+      {
+        "source": "README.md",
+        "heading": "Regulatory references",
+        "text": "- [SAR Filing FAQs, October 2025](https://www.fincen.gov/system/files/2025-10/SAR-FAQs-October-2025.pdf)  \n- [SAR Narrative Guidance](https://www.fincen.gov/system/files/shared/sar_guidance_narrative.pdf): the standard for your `sar.narrative`  \n- [Preparing a Complete and Sufficient SAR Narrative](https://www.fincen.gov/system/files/shared/sarnarrcompletguidfinal_112003.pdf)  \n- [SAR Supporting Documentation (FIN-2007-G003)](https://www.fincen.gov/system/files/shared/fin-2007-g003.pdf)  \n- [SAR Activity Review: Trends, Tips and Issues](https://www.fincen.gov/sites/default/files/sar_report/sar_tti_19.pdf)  \n- [Advisory on Account Takeover Activity](https://www.fincen.gov/resources/advisories/fincen-advisory-fin-2011-a016)  \n- [Advisory on Imposter Scams and Money Mule Schemes](https://www.fincen.gov/system/files/advisory/2020-07-07/Advisory_%20Imposter_and_Money_Mule_COVID_19_508_FINAL.p",
+        "score": 0.312,
+        "citation": "README.md \u00a7 Regulatory references"
+      },
+      {
+        "source": "README.md",
+        "heading": "Regulatory references",
+        "text": "Public documents from US and international regulators on fraud typologies, red flags, and how investigations and suspicious activity reports must be written. Load the ones you find useful into TigerGraph's vector store alongside the closed cases and the policy.",
+        "score": 0.246,
+        "citation": "README.md \u00a7 Regulatory references"
+      }
+    ],
+    "graph_context": [
+      "Subject: card C11891-K1 / customer C11891, trigger=risk_score.",
+      "[graph] Bank model risk score 0.79 on the flagged transaction (a reason to look, not a verdict) (ref field:risk_score)",
+      "[graph] Flagged transaction is unusual: amount $292.36 exceeds the card's 95th-pct $93.00 (ref query:history(C11891))",
+      "[graph] Purchaser domain hotmail.com was used on 7 prior transactions by this cardholder (ref query:merchant_history(C11891))",
+      "[memory] Prior case CC-0003: none -> cleared ($0).",
+      "[memory] Prior case CC-0009: none -> cleared ($0).",
+      "[memory] Prior case CC-0010: none -> cleared ($0)."
+    ],
+    "prompt_context": "# GROUNDING CONTEXT (retrieved by relevance \u2014 cite these, do not invent)\n\n## Fraud policy (governing rules)\n- (README.md \u00a7 3\\. Rules) **R7. Disputed but legitimate.** When the customer disputes a charge that matches their own recurring pattern (same merchant, same amount, monthly), recommend `CREATE_CASE`, `VERIFY_WITH_CUSTOMER`, and `WARN_CUSTOMER`. Do not block.\n- (README.md \u00a7 2\\. Approval routing) | Route | Applies to |\n| :---- | :---- |\n| `auto` | `ALLOW_TRANSACTION`, `MONITOR_CARD`, `MONITOR_CONNECTED_CARDS`, `WARN_CUSTOMER`, `VERIFY_WITH_CUSTOMER`, `STEP_UP_AUTH`, `GENERATE_REPORT`, `CREATE_CASE`, `ESCALATE_TO_ANALYST`, `CLOSE_NO_FRAUD` |\n| `L1` (team lead) | `DECLINE_TRANSACTION`; `BLOCK_CARD` when exposure \u2264 $2,500 |\n| `L2` (fraud manager) | `BLOCK_CARD` when exposure \\> $2,500; `BLOCK\n\n## Known typologies\n- (patterns.md \u00a7 Known Fraud Typologies (synthetic)) 1. **account_farming** - many distinct cards (card1) transacting from ONE device\n   (DeviceInfo + id_33 fingerprint), often with anonymous email. Graph signal:\n   high shared-device degree.\n2. **shared_email_ring** - many cards under one P_emaildomain. Graph signal: high\n   shared-email degree.\n3. **card_testing** - one card, burst of tiny-amount transactions in a short\n   TransactionDT window (va\n- (README.md \u00a7 3\\. Rules) **R1. Verify before you block on a weak signal.** If the case rests on a single signal (including a risk score alone) and your assessed fraud probability is below 0.70, recommend `VERIFY_WITH_CUSTOMER` or `STEP_UP_AUTH` before any block. Blocking a legitimate customer on one signal is a policy breach.\n\n## Regulatory references\n- (README.md \u00a7 Regulatory references) - [SAR Filing FAQs, October 2025](https://www.fincen.gov/system/files/2025-10/SAR-FAQs-October-2025.pdf)  \n- [SAR Narrative Guidance](https://www.fincen.gov/system/files/shared/sar_guidance_narrative.pdf): the standard for your `sar.narrative`  \n- [Preparing a Complete and Sufficient SAR Narrative](https://www.fincen.gov/system/files/shared/sarnarrcompletguidfinal_112003.pdf)  \n- [SAR Supporting D\n- (README.md \u00a7 Regulatory references) Public documents from US and international regulators on fraud typologies, red flags, and how investigations and suspicious activity reports must be written. Load the ones you find useful into TigerGraph's vector store alongside the closed cases and the policy.\n\n## Connected graph evidence\nSubject: card C11891-K1 / customer C11891, trigger=risk_score.\n[graph] Bank model risk score 0.79 on the flagged transaction (a reason to look, not a verdict) (ref field:risk_score)\n[graph] Flagged transaction is unusual: amount $292.36 exceeds the card's 95th-pct $93.00 (ref query:history(C11891))\n[graph] Purchaser domain hotmail.com was used on 7 prior transactions by this cardholder (ref query:merchant_history(C11891))\n[memory] Prior case CC-0003: none -> cleared ($0).\n[memory] Prior case CC-0009: none -> cleared ($0).\n[memory] Prior case CC-0010: none -> cleared ($0).",
+    "citations": [
+      "README.md \u00a7 3\\. Rules",
+      "README.md \u00a7 2\\. Approval routing",
+      "patterns.md \u00a7 Known Fraud Typologies (synthetic)",
+      "README.md \u00a7 Regulatory references",
+      "README.md \u00a7 Suggested graph schema"
+    ]
+  },
+  "case_progression": {
+    "case_id": "CASE-2016-78782",
+    "opened_at": "2016-11-22 17:27:07",
+    "status": "closed_legitimate",
+    "status_history": [
+      "OPEN",
+      "EVIDENCE_REQUESTED",
+      "CLOSED_LEGITIMATE"
+    ],
+    "resolved": true,
+    "n_events": 10,
+    "timeline": [
+      {
+        "seq": 1,
+        "event": "case_opened",
+        "actor": "agent",
+        "detail": "Case CASE-2016-78782 opened on trigger 'risk_score' for card C11891-K1.",
+        "confidence": 0.345
+      },
+      {
+        "seq": 2,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] Bank model risk score 0.79 on the flagged transaction (a reason to look, not a verdict)",
+        "confidence": null
+      },
+      {
+        "seq": 3,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[prosecution] Flagged transaction is unusual: amount $292.36 exceeds the card's 95th-pct $93.00",
+        "confidence": null
+      },
+      {
+        "seq": 4,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[defense] Purchaser domain hotmail.com was used on 7 prior transactions by this cardholder",
+        "confidence": null
+      },
+      {
+        "seq": 5,
+        "event": "evidence_added",
+        "actor": "customer",
+        "detail": "[defense] Customer confirms they made the transaction",
+        "confidence": null
+      },
+      {
+        "seq": 6,
+        "event": "evidence_requested",
+        "actor": "agent",
+        "detail": "Requested customer_validation (after step 3): Customer confirms they made the transaction",
+        "confidence": null
+      },
+      {
+        "seq": 7,
+        "event": "assessed",
+        "actor": "agent",
+        "detail": "Assessed legitimate at 4%.",
+        "confidence": 0.036
+      },
+      {
+        "seq": 8,
+        "event": "recommendation_initial",
+        "actor": "agent",
+        "detail": "Initial next-best-action: VERIFY_WITH_CUSTOMER(auto) | CREATE_CASE(auto)",
+        "confidence": null
+      },
+      {
+        "seq": 9,
+        "event": "recommendation_final",
+        "actor": "agent",
+        "detail": "Final next-best-action: ALLOW_TRANSACTION(auto) | CLOSE_NO_FRAUD(auto)",
+        "confidence": null
+      },
+      {
+        "seq": 10,
+        "event": "case_closed_legitimate",
+        "actor": "agent",
+        "detail": "Case resolved to status 'closed_legitimate'.",
+        "confidence": 0.036
+      }
+    ],
+    "belief_trajectory": [
+      {
+        "stage": "risk score",
+        "confidence": 0.345
+      },
+      {
+        "stage": "flagged_anomaly",
+        "confidence": 0.513
+      },
+      {
+        "stage": "familiar_merchant",
+        "confidence": 0.424
+      },
+      {
+        "stage": "customer_validation",
+        "confidence": 0.036
+      }
+    ],
+    "written_to_graph": true
+  },
+  "case_memory": {
+    "retrieved": [
+      {
+        "case_id": "HHG-001",
+        "pattern": "none",
+        "outcome": "legitimate",
+        "exposure_usd": 0.0,
+        "similarity": 1.0,
+        "kind": "resolved",
+        "note": "Card C12382-K1 (customer C12382), trigger risk_score. Assessed legitimate at 1% confidence. Evidence did not support fraud; recommended to close/monitor per policy."
+      },
+      {
+        "case_id": "CC-0003",
+        "pattern": "none",
+        "outcome": "cleared",
+        "exposure_usd": 0.0,
+        "similarity": 1.0,
+        "kind": "closed",
+        "note": "Case CC-0003: model scored a $442.92 transaction at 0.91. Cardholder confirmed travel to the billing region in question. Alert cleared."
+      },
+      {
+        "case_id": "CC-0009",
+        "pattern": "none",
+        "outcome": "cleared",
+        "exposure_usd": 0.0,
+        "similarity": 1.0,
+        "kind": "closed",
+        "note": "Case CC-0009: model scored a $149.98 transaction at 0.84. Cardholder confirmed the purchase from a new phone. Device added to profile. Alert cleared."
+      }
+    ],
+    "recurring_entities": {
+      "device_profiles": [],
+      "connected_cards": [
+        {
+          "card": "C00255-K1",
+          "cases": 4
+        },
+        {
+          "card": "C01935-K1",
+          "cases": 4
+        },
+        {
+          "card": "C03551-K2",
+          "cases": 4
+        },
+        {
+          "card": "C03744-K1",
+          "cases": 4
+        },
+        {
+          "card": "C04311-K1",
+          "cases": 4
+        },
+        {
+          "card": "C06197-K2",
+          "cases": 4
+        },
+        {
+          "card": "C07485-K1",
+          "cases": 4
+        },
+        {
+          "card": "C07762-K1",
+          "cases": 4
+        },
+        {
+          "card": "C08112-K2",
+          "cases": 4
+        },
+        {
+          "card": "C09174-K1",
+          "cases": 4
+        }
+      ]
+    },
+    "memory_size": 5567
+  },
+  "belief_trajectory": [
+    {
+      "stage": "risk score",
+      "confidence": 0.345
+    },
+    {
+      "stage": "flagged_anomaly",
+      "confidence": 0.513
+    },
+    {
+      "stage": "familiar_merchant",
+      "confidence": 0.424
+    },
+    {
+      "stage": "customer_validation",
+      "confidence": 0.036
+    }
+  ],
   "case": {
     "status": "closed_legitimate",
     "verdict": "legitimate",
@@ -72,7 +424,8 @@
     ],
     "summary": "Card C11891-K1 (customer C11891), trigger risk_score. Assessed legitimate at 4% confidence. Evidence did not support fraud; recommended to close/monitor per policy. A legitimate explanation accounts for the alert; the fraud hypothesis did not survive.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-78782"
+    "graph_case_id": "CASE-2016-78782",
+    "graph_writeback": "memory"
   },
   "evidence_requests": [
     {
@@ -117,7 +470,7 @@
     "activity_dates": []
   },
   "stop_reason": "Fraud probability 4% at/below 0.15; cleared as legitimate (policy 6).",
-  "tool_calls": 14,
+  "tool_calls": 24,
   "tokens": 0,
-  "latency_s": 0.013
+  "latency_s": 0.025
 }

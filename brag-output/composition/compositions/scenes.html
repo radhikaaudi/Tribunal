@@ -1,0 +1,160 @@
+<template id="scenes-template">
+  <div data-composition-id="scenes" data-width="1920" data-height="1080" data-duration="20.5">
+
+    <!-- Scene 1 — Hook -->
+    <div id="s1" class="clip" data-start="0" data-duration="4">
+      <div class="line1 serif">Every fraud alert is a question.</div>
+      <div class="line2 serif">Most are false alarms.</div>
+      <div class="amberrule"></div>
+    </div>
+
+    <!-- Scene 2 — Name -->
+    <div id="s2" class="clip" data-start="4" data-duration="3.5">
+      <div class="emblem">⚖️</div>
+      <div class="brand serif">TRIBUNAL</div>
+      <div class="sub">Agentic fraud investigation on TigerGraph</div>
+    </div>
+
+    <!-- Scene 3 — Belief meter -->
+    <div id="s3" class="clip" data-start="7.5" data-duration="5.5">
+      <div class="mtitle">Fraud confidence</div>
+      <div class="meter">
+        <div class="scalerow">
+          <span>clear ≤ 15%</span>
+          <div class="statelbl">
+            <span class="st-unc" style="color:#f59e42">uncertain</span>
+            <span class="st-ver" style="color:#f59e42">VERIFY</span>
+            <span class="st-blk" style="color:#f87171">BLOCK</span>
+          </div>
+          <span>block ≥ 85%</span>
+        </div>
+        <div class="track">
+          <div class="fill"></div>
+          <div class="pct">25%</div>
+        </div>
+      </div>
+      <div class="cap">It weighs <b>prosecution</b> against <b>defence</b> — and knows when it's uncertain.</div>
+    </div>
+
+    <!-- Scene 4 — Capabilities -->
+    <div id="s4" class="clip" data-start="13" data-duration="4.5">
+      <div class="chead">A defensible verdict</div>
+      <div class="cards">
+        <div class="card c1"><div class="k">Uncertainty</div><div class="t">VERIFY before it blocks (R1)</div></div>
+        <div class="card c2"><div class="k">Grounding</div><div class="t">Grounded in policy — GraphRAG</div></div>
+        <div class="card c3"><div class="k">Compliance</div><div class="t">Files a SAR only when the rules say so</div></div>
+      </div>
+    </div>
+
+    <!-- Scene 5 — Outro -->
+    <div id="s5" class="clip" data-start="17.5" data-duration="3">
+      <div class="emblem">⚖️</div>
+      <div class="brand serif">TRIBUNAL</div>
+      <div class="tag serif">From an uncertain signal to a defensible verdict.</div>
+      <div class="foot">Built on TigerGraph · HHGOA 2026</div>
+    </div>
+
+    <style>
+      [data-composition-id="scenes"] {
+        width: 1920px; height: 1080px; position: relative; overflow: hidden;
+        background: transparent; color: #f5f7fa; font-family: "Helvetica", Arial, sans-serif;
+      }
+      [data-composition-id="scenes"] .clip {
+        position: absolute; inset: 0; width: 1920px; height: 1080px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+      }
+      [data-composition-id="scenes"] .serif { font-family: Georgia, "Times New Roman", serif; }
+      [data-composition-id="scenes"] .amberrule { width: 200px; height: 4px; background: #d97706; border-radius: 2px; opacity: 0; }
+
+      /* Scene 1 */
+      [data-composition-id="scenes"] #s1 .line1 { font-size: 82px; font-weight: 400; opacity: 0; letter-spacing: 0.5px; }
+      [data-composition-id="scenes"] #s1 .line2 { font-size: 56px; font-weight: 400; color: #b8c0cc; opacity: 0; margin-top: 26px; }
+      [data-composition-id="scenes"] #s1 .amberrule { margin-top: 36px; }
+
+      /* Scene 2 */
+      [data-composition-id="scenes"] #s2 .emblem { font-size: 150px; opacity: 0; line-height: 1; }
+      [data-composition-id="scenes"] #s2 .brand { font-size: 176px; font-weight: 700; letter-spacing: 12px; opacity: 0; margin-top: 6px; }
+      [data-composition-id="scenes"] #s2 .sub { font-size: 42px; color: #b8c0cc; letter-spacing: 3px; opacity: 0; margin-top: 26px; text-transform: uppercase; }
+
+      /* Scene 3 */
+      [data-composition-id="scenes"] #s3 .mtitle { font-size: 42px; color: #b8c0cc; letter-spacing: 3px; text-transform: uppercase; opacity: 0; margin-bottom: 32px; }
+      [data-composition-id="scenes"] #s3 .meter { width: 1180px; border: 1px solid #2b3240; border-radius: 18px; padding: 28px 32px; background: #151a22; opacity: 0; }
+      [data-composition-id="scenes"] #s3 .scalerow { display: flex; justify-content: space-between; align-items: center; font-size: 27px; color: #b8c0cc; }
+      [data-composition-id="scenes"] #s3 .statelbl { position: relative; height: 34px; width: 240px; }
+      [data-composition-id="scenes"] #s3 .statelbl span { position: absolute; left: 0; right: 0; text-align: center; font-weight: 700; letter-spacing: 2px; opacity: 0; }
+      [data-composition-id="scenes"] #s3 .track { position: relative; margin-top: 18px; height: 64px; background: #0e131b; border-radius: 12px; overflow: hidden; }
+      [data-composition-id="scenes"] #s3 .fill { position: absolute; left: 0; top: 0; height: 100%; width: 25%; background: #d97706; border-radius: 12px; }
+      [data-composition-id="scenes"] #s3 .pct { position: absolute; left: 26px; top: 13px; font-size: 36px; font-weight: 700; color: #ffffff; }
+      [data-composition-id="scenes"] #s3 .cap { font-size: 42px; color: #f5f7fa; opacity: 0; margin-top: 44px; max-width: 1250px; text-align: center; line-height: 1.35; }
+      [data-composition-id="scenes"] #s3 .cap b { color: #f59e42; font-weight: 700; }
+
+      /* Scene 4 */
+      [data-composition-id="scenes"] #s4 .chead { font-size: 46px; color: #b8c0cc; letter-spacing: 3px; text-transform: uppercase; opacity: 0; margin-bottom: 48px; }
+      [data-composition-id="scenes"] #s4 .cards { display: flex; gap: 36px; }
+      [data-composition-id="scenes"] #s4 .card { width: 470px; height: 330px; background: #151a22; border: 1px solid #2b3240; border-left: 8px solid #d97706; border-radius: 16px; padding: 42px; box-sizing: border-box; opacity: 0; display: flex; flex-direction: column; }
+      [data-composition-id="scenes"] #s4 .card .k { font-size: 34px; color: #b8c0cc; }
+      [data-composition-id="scenes"] #s4 .card .t { font-size: 48px; font-weight: 700; margin-top: 20px; line-height: 1.2; }
+      [data-composition-id="scenes"] #s4 .card.c2 { border-left-color: #16a34a; }
+      [data-composition-id="scenes"] #s4 .card.c3 { border-left-color: #dc2626; }
+
+      /* Scene 5 */
+      [data-composition-id="scenes"] #s5 .emblem { font-size: 128px; opacity: 0; line-height: 1; }
+      [data-composition-id="scenes"] #s5 .brand { font-size: 158px; font-weight: 700; letter-spacing: 12px; opacity: 0; margin-top: 4px; }
+      [data-composition-id="scenes"] #s5 .tag { font-size: 48px; color: #f5f7fa; opacity: 0; margin-top: 28px; }
+      [data-composition-id="scenes"] #s5 .foot { font-size: 31px; color: #b8c0cc; letter-spacing: 2px; opacity: 0; margin-top: 32px; }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        const IN = "power2.out", OUT = "power2.in";
+        const q = (s) => '[data-composition-id="scenes"] ' + s;
+
+        // S1 (0–4)
+        tl.fromTo(q("#s1 .line1"), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: IN }, 0.4);
+        tl.fromTo(q("#s1 .line2"), { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: IN }, 2.05);
+        tl.fromTo(q("#s1 .amberrule"), { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.5, ease: IN }, 2.35);
+        tl.to(q("#s1 .line1") + ", " + q("#s1 .line2") + ", " + q("#s1 .amberrule"), { opacity: 0, duration: 0.35, ease: OUT }, 3.65);
+
+        // S2 (4–7.5)
+        tl.fromTo(q("#s2 .emblem"), { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(1.5)" }, 4.15);
+        tl.fromTo(q("#s2 .brand"), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: IN }, 4.4);
+        tl.fromTo(q("#s2 .sub"), { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: IN }, 4.95);
+        tl.to(q("#s2 .emblem") + ", " + q("#s2 .brand") + ", " + q("#s2 .sub"), { opacity: 0, duration: 0.35, ease: OUT }, 7.1);
+
+        // S3 (7.5–13) — belief meter
+        tl.fromTo(q("#s3 .mtitle"), { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: IN }, 7.65);
+        tl.fromTo(q("#s3 .meter"), { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55, ease: IN }, 7.8);
+        tl.to(q("#s3 .st-unc"), { opacity: 1, duration: 0.3 }, 8.1);
+        const counter = { v: 25 };
+        tl.to(q("#s3 .fill"), { width: "93%", duration: 3.0, ease: "power1.inOut" }, 8.2);
+        tl.to(q("#s3 .fill"), { backgroundColor: "#dc2626", duration: 3.0, ease: "none" }, 8.2);
+        tl.to(counter, { v: 93, duration: 3.0, ease: "power1.inOut",
+          onUpdate: () => { const e = document.querySelector(q("#s3 .pct")); if (e) e.textContent = Math.round(counter.v) + "%"; } }, 8.2);
+        tl.to(q("#s3 .st-unc"), { opacity: 0, duration: 0.3 }, 9.4);
+        tl.to(q("#s3 .st-ver"), { opacity: 1, duration: 0.3 }, 9.5);
+        tl.to(q("#s3 .st-ver"), { opacity: 0, duration: 0.3 }, 10.7);
+        tl.to(q("#s3 .st-blk"), { opacity: 1, duration: 0.3 }, 10.8);
+        tl.fromTo(q("#s3 .cap"), { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: IN }, 8.4);
+        tl.to(q("#s3 .mtitle") + ", " + q("#s3 .meter") + ", " + q("#s3 .cap"), { opacity: 0, duration: 0.35, ease: OUT }, 12.6);
+
+        // S4 (13–17.5) — capabilities
+        tl.fromTo(q("#s4 .chead"), { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: IN }, 13.15);
+        tl.fromTo(q("#s4 .c1"), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: IN }, 13.35);
+        tl.fromTo(q("#s4 .c2"), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: IN }, 13.95);
+        tl.fromTo(q("#s4 .c3"), { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: IN }, 14.55);
+        tl.to(q("#s4 .chead") + ", " + q("#s4 .card"), { opacity: 0, duration: 0.35, ease: OUT }, 17.1);
+
+        // S5 (17.5–20.5) — outro
+        tl.fromTo(q("#s5 .emblem"), { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(1.5)" }, 17.65);
+        tl.fromTo(q("#s5 .brand"), { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: IN }, 17.9);
+        tl.fromTo(q("#s5 .tag"), { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: IN }, 18.25);
+        tl.fromTo(q("#s5 .foot"), { opacity: 0 }, { opacity: 1, duration: 0.6, ease: IN }, 18.7);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scenes"] = tl;
+      })();
+    </script>
+  </div>
+</template>

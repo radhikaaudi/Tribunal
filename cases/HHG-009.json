@@ -14,6 +14,352 @@
       "customer_validation"
     ]
   },
+  "agent_reasoning": {
+    "provider": "anthropic",
+    "tool_plan": [
+      {
+        "tool": "history_summary",
+        "why": "customer transaction history baseline",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_flagged_anomaly",
+        "why": "is the flagged purchase off the customer's pattern?",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_new_device",
+        "why": "device newly seen on this account",
+        "kind": "graph"
+      },
+      {
+        "tool": "probe_cnp_burst",
+        "why": "card-not-present burst",
+        "kind": "graph"
+      },
+      {
+        "tool": "similar_cases",
+        "why": "case-memory vector retrieval of prior outcomes",
+        "kind": "vector"
+      },
+      {
+        "tool": "ask_customer",
+        "why": "controlled action: customer validation (R1/R2)",
+        "kind": "action"
+      }
+    ],
+    "reasoning": "Investigating card C08299-K1 (customer C08299), triggered by customer_report. Evidence for fraud: Cardholder reports they did not make the flagged purchase; Cardholder reaffirms they did not make the purchase and still holds the card. Evidence against: Flagged transaction is consistent with the card's history; Amount $30.02 and product sit within the cardholder's normal range ($20\u2013$156). Assessed fraud at 82% (card_not_present_fraud). Confidence 82% \u2014 at/above the 0.85 stop line or supported by a hard signal; the fraud hypothesis survived its strongest defence, so the decision is settled. Grounded in README.md \u00a7 3\\. Rules, README.md \u00a7 2\\. Approval routing, README.md \u00a7 `pattern` values.",
+    "uncertainty": "Confidence 82% \u2014 at/above the 0.85 stop line or supported by a hard signal; the fraud hypothesis survived its strongest defence, so the decision is settled.",
+    "grounded_on": [
+      "README.md \u00a7 3\\. Rules",
+      "README.md \u00a7 2\\. Approval routing",
+      "README.md \u00a7 `pattern` values",
+      "patterns.md \u00a7 Known Fraud Typologies (synthetic)",
+      "README.md \u00a7 Regulatory references"
+    ],
+    "tokens": 0
+  },
+  "graphrag": {
+    "backend": "offline",
+    "query": "card not present fraud cardholder history unauthorized R2 block card trigger customer_report Cardholder reports they did not make the flagged purchase Flagged transaction is consistent with the card's",
+    "retrieved": [
+      {
+        "source": "README.md",
+        "heading": "The five known fraud patterns",
+        "text": "**2\\. Card-not-present fraud.** The number is used online without the card. Amounts and products that don't fit the cardholder's history, often in a burst of two to four within 48 hours. On its own, one unusual online purchase is ambiguous: verify. Policy R1 to R4.",
+        "score": 0.268,
+        "citation": "README.md \u00a7 The five known fraud patterns"
+      },
+      {
+        "source": "README.md",
+        "heading": "The five known fraud patterns",
+        "text": "**4\\. Out-of-region use.** Card-present purchases in a billing region the cardholder has no history in, while their normal activity continues at home. Several days of purchases in one new region is a trip, not a clone. Policy R2, R3.",
+        "score": 0.236,
+        "citation": "README.md \u00a7 The five known fraud patterns"
+      },
+      {
+        "source": "README.md",
+        "heading": "3\\. Rules",
+        "text": "**R5. Card testing.** Three or more small online authorizations on one card within an hour, followed by a larger purchase: recommend `DECLINE_TRANSACTION` and `STEP_UP_AUTH`. If a purchase over $100 has already cleared, recommend `BLOCK_CARD`.",
+        "score": 0.202,
+        "citation": "README.md \u00a7 3\\. Rules"
+      },
+      {
+        "source": "README.md",
+        "heading": "`pattern` values",
+        "text": "`card_testing` \u00b7 `card_not_present_fraud` \u00b7 `card_not_present_new_device` \u00b7 `out_of_region_use` \u00b7 `account_takeover` \u00b7 `undocumented` \u00b7 `none`",
+        "score": 0.179,
+        "citation": "README.md \u00a7 `pattern` values"
+      }
+    ],
+    "policy": [
+      {
+        "source": "README.md",
+        "heading": "3\\. Rules",
+        "text": "**R2. Customer denies the transaction.** Recommend `BLOCK_CARD` and `CREATE_CASE`. Add `FILE_REPORT` if exposure exceeds $1,000 or the case connects to a shared device profile or another card's fraud.",
+        "score": 0.36,
+        "citation": "README.md \u00a7 3\\. Rules"
+      },
+      {
+        "source": "README.md",
+        "heading": "2\\. Approval routing",
+        "text": "| Route | Applies to |\n| :---- | :---- |\n| `auto` | `ALLOW_TRANSACTION`, `MONITOR_CARD`, `MONITOR_CONNECTED_CARDS`, `WARN_CUSTOMER`, `VERIFY_WITH_CUSTOMER`, `STEP_UP_AUTH`, `GENERATE_REPORT`, `CREATE_CASE`, `ESCALATE_TO_ANALYST`, `CLOSE_NO_FRAUD` |\n| `L1` (team lead) | `DECLINE_TRANSACTION`; `BLOCK_CARD` when exposure \u2264 $2,500 |\n| `L2` (fraud manager) | `BLOCK_CARD` when exposure \\> $2,500; `BLOCK_ALL_CARDS` always; `FILE_REPORT` always |",
+        "score": 0.339,
+        "citation": "README.md \u00a7 2\\. Approval routing"
+      }
+    ],
+    "typology": [
+      {
+        "source": "README.md",
+        "heading": "`pattern` values",
+        "text": "`card_testing` \u00b7 `card_not_present_fraud` \u00b7 `card_not_present_new_device` \u00b7 `out_of_region_use` \u00b7 `account_takeover` \u00b7 `undocumented` \u00b7 `none`",
+        "score": 0.379,
+        "citation": "README.md \u00a7 `pattern` values"
+      },
+      {
+        "source": "patterns.md",
+        "heading": "Known Fraud Typologies (synthetic)",
+        "text": "1. **account_farming** - many distinct cards (card1) transacting from ONE device\n   (DeviceInfo + id_33 fingerprint), often with anonymous email. Graph signal:\n   high shared-device degree.\n2. **shared_email_ring** - many cards under one P_emaildomain. Graph signal: high\n   shared-email degree.\n3. **card_testing** - one card, burst of tiny-amount transactions in a short\n   TransactionDT window (validating stolen card numbers). Signal: velocity spike.\n4. **identity_mismatch / ATO** - M1-M9 match flags = F plus dist1/dist2 anomaly;\n   new device on an existing card. Signal: mismatch + distance.\n5. **(undocumented)** - not every pattern is documented; dense clusters matching\n   none of the above are candidate new typologies.",
+        "score": 0.266,
+        "citation": "patterns.md \u00a7 Known Fraud Typologies (synthetic)"
+      }
+    ],
+    "regulatory": [
+      {
+        "source": "README.md",
+        "heading": "Regulatory references",
+        "text": "- [SAR Filing FAQs, October 2025](https://www.fincen.gov/system/files/2025-10/SAR-FAQs-October-2025.pdf)  \n- [SAR Narrative Guidance](https://www.fincen.gov/system/files/shared/sar_guidance_narrative.pdf): the standard for your `sar.narrative`  \n- [Preparing a Complete and Sufficient SAR Narrative](https://www.fincen.gov/system/files/shared/sarnarrcompletguidfinal_112003.pdf)  \n- [SAR Supporting Documentation (FIN-2007-G003)](https://www.fincen.gov/system/files/shared/fin-2007-g003.pdf)  \n- [SAR Activity Review: Trends, Tips and Issues](https://www.fincen.gov/sites/default/files/sar_report/sar_tti_19.pdf)  \n- [Advisory on Account Takeover Activity](https://www.fincen.gov/resources/advisories/fincen-advisory-fin-2011-a016)  \n- [Advisory on Imposter Scams and Money Mule Schemes](https://www.fincen.gov/system/files/advisory/2020-07-07/Advisory_%20Imposter_and_Money_Mule_COVID_19_508_FINAL.p",
+        "score": 0.312,
+        "citation": "README.md \u00a7 Regulatory references"
+      },
+      {
+        "source": "README.md",
+        "heading": "Regulatory references",
+        "text": "Public documents from US and international regulators on fraud typologies, red flags, and how investigations and suspicious activity reports must be written. Load the ones you find useful into TigerGraph's vector store alongside the closed cases and the policy.",
+        "score": 0.246,
+        "citation": "README.md \u00a7 Regulatory references"
+      }
+    ],
+    "graph_context": [
+      "Subject: card C08299-K1 / customer C08299, trigger=customer_report.",
+      "[graph] Flagged transaction is consistent with the card's history (ref query:history(C08299))",
+      "[graph] Amount $30.02 and product sit within the cardholder's normal range ($20\u2013$156) (ref query:history(C08299))",
+      "[memory] Prior case CC-2728: card_not_present_fraud -> confirmed_fraud ($30).",
+      "[memory] Prior case CC-2449: card_not_present_fraud -> confirmed_fraud ($30).",
+      "[memory] Prior case CC-0340: card_not_present_fraud -> confirmed_fraud ($30)."
+    ],
+    "prompt_context": "# GROUNDING CONTEXT (retrieved by relevance \u2014 cite these, do not invent)\n\n## Fraud policy (governing rules)\n- (README.md \u00a7 3\\. Rules) **R2. Customer denies the transaction.** Recommend `BLOCK_CARD` and `CREATE_CASE`. Add `FILE_REPORT` if exposure exceeds $1,000 or the case connects to a shared device profile or another card's fraud.\n- (README.md \u00a7 2\\. Approval routing) | Route | Applies to |\n| :---- | :---- |\n| `auto` | `ALLOW_TRANSACTION`, `MONITOR_CARD`, `MONITOR_CONNECTED_CARDS`, `WARN_CUSTOMER`, `VERIFY_WITH_CUSTOMER`, `STEP_UP_AUTH`, `GENERATE_REPORT`, `CREATE_CASE`, `ESCALATE_TO_ANALYST`, `CLOSE_NO_FRAUD` |\n| `L1` (team lead) | `DECLINE_TRANSACTION`; `BLOCK_CARD` when exposure \u2264 $2,500 |\n| `L2` (fraud manager) | `BLOCK_CARD` when exposure \\> $2,500; `BLOCK\n\n## Known typologies\n- (README.md \u00a7 `pattern` values) `card_testing` \u00b7 `card_not_present_fraud` \u00b7 `card_not_present_new_device` \u00b7 `out_of_region_use` \u00b7 `account_takeover` \u00b7 `undocumented` \u00b7 `none`\n- (patterns.md \u00a7 Known Fraud Typologies (synthetic)) 1. **account_farming** - many distinct cards (card1) transacting from ONE device\n   (DeviceInfo + id_33 fingerprint), often with anonymous email. Graph signal:\n   high shared-device degree.\n2. **shared_email_ring** - many cards under one P_emaildomain. Graph signal: high\n   shared-email degree.\n3. **card_testing** - one card, burst of tiny-amount transactions in a short\n   TransactionDT window (va\n\n## Regulatory references\n- (README.md \u00a7 Regulatory references) - [SAR Filing FAQs, October 2025](https://www.fincen.gov/system/files/2025-10/SAR-FAQs-October-2025.pdf)  \n- [SAR Narrative Guidance](https://www.fincen.gov/system/files/shared/sar_guidance_narrative.pdf): the standard for your `sar.narrative`  \n- [Preparing a Complete and Sufficient SAR Narrative](https://www.fincen.gov/system/files/shared/sarnarrcompletguidfinal_112003.pdf)  \n- [SAR Supporting D\n- (README.md \u00a7 Regulatory references) Public documents from US and international regulators on fraud typologies, red flags, and how investigations and suspicious activity reports must be written. Load the ones you find useful into TigerGraph's vector store alongside the closed cases and the policy.\n\n## Connected graph evidence\nSubject: card C08299-K1 / customer C08299, trigger=customer_report.\n[graph] Flagged transaction is consistent with the card's history (ref query:history(C08299))\n[graph] Amount $30.02 and product sit within the cardholder's normal range ($20\u2013$156) (ref query:history(C08299))\n[memory] Prior case CC-2728: card_not_present_fraud -> confirmed_fraud ($30).\n[memory] Prior case CC-2449: card_not_present_fraud -> confirmed_fraud ($30).\n[memory] Prior case CC-0340: card_not_present_fraud -> confirmed_fraud ($30).",
+    "citations": [
+      "README.md \u00a7 3\\. Rules",
+      "README.md \u00a7 2\\. Approval routing",
+      "README.md \u00a7 `pattern` values",
+      "patterns.md \u00a7 Known Fraud Typologies (synthetic)",
+      "README.md \u00a7 Regulatory references"
+    ]
+  },
+  "case_progression": {
+    "case_id": "CASE-2016-81141",
+    "opened_at": "2016-12-28 12:10:53",
+    "status": "open",
+    "status_history": [
+      "OPEN",
+      "EVIDENCE_REQUESTED",
+      "OPEN"
+    ],
+    "resolved": false,
+    "n_events": 10,
+    "timeline": [
+      {
+        "seq": 1,
+        "event": "case_opened",
+        "actor": "agent",
+        "detail": "Case CASE-2016-81141 opened on trigger 'customer_report' for card C08299-K1.",
+        "confidence": 0.625
+      },
+      {
+        "seq": 2,
+        "event": "evidence_added",
+        "actor": "customer",
+        "detail": "[prosecution] Cardholder reports they did not make the flagged purchase",
+        "confidence": null
+      },
+      {
+        "seq": 3,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[defense] Flagged transaction is consistent with the card's history",
+        "confidence": null
+      },
+      {
+        "seq": 4,
+        "event": "evidence_added",
+        "actor": "graph",
+        "detail": "[defense] Amount $30.02 and product sit within the cardholder's normal range ($20\u2013$156)",
+        "confidence": null
+      },
+      {
+        "seq": 5,
+        "event": "evidence_added",
+        "actor": "customer",
+        "detail": "[prosecution] Cardholder reaffirms they did not make the purchase and still holds the card",
+        "confidence": null
+      },
+      {
+        "seq": 6,
+        "event": "evidence_requested",
+        "actor": "agent",
+        "detail": "Requested customer_validation (after step 3): Cardholder reaffirms they did not make the purchase and still holds the card",
+        "confidence": null
+      },
+      {
+        "seq": 7,
+        "event": "assessed",
+        "actor": "agent",
+        "detail": "Assessed fraud at 82%.",
+        "confidence": 0.82
+      },
+      {
+        "seq": 8,
+        "event": "recommendation_initial",
+        "actor": "agent",
+        "detail": "Initial next-best-action: VERIFY_WITH_CUSTOMER(auto) | CREATE_CASE(auto)",
+        "confidence": null
+      },
+      {
+        "seq": 9,
+        "event": "recommendation_final",
+        "actor": "agent",
+        "detail": "Final next-best-action: BLOCK_CARD(L1) | CREATE_CASE(auto)",
+        "confidence": null
+      },
+      {
+        "seq": 10,
+        "event": "case_open",
+        "actor": "agent",
+        "detail": "Case resolved to status 'open'.",
+        "confidence": 0.82
+      }
+    ],
+    "belief_trajectory": [
+      {
+        "stage": "customer report",
+        "confidence": 0.625
+      },
+      {
+        "stage": "flagged_anomaly",
+        "confidence": 0.538
+      },
+      {
+        "stage": "consistent_amount",
+        "confidence": 0.431
+      },
+      {
+        "stage": "customer_validation",
+        "confidence": 0.82
+      }
+    ],
+    "written_to_graph": true
+  },
+  "case_memory": {
+    "retrieved": [
+      {
+        "case_id": "HHG-003",
+        "pattern": "card_not_present_fraud",
+        "outcome": "fraud",
+        "exposure_usd": 49.0,
+        "similarity": 1.0,
+        "kind": "resolved",
+        "note": "Card C08623-K2 (customer C08623), trigger customer_report. Assessed fraud at 82% confidence, pattern card_not_present_fraud, exposure $49.00. Nearest prior case: CC-2418."
+      },
+      {
+        "case_id": "CC-5012",
+        "pattern": "card_not_present_fraud",
+        "outcome": "confirmed_fraud",
+        "exposure_usd": 30.94,
+        "similarity": 1.0,
+        "kind": "closed",
+        "note": "Case CC-5012: cardholder C02147 reported unrecognized activity on card C02147-K2. 2 transaction(s) between 2016-10-18 and 2016-10-18 totaling $30.94 were confirmed fraudulent. Online purchases inconsistent with the cardholder's usual mercha"
+      },
+      {
+        "case_id": "CC-2728",
+        "pattern": "card_not_present_fraud",
+        "outcome": "confirmed_fraud",
+        "exposure_usd": 30.01,
+        "similarity": 1.0,
+        "kind": "closed",
+        "note": "Case CC-2728: cardholder C06660 reported unrecognized activity on card C06660-K1. 2 transaction(s) between 2016-08-28 and 2016-08-28 totaling $30.01 were confirmed fraudulent. Online purchases inconsistent with the cardholder's usual mercha"
+      }
+    ],
+    "recurring_entities": {
+      "device_profiles": [
+        {
+          "profile": "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080",
+          "cases": 2
+        }
+      ],
+      "connected_cards": [
+        {
+          "card": "C00255-K1",
+          "cases": 4
+        },
+        {
+          "card": "C01935-K1",
+          "cases": 4
+        },
+        {
+          "card": "C03551-K2",
+          "cases": 4
+        },
+        {
+          "card": "C03744-K1",
+          "cases": 4
+        },
+        {
+          "card": "C04311-K1",
+          "cases": 4
+        },
+        {
+          "card": "C06197-K2",
+          "cases": 4
+        },
+        {
+          "card": "C07485-K1",
+          "cases": 4
+        },
+        {
+          "card": "C07762-K1",
+          "cases": 4
+        },
+        {
+          "card": "C08112-K2",
+          "cases": 4
+        },
+        {
+          "card": "C09174-K1",
+          "cases": 4
+        }
+      ]
+    },
+    "memory_size": 5574
+  },
+  "belief_trajectory": [
+    {
+      "stage": "customer report",
+      "confidence": 0.625
+    },
+    {
+      "stage": "flagged_anomaly",
+      "confidence": 0.538
+    },
+    {
+      "stage": "consistent_amount",
+      "confidence": 0.431
+    },
+    {
+      "stage": "customer_validation",
+      "confidence": 0.82
+    }
+  ],
   "case": {
     "status": "open",
     "verdict": "fraud",
@@ -70,7 +416,8 @@
     ],
     "summary": "Card C08299-K1 (customer C08299), trigger customer_report. Assessed fraud at 82% confidence, pattern card_not_present_fraud, exposure $30.02. Nearest prior case: CC-2728. The fraud hypothesis survived its strongest defense.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-81141"
+    "graph_case_id": "CASE-2016-81141",
+    "graph_writeback": "memory"
   },
   "evidence_requests": [
     {
@@ -115,7 +462,7 @@
     "activity_dates": []
   },
   "stop_reason": "A verification response settled the question (policy 6).",
-  "tool_calls": 14,
+  "tool_calls": 22,
   "tokens": 0,
-  "latency_s": 0.011
+  "latency_s": 0.025
 }
