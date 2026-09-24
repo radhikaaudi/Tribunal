@@ -125,5 +125,5 @@
   "stop_reason": "Fraud probability 13% at/below 0.15; cleared as legitimate (policy 6).",
   "tool_calls": 14,
   "tokens": 0,
-  "latency_s": 0.013
+  "latency_s": 0.014
 }

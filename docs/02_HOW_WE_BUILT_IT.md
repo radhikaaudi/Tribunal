@@ -26,7 +26,7 @@ script **once** that keeps only the columns we need and saves a small, fast file
 
 *(Think: taking a giant messy warehouse and putting just the useful items on one neat shelf.)*
 
-## Step 2 — build the "graph" (`clara/realdata.py`)
+## Step 2 — build the "graph" (`tribunal/realdata.py`)
 
 A **graph** is just **dots joined by lines**:
 - Dots = customers, cards, **devices**, **regions (locations)**, email domains.
@@ -43,7 +43,7 @@ device** ("Samsung SM-G935F build number…" — a real physical phone; if 27 ca
 that's a fraud ring). We only treat *specific* devices as a real link. This one rule stops
 tons of false alarms.
 
-## Step 3 — the two investigators (`clara/signals.py`)
+## Step 3 — the two investigators (`tribunal/signals.py`)
 
 This file is a **toolbox of small questions we can ask the graph**. Each question is called
 a **probe**. Each probe returns a piece of evidence *and* a number saying how much it moves
@@ -70,7 +70,7 @@ So the "Prosecutor vs Defender" is really just **two lists of graph questions**:
 for guilt, one hunting for innocence. No fancy chatbots arguing — just real evidence from
 the data. (This is important: it means the demo can't glitch or make things up.)
 
-## Step 4 — the confidence meter (`clara/belief.py`)
+## Step 4 — the confidence meter (`tribunal/belief.py`)
 
 We keep a single number: **"how likely is this fraud, right now?"** — like a dial from 0% to 100%.
 
@@ -81,7 +81,7 @@ We keep a single number: **"how likely is this fraud, right now?"** — like a d
 We use a well-known, honest math for this (log-odds / Bayesian updating), so the dial always
 moves in a fair, explainable way. You can literally see *why* it went from 61% to 93%.
 
-## Step 5 — the Judge and the rulebook (`clara/policy_real.py` + `clara/investigator.py`)
+## Step 5 — the Judge and the rulebook (`tribunal/policy_real.py` + `tribunal/investigator.py`)
 
 The **Judge** does three things:
 
@@ -135,12 +135,12 @@ powers the courtroom screen.
 
 ```
 data/build_cache.py     → shrink the huge file so it loads fast
-clara/realdata.py       → build the graph (dots + lines) + load memory of old cases
-clara/signals.py        → the Prosecutor & Defender questions (probes)
-clara/belief.py         → the confidence meter (the math)
-clara/policy_real.py    → the bank's rulebook (actions, approvals, when to file a report)
-clara/investigator.py   → the Judge: run both sides, weigh, decide, ask for more if unsure
-clara/narrate_real.py   → write the human summary + the formal fraud report
+tribunal/realdata.py       → build the graph (dots + lines) + load memory of old cases
+tribunal/signals.py        → the Prosecutor & Defender questions (probes)
+tribunal/belief.py         → the confidence meter (the math)
+tribunal/policy_real.py    → the bank's rulebook (actions, approvals, when to file a report)
+tribunal/investigator.py   → the Judge: run both sides, weigh, decide, ask for more if unsure
+tribunal/narrate_real.py   → write the human summary + the formal fraud report
 run_cases.py            → do all 20 cases → answer files
 app/streamlit_app.py    → the screen you demo (belief meter, evidence, verdict)
 graph/                  → the TigerGraph version (see doc 3)

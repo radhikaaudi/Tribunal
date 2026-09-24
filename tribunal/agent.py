@@ -1,5 +1,5 @@
 """
-The CLARA investigation loop.
+The Tribunal investigation loop.
 
   trigger -> open case -> prior belief
   loop: choose next evidence by VoI -> run it -> update belief -> record NBA

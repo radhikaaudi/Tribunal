@@ -1,5 +1,5 @@
 """
-CLARA investigator for the real HHGOA dataset.
+Tribunal investigator for the real HHGOA dataset.
 
 Runs evidence probes, updates a log-odds belief (prior = a base rate nudged by the
 risk score / customer report, NOT the risk score as a verdict), classifies the fraud

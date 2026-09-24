@@ -1,7 +1,7 @@
 """
 Belief state as log-odds. Prior = bank risk score; each evidence adds ln(LR).
 
-This is the mathematical heart of CLARA: fraud belief is a probability that moves
+This is the mathematical heart of Tribunal: fraud belief is a probability that moves
 by Bayesian log-odds updates, so every step is auditable ("we went from 0.61 to 0.88
 because the shared-device check had likelihood ratio 8.0").
 """

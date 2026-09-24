@@ -242,5 +242,5 @@
   "stop_reason": "Fraud probability 97% at/above 0.85 with 7 independent graph evidence items; further steps would not change the decision (policy 6).",
   "tool_calls": 14,
   "tokens": 0,
-  "latency_s": 0.078
+  "latency_s": 0.068
 }

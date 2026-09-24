@@ -1,9 +1,9 @@
 // Upsert a completed investigation as a Case vertex + link it to the subject card.
 // Called by TigerGraphClient.write_case (payload carries the fields).
-USE GRAPH CLARA
+USE GRAPH TRIBUNAL
 
 CREATE QUERY write_case(STRING case_id, INT card1, STRING outcome, STRING typology,
-                        DOUBLE confidence, STRING action, STRING note) FOR GRAPH CLARA {
+                        DOUBLE confidence, STRING action, STRING note) FOR GRAPH TRIBUNAL {
   INSERT INTO Case (PRIMARY_ID, card1, outcome, typology, confidence, action, note)
     VALUES (case_id, card1, outcome, typology, confidence, action, note);
   INSERT INTO CASE_OF (FROM, TO) VALUES (case_id Case, card1 Card);

@@ -1,5 +1,5 @@
 """
-CLARA analyst console (real HHGOA dataset).
+Tribunal analyst console (real HHGOA dataset).
 
   streamlit run app/streamlit_app.py
 
@@ -20,11 +20,11 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dotenv import load_dotenv
 import pandas as pd
 
-from clara.investigator import investigate
-from clara.realdata import load
+from tribunal.investigator import investigate
+from tribunal.realdata import load
 
 load_dotenv()
-st.set_page_config(page_title="CLARA — Fraud Investigation Agent", page_icon="🕵️", layout="wide")
+st.set_page_config(page_title="Tribunal — Fraud Investigation Agent", page_icon="🕵️", layout="wide")
 
 
 @st.cache_resource
@@ -32,7 +32,7 @@ def dataset():
     return load()
 
 
-st.markdown("## 🕵️ CLARA — Confidence-Led Adaptive Risk Agent")
+st.markdown("## 🕵️ Tribunal — Confidence-Led Adaptive Risk Agent")
 st.caption("Investigates a fraud alert on TigerGraph · gathers evidence until the decision is "
            "settled · recommends a policy-bound next-best-action")
 

@@ -1,8 +1,8 @@
-# CLARA — Confidence-Led Adaptive Risk Agent
+# Tribunal — Confidence-Led Adaptive Risk Agent
 
 > An agentic fraud investigator for the **TigerGraph Agentic Fraud Investigation — Hacker House Goa 2026** challenge, running on the real HHGOA / IEEE-CIS dataset.
 
-CLARA takes a case from the case pack, investigates it against the transaction graph and the bank's closed cases, works out **what kind of fraud it is (if any)**, **how far it goes**, and **what to do next under the Fraud Policy** — and it **knows when to stop**. It treats an investigation as an explicit uncertainty-reduction loop: a fraud belief (log-odds) starts from a base rate nudged by the risk score / customer report — *never* the risk score as a verdict — and moves by auditable Bayesian updates as evidence arrives. It stops the moment the decision is settled (policy §6), then recommends a policy-bound next-best-action with the correct approval route, and files a SAR only when policy 3a calls for one.
+Tribunal takes a case from the case pack, investigates it against the transaction graph and the bank's closed cases, works out **what kind of fraud it is (if any)**, **how far it goes**, and **what to do next under the Fraud Policy** — and it **knows when to stop**. It treats an investigation as an explicit uncertainty-reduction loop: a fraud belief (log-odds) starts from a base rate nudged by the risk score / customer report — *never* the risk score as a verdict — and moves by auditable Bayesian updates as evidence arrives. It stops the moment the decision is settled (policy §6), then recommends a policy-bound next-best-action with the correct approval route, and files a SAR only when policy 3a calls for one.
 
 Output: **one `cases/HHG-XXX.json` per case, in the exact submission format** (case + evidence_requests + next_best_actions.initial/final + sar + stop_reason).
 
@@ -11,7 +11,7 @@ Output: **one `cases/HHG-XXX.json` per case, in the exact submission format** (c
 ## Quickstart
 
 ```bash
-cd clara
+cd tribunal
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
@@ -52,12 +52,12 @@ routes, SAR) is a deterministic function of the evidence — auditable and repro
 
 | File | Role |
 |---|---|
-| `clara/realdata.py` | loads the slim parquet + closed cases + case pack; device/region indexes; fraud-memory; **specific-vs-generic device-profile** rule |
-| `clara/signals.py` | evidence probes for the five patterns + shared-device rings + known-fraud links + recurring-charge (R7) |
-| `clara/belief.py` | log-odds belief; `update(LR)` |
-| `clara/policy_real.py` | the Fraud Policy: actions, approval routes, SAR criteria (3a), thresholds R1–R10, §6 |
-| `clara/investigator.py` | the loop: probes → belief → pattern → simulated response → initial/final NBA → SAR → answer JSON |
-| `clara/narrate_real.py` | FinCEN-style SAR narrative (5W1H) + case summary |
+| `tribunal/realdata.py` | loads the slim parquet + closed cases + case pack; device/region indexes; fraud-memory; **specific-vs-generic device-profile** rule |
+| `tribunal/signals.py` | evidence probes for the five patterns + shared-device rings + known-fraud links + recurring-charge (R7) |
+| `tribunal/belief.py` | log-odds belief; `update(LR)` |
+| `tribunal/policy_real.py` | the Fraud Policy: actions, approval routes, SAR criteria (3a), thresholds R1–R10, §6 |
+| `tribunal/investigator.py` | the loop: probes → belief → pattern → simulated response → initial/final NBA → SAR → answer JSON |
+| `tribunal/narrate_real.py` | FinCEN-style SAR narrative (5W1H) + case summary |
 | `run_cases.py` | run all 20 → `cases/HHG-XXX.json` |
 | `app/streamlit_app.py` | analyst console (demo) |
 | `graph/` | TigerGraph schema + GSQL queries + loader for the production/graded path |

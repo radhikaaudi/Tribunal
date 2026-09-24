@@ -1,7 +1,7 @@
 """
 Narrative generation. The LLM ONLY explains what the deterministic engine already
 decided - it never picks the action or invents evidence. Falls back to a template
-when CLARA_LLM_PROVIDER=none (or no key), so the demo always runs offline.
+when TRIBUNAL_LLM_PROVIDER=none (or no key), so the demo always runs offline.
 """
 from __future__ import annotations
 
@@ -55,7 +55,7 @@ def _template(case: Case) -> str:
 
 
 def narrate(case: Case) -> str:
-    provider = os.getenv("CLARA_LLM_PROVIDER", "none").lower()
+    provider = os.getenv("TRIBUNAL_LLM_PROVIDER", "none").lower()
     facts = _facts(case)
     prompt = (
         "You are a fraud investigator writing a concise, defensible case summary for an "

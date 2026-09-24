@@ -8,8 +8,8 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 
-from clara.agent import investigate
-from clara.graph_client import make_client
+from tribunal.agent import investigate
+from tribunal.graph_client import make_client
 
 load_dotenv()
 

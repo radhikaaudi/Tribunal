@@ -1,13 +1,13 @@
 // ============================================================================
-// CLARA evidence queries (installed GSQL). Method names match TigerGraphClient.
+// Tribunal evidence queries (installed GSQL). Method names match TigerGraphClient.
 // Install:  gsql graph/queries/evidence.gsql   then  INSTALL QUERY ALL
 // Every query takes card1 as the subject; each is a single-purpose evidence probe.
 // ============================================================================
 
-USE GRAPH CLARA
+USE GRAPH TRIBUNAL
 
 // ---- prior risk + total exposure for a card --------------------------------
-CREATE QUERY ev_prior_exposure(INT card1) FOR GRAPH CLARA {
+CREATE QUERY ev_prior_exposure(INT card1) FOR GRAPH TRIBUNAL {
   SumAccum<DOUBLE> @@exposure;
   MaxAccum<DOUBLE> @@prior;
   start = {Card.*};
@@ -17,7 +17,7 @@ CREATE QUERY ev_prior_exposure(INT card1) FOR GRAPH CLARA {
 }
 
 // ---- shared-device peer count (distinct other cards on the same device) -----
-CREATE QUERY ev_shared_device(INT card1) FOR GRAPH CLARA {
+CREATE QUERY ev_shared_device(INT card1) FOR GRAPH TRIBUNAL {
   SetAccum<INT> @@peers;
   start = {Card.*};
   c   = SELECT s FROM start:s WHERE s.card1 == card1;
@@ -30,7 +30,7 @@ CREATE QUERY ev_shared_device(INT card1) FOR GRAPH CLARA {
 }
 
 // ---- shared rare-email peer count ------------------------------------------
-CREATE QUERY ev_shared_email(INT card1) FOR GRAPH CLARA {
+CREATE QUERY ev_shared_email(INT card1) FOR GRAPH TRIBUNAL {
   SetAccum<INT> @@peers;
   start = {Card.*};
   c   = SELECT s FROM start:s WHERE s.card1 == card1;
@@ -43,7 +43,7 @@ CREATE QUERY ev_shared_email(INT card1) FOR GRAPH CLARA {
 }
 
 // ---- max transactions in any 24h window (velocity) -------------------------
-CREATE QUERY ev_velocity(INT card1) FOR GRAPH CLARA {
+CREATE QUERY ev_velocity(INT card1) FOR GRAPH TRIBUNAL {
   ListAccum<INT> @@dts;
   start = {Card.*};
   c   = SELECT s FROM start:s WHERE s.card1 == card1;
@@ -59,7 +59,7 @@ CREATE QUERY ev_velocity(INT card1) FOR GRAPH CLARA {
 }
 
 // ---- identity-mismatch score (F-flags beyond one, + distance anomaly) -------
-CREATE QUERY ev_identity_mismatch(INT card1) FOR GRAPH CLARA {
+CREATE QUERY ev_identity_mismatch(INT card1) FOR GRAPH TRIBUNAL {
   AvgAccum @@avg_f;
   MaxAccum<DOUBLE> @@maxdist;
   start = {Card.*};
@@ -74,7 +74,7 @@ CREATE QUERY ev_identity_mismatch(INT card1) FOR GRAPH CLARA {
 }
 
 // ---- hops to nearest KNOWN-fraud card (BFS over shared-attr links, <=4) -----
-CREATE QUERY ev_path_to_fraud(INT card1) FOR GRAPH CLARA {
+CREATE QUERY ev_path_to_fraud(INT card1) FOR GRAPH TRIBUNAL {
   OrAccum @@found; INT hops = -1;
   seed = {Card.*};
   seed = SELECT s FROM seed:s WHERE s.card1 == card1;
@@ -93,7 +93,7 @@ CREATE QUERY ev_path_to_fraud(INT card1) FOR GRAPH CLARA {
 }
 
 // ---- similar past cases via NATIVE VECTOR SEARCH (hybrid) -------------------
-CREATE QUERY ev_similar_cases(LIST<DOUBLE> sig, INT k) FOR GRAPH CLARA {
+CREATE QUERY ev_similar_cases(LIST<DOUBLE> sig, INT k) FOR GRAPH TRIBUNAL {
   // vectorSearch returns the top-k most similar Case vertices by sig_vec
   cases = vectorSearch({Case.sig_vec}, sig, k);
   PRINT cases[cases.case_id AS case_id, cases.outcome AS outcome,

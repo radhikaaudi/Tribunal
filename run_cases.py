@@ -1,5 +1,5 @@
 """
-Run CLARA on all 20 case-pack cases and write one answer file per case.
+Run Tribunal on all 20 case-pack cases and write one answer file per case.
 
   python run_cases.py                 # -> cases/HHG-XXX.json  (submission format)
 
@@ -10,8 +10,8 @@ import os
 
 from dotenv import load_dotenv
 
-from clara.investigator import investigate
-from clara.realdata import load
+from tribunal.investigator import investigate
+from tribunal.realdata import load
 
 load_dotenv()
 

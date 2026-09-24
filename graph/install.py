@@ -1,5 +1,5 @@
 """
-Provision a real TigerGraph instance for CLARA and load the data.
+Provision a real TigerGraph instance for Tribunal and load the data.
 
   python graph/install.py --reset      # drop + recreate schema, load, install queries
 
@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 import pandas as pd
 import pyTigerGraph as tg
 
-from clara.graph_client import MockGraphClient, COMMON_EMAIL, GENERIC_DEVICE
+from tribunal.graph_client import MockGraphClient, COMMON_EMAIL, GENERIC_DEVICE
 
 load_dotenv()
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -48,12 +48,12 @@ def main():
     conn = connect()
     if args.reset:
         try:
-            conn.gsql("USE GRAPH CLARA DROP GRAPH CLARA")
+            conn.gsql("USE GRAPH TRIBUNAL DROP GRAPH TRIBUNAL")
         except Exception as e:
             print("drop skipped:", e)
 
     print(">> schema"); run_gsql_file(conn, os.path.join(HERE, "schema.gsql"))
-    conn.graphname = "CLARA"
+    conn.graphname = "TRIBUNAL"
     secret = os.getenv("TG_SECRET") or conn.createSecret()
     conn.getToken(secret)
 
@@ -125,8 +125,8 @@ def main():
     print(">> queries")
     run_gsql_file(conn, os.path.join(HERE, "queries", "evidence.gsql"))
     run_gsql_file(conn, os.path.join(HERE, "queries", "write_case.gsql"))
-    print(conn.gsql("USE GRAPH CLARA INSTALL QUERY ALL"))
-    print("done. set CLARA_GRAPH_BACKEND=tigergraph in .env to use it.")
+    print(conn.gsql("USE GRAPH TRIBUNAL INSTALL QUERY ALL"))
+    print("done. set TRIBUNAL_GRAPH_BACKEND=tigergraph in .env to use it.")
 
 
 if __name__ == "__main__":

@@ -58,7 +58,7 @@ WHERE d.profile == $device AND other != $thisCard;
 ```
 
 > **Where we are right now (honest note):** to build fast, our probes currently run the same
-> logic in Python over the slimmed data (`clara/realdata.py`), which mirrors the graph exactly.
+> logic in Python over the slimmed data (`tribunal/realdata.py`), which mirrors the graph exactly.
 > The TigerGraph schema and loader are written (`graph/`) so you load the same data into a real
 > TigerGraph instance and flip one switch to run against it. The *design* is graph-first; the
 > Python layer is a stand-in during development.
@@ -84,7 +84,7 @@ turns graph actions into neat tools the agent can use, like:
   MCP + TigerGraph *do the exact query* and hand back real numbers.
 
 **How we use it:** our Prosecutor and Defender don't talk to the database directly — they call
-graph queries **through MCP tools**. In the code, `clara/graph_client.py` is written with two
+graph queries **through MCP tools**. In the code, `tribunal/graph_client.py` is written with two
 "plugs": a local one (for development) and a **TigerGraph/MCP** one (for the real run). The rest
 of the Tribunal doesn't change — it just asks for evidence, and MCP fetches it from TigerGraph.
 

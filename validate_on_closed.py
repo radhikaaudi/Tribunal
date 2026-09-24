@@ -8,8 +8,8 @@ answers the worry is the FALSE-NEGATIVE rate: known frauds we call 'legitimate'.
 import sys
 import pandas as pd
 
-from clara.realdata import load
-from clara.investigator import investigate
+from tribunal.realdata import load
+from tribunal.investigator import investigate
 
 N_FRAUD = int(sys.argv[1]) if len(sys.argv) > 1 else 120
 N_CLEAR = int(sys.argv[2]) if len(sys.argv) > 2 else 80

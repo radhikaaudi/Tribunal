@@ -1,4 +1,4 @@
-"""Data models for a CLARA investigation."""
+"""Data models for a Tribunal investigation."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field

@@ -1,5 +1,5 @@
 """
-The evidence catalog: everything CLARA can look at, with a cost and a calibrated
+The evidence catalog: everything Tribunal can look at, with a cost and a calibrated
 likelihood ratio per outcome bucket.
 
 Each Evidence declares:

@@ -1,6 +1,6 @@
 """
 SAR narrative + case summary text. Template-based so it always runs offline; if
-CLARA_LLM_PROVIDER is set, the template is handed to the LLM to polish (never to
+TRIBUNAL_LLM_PROVIDER is set, the template is handed to the LLM to polish (never to
 decide). The narrative follows FinCEN 5W1H and must stand on its own.
 """
 from __future__ import annotations
@@ -46,7 +46,7 @@ def sar_narrative(ctx, pattern, exposure, aff_df, connected_cards, connected_pro
                  f"were placed under monitoring. Total suspicious amount: ${exposure:,.2f}.")
     narrative = " ".join(lines)
 
-    provider = os.getenv("CLARA_LLM_PROVIDER", "none").lower()
+    provider = os.getenv("TRIBUNAL_LLM_PROVIDER", "none").lower()
     if provider in ("anthropic", "openai"):
         try:
             return _polish(narrative, provider)

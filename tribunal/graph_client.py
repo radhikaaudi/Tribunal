@@ -6,8 +6,8 @@ Graph access behind one interface, two implementations:
   TigerGraphClient - runs the SAME evidence as installed GSQL queries via pyTigerGraph
                      (and/or TigerGraph-MCP) for the graded submission.
 
-Both expose identical methods, so clara/agent.py never changes when you switch
-CLARA_GRAPH_BACKEND from `mock` to `tigergraph`.
+Both expose identical methods, so tribunal/agent.py never changes when you switch
+TRIBUNAL_GRAPH_BACKEND from `mock` to `tigergraph`.
 """
 from __future__ import annotations
 
@@ -212,7 +212,7 @@ class TigerGraphClient(GraphClient):
         import pyTigerGraph as tg
         self.conn = tg.TigerGraphConnection(
             host=os.getenv("TG_HOST", "http://localhost"),
-            graphname=os.getenv("TG_GRAPHNAME", "CLARA"),
+            graphname=os.getenv("TG_GRAPHNAME", "TRIBUNAL"),
             username=os.getenv("TG_USERNAME", "tigergraph"),
             password=os.getenv("TG_PASSWORD", "tigergraph"),
             restppPort=os.getenv("TG_RESTPP_PORT", "9000"),
@@ -268,7 +268,7 @@ class TigerGraphClient(GraphClient):
 
 
 def make_client() -> GraphClient:
-    backend = os.getenv("CLARA_GRAPH_BACKEND", "mock").lower()
+    backend = os.getenv("TRIBUNAL_GRAPH_BACKEND", "mock").lower()
     if backend == "tigergraph":
         return TigerGraphClient()
     return MockGraphClient()

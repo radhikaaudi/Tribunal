@@ -10,9 +10,9 @@ import os
 
 from dotenv import load_dotenv
 
-from clara.agent import investigate
-from clara.graph_client import make_client
-from clara.narrate import fmt_value
+from tribunal.agent import investigate
+from tribunal.graph_client import make_client
+from tribunal.narrate import fmt_value
 
 load_dotenv()
 
@@ -41,7 +41,7 @@ def main():
         row = bench[bench.bench_id == args.bench].iloc[0]
         card1, trigger, case_id = int(row.card1), row.reason, args.bench
 
-    print(f"\n=== CLARA investigation {case_id} (card1={card1}, trigger='{trigger}') ===")
+    print(f"\n=== Tribunal investigation {case_id} (card1={card1}, trigger='{trigger}') ===")
     case = investigate(client, case_id, card1, trigger, on_step=_print_step)
 
     print(f"\n  NBA (initial): {case.nba_initial.name} [{case.nba_initial.approval_route}]")

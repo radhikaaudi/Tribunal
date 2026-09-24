@@ -1,5 +1,5 @@
 // ============================================================================
-// CLARA graph schema for TigerGraph 4.2+ (Community Edition or Savanna).
+// Tribunal graph schema for TigerGraph 4.2+ (Community Edition or Savanna).
 // Follows the HHGOA dataset's suggested schema. Investigation is at the Customer
 // level; shared DeviceProfile / BillingRegion make rings a short traversal; a native
 // VECTOR on ClosedCase powers hybrid case-memory retrieval.
@@ -23,7 +23,7 @@ CREATE VERTEX ClosedCase    (PRIMARY_ID case_id STRING, customer_id STRING, card
                              pattern STRING, outcome STRING, exposure_usd DOUBLE,
                              report_filed STRING, notes STRING)
   WITH primary_id_as_attribute="true";
-// investigations CLARA creates and writes back (case memory grows)
+// investigations Tribunal creates and writes back (case memory grows)
 CREATE VERTEX Case          (PRIMARY_ID case_id STRING, verdict STRING, pattern STRING,
                              fraud_probability DOUBLE, exposure_usd DOUBLE)
   WITH primary_id_as_attribute="true";
@@ -39,7 +39,7 @@ CREATE UNDIRECTED EDGE CC_ON_CARD      (FROM ClosedCase, TO Card);
 CREATE UNDIRECTED EDGE CC_CONNECTED_TO (FROM ClosedCase, TO Card);
 CREATE UNDIRECTED EDGE CASE_ON_CARD    (FROM Case, TO Card);
 
-CREATE GRAPH CLARA (Customer, Card, Transaction, DeviceProfile, EmailDomain, BillingRegion,
+CREATE GRAPH TRIBUNAL (Customer, Card, Transaction, DeviceProfile, EmailDomain, BillingRegion,
                     ClosedCase, Case,
                     OWNS, MADE, NEXT, FROM_DEVICE, PURCHASER_EMAIL, BILLED_IN,
                     CC_INVOLVES, CC_ON_CARD, CC_CONNECTED_TO, CASE_ON_CARD);

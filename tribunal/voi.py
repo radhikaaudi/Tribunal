@@ -1,5 +1,5 @@
 """
-Value-of-Information selection + stop rule -- CLARA's differentiator.
+Value-of-Information selection + stop rule -- Tribunal's differentiator.
 
 Instead of running every check, the agent asks of each unused check:
   "Given what I believe right now, how likely is THIS check to actually change my
