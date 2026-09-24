@@ -39,24 +39,16 @@
         ]
       },
       {
-        "claim": "TigerGraph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase reaches 152 confirmed-fraud closed case(s)",
+        "claim": "Graph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase (via TigerGraph MCP) reaches 152 confirmed-fraud closed case(s) through 5 specific device(s)",
         "source": "graph",
-        "ref": "tigergraph:link_to_known_fraud",
+        "ref": "mcp:tigergraph__run_installed_query(link_to_known_fraud)",
         "entity_ids": [
-          "CC-0651",
+          "CC-0056",
+          "CC-0073",
+          "CC-0078",
+          "CC-0081",
           "CC-0206",
-          "CC-3847",
-          "CC-2984",
-          "CC-2547",
-          "CC-4992"
-        ]
-      },
-      {
-        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
-        "source": "graph",
-        "ref": "tigergraph:prior_cases_for_customer",
-        "entity_ids": [
-          "CASE-HHG-002"
+          "CC-0227"
         ]
       },
       {
@@ -96,7 +88,7 @@
   "evidence_requests": [
     {
       "type": "customer_validation",
-      "asked_after_step": 5,
+      "asked_after_step": 4,
       "assumed_response": "No reply from the customer within 24 hours (assumed because the graph evidence leans only 2.0x toward fraud \u2014 too weak to predict a denial, too strong to predict a confirmation)"
     }
   ],
@@ -141,7 +133,7 @@
     "activity_dates": []
   },
   "stop_reason": "No reply to the customer validation request within 24 hours; probability 40% stays uncertain and further graph steps are unlikely to change it, so the card is monitored and pending authorizations declined under R4 (policy 6).",
-  "tool_calls": 23,
+  "tool_calls": 22,
   "tokens": 1760,
-  "latency_s": 32.759
+  "latency_s": 2.851
 }

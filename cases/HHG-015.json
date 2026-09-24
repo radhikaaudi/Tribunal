@@ -49,24 +49,24 @@
         ]
       },
       {
-        "claim": "TigerGraph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase reaches 8 confirmed-fraud closed case(s)",
+        "claim": "Graph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase (via TigerGraph MCP) reaches 8 confirmed-fraud closed case(s) through 2 specific device(s)",
         "source": "graph",
-        "ref": "tigergraph:link_to_known_fraud",
+        "ref": "mcp:tigergraph__run_installed_query(link_to_known_fraud)",
         "entity_ids": [
-          "CC-4250",
+          "CC-0707",
+          "CC-2353",
           "CC-2569",
           "CC-3036",
-          "CC-2353",
-          "CC-4071",
-          "CC-3249"
+          "CC-3249",
+          "CC-3845"
         ]
       },
       {
-        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
+        "claim": "Live graph (via TigerGraph MCP): device profile 'Trident/7.0 | Windows 8.1 | ie 11.0 for desktop ' carries 2 transaction(s) from 1 other customer(s) within \u00b130 days of the alert",
         "source": "graph",
-        "ref": "tigergraph:prior_cases_for_customer",
+        "ref": "mcp:tigergraph__run_installed_query(device_neighbors)",
         "entity_ids": [
-          "CASE-HHG-015"
+          "C05704"
         ]
       },
       {
@@ -167,7 +167,7 @@
     "activity_dates": []
   },
   "stop_reason": "No reply to the step up auth request within 24 hours; probability 46% stays uncertain and further graph steps are unlikely to change it, so the card is monitored and pending authorizations declined under R4 (policy 6).",
-  "tool_calls": 24,
+  "tool_calls": 23,
   "tokens": 2073,
-  "latency_s": 63.621
+  "latency_s": 16.355
 }

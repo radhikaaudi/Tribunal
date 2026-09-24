@@ -45,11 +45,12 @@
         ]
       },
       {
-        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
+        "claim": "Live graph (via TigerGraph MCP): device profile 'Trident/7.0 | Windows 7 | ie 11.0 for desktop | ' carries 5 transaction(s) from 2 other customer(s) within \u00b130 days of the alert",
         "source": "graph",
-        "ref": "tigergraph:prior_cases_for_customer",
+        "ref": "mcp:tigergraph__run_installed_query(device_neighbors)",
         "entity_ids": [
-          "CASE-HHG-006"
+          "C02354",
+          "C03856"
         ]
       },
       {
@@ -145,7 +146,7 @@
     ]
   },
   "stop_reason": "Fraud probability 93% is at/above 0.85 with 1 independent inculpatory graph findings; further steps would not change the decision (policy 6).",
-  "tool_calls": 24,
+  "tool_calls": 23,
   "tokens": 2463,
-  "latency_s": 14.916
+  "latency_s": 6.788
 }

@@ -39,14 +39,6 @@
         ]
       },
       {
-        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
-        "source": "graph",
-        "ref": "tigergraph:prior_cases_for_customer",
-        "entity_ids": [
-          "CASE-HHG-001"
-        ]
-      },
-      {
         "claim": "Customer confirms they made the transaction",
         "source": "customer",
         "ref": "evidence_request:1",
@@ -83,7 +75,7 @@
   "evidence_requests": [
     {
       "type": "customer_validation",
-      "asked_after_step": 4,
+      "asked_after_step": 3,
       "assumed_response": "Customer confirms they made the transaction (assumed because no graph evidence beyond the alert points to fraud; 716 closed cases with the same profile \u2014 'travel' \u2014 were cleared after the cardholder confirmed)"
     }
   ],
@@ -123,7 +115,7 @@
     "activity_dates": []
   },
   "stop_reason": "The customer validation response settled the question (policy 6): probability now 2%, verdict legitimate. Further graph steps would not change the actions.",
-  "tool_calls": 23,
+  "tool_calls": 22,
   "tokens": 1567,
-  "latency_s": 51.713
+  "latency_s": 6.729
 }

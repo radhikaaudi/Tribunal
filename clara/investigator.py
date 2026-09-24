@@ -314,45 +314,73 @@ def investigate(ds, case_row, on_step=None, write_back=True, use_llm=True) -> di
 
 
 # --------------------------------------------------------------------------- helpers
+def _mcp_query(mcp, name, params) -> dict | None:
+    """Run an installed GSQL query through the TigerGraph MCP server; merge the PRINT blocks."""
+    import json
+    raw = mcp.run_installed_query(name, params)
+    obj = raw if isinstance(raw, dict) else json.JSONDecoder().raw_decode(str(raw).strip())[0]
+    if not obj.get("success", False):
+        return None
+    merged = {}
+    for block in obj.get("data", {}).get("result", []) or []:
+        merged.update(block)
+    return merged
+
+
 def _graph_crosscheck(ctx, fired, evidence) -> int:
-    """When TigerGraph is live, re-run the key traversals as installed GSQL queries (direct
-    REST and through the TigerGraph MCP server) and attach what the graph returns. The pandas
-    probes and the graph queries implement the same traversals, so this is also a consistency
-    check between the two backends."""
-    tg = _tg()
-    if tg is None:
-        return 0
-    n = 0
-    cust = ctx["customer_id"]
-    try:
-        link = tg.link_to_known_fraud(cust)
-        n += 1
-        cc = [c.get("v_id") or c.get("case_id") for c in (link or {}).get("closed_cases", [])][:6]
-        if cc:
-            evidence.append({"claim": f"TigerGraph traversal Customer→Card→Transaction→DeviceProfile→Transaction"
-                                      f"←ClosedCase reaches {len(link['closed_cases'])} confirmed-fraud closed case(s)",
-                             "source": "graph", "ref": "tigergraph:link_to_known_fraud", "entity_ids": cc,
-                             "side": "context"})
-        prior = tg.prior_cases_for_customer(cust)
-        n += 1
-        inv = [i.get("v_id") for i in (prior or {}).get("investigations", [])][:4]
-        if inv:
-            evidence.append({"claim": f"Graph case memory holds {len(inv)} earlier investigation(s) on this customer",
-                             "source": "graph", "ref": "tigergraph:prior_cases_for_customer", "entity_ids": inv,
-                             "side": "context"})
-    except Exception:
-        pass
+    """Live graph step. The agent calls TigerGraph as tools through the TigerGraph MCP server
+    (tigergraph__run_installed_query over stdio); if MCP is unavailable it falls back to the
+    direct REST client. What the graph returns is attached as cited evidence. These traversals
+    re-derive the pandas probes on the live graph, so they are recorded as context and do not
+    move the belief a second time."""
+    cust, prof, f = ctx["customer_id"], ctx["flagged_profile"], ctx["flagged"]
+    own = f"CASE-{ctx['case_id']}"
+    mcp, tg, via = None, None, "mcp"
     try:
         from . import mcp_tools
         mcp = mcp_tools.get()
-        if mcp is not None and ctx["flagged_profile"]:
-            f = ctx["flagged"]
-            mcp.run_installed_query("device_neighbors", {
-                "profile": ctx["flagged_profile"],
-                "t0": str(f["ts"] - pd.Timedelta(days=30))[:19], "t1": str(f["ts"] + pd.Timedelta(days=30))[:19]})
-            n += 1
     except Exception:
-        pass
+        mcp = None
+    if mcp is None:
+        tg, via = _tg(), "tigergraph"
+        if tg is None:
+            return 0
+
+    def q(name, params):
+        try:
+            if mcp is not None:
+                return _mcp_query(mcp, name, params)
+            return tg.query(name, params) and {k: v for b in tg.query(name, params) for k, v in b.items()}
+        except Exception:
+            return None
+
+    def ref(name):
+        return f"mcp:tigergraph__run_installed_query({name})" if via == "mcp" else f"tigergraph:{name}"
+
+    n = 0
+    link = q("link_to_known_fraud", {"customer": cust, "max_device_customers": 150}); n += 1
+    if link:
+        cc = sorted({c["v_id"] for c in link.get("closed_cases", [])})
+        inv = sorted({i["v_id"] for i in link.get("investigations", [])} - {own})
+        if cc:
+            evidence.append({"claim": f"Graph traversal Customer→Card→Transaction→DeviceProfile→Transaction←ClosedCase "
+                                      f"(via TigerGraph MCP) reaches {len(cc)} confirmed-fraud closed case(s) through "
+                                      f"{len(link.get('devices', []))} specific device(s)",
+                             "source": "graph", "ref": ref("link_to_known_fraud"), "entity_ids": cc[:6], "side": "context"})
+        if inv:
+            evidence.append({"claim": f"Graph case memory: {len(inv)} earlier DefAttack investigation(s) are reachable "
+                                      f"from this customer's devices ({', '.join(inv[:3])})",
+                             "source": "graph", "ref": ref("link_to_known_fraud"), "entity_ids": inv[:4], "side": "context"})
+    if prof:
+        t0 = str(f["ts"] - pd.Timedelta(days=30))[:19]
+        t1 = str(f["ts"] + pd.Timedelta(days=30))[:19]
+        dn = q("device_neighbors", {"profile": prof, "t0": t0, "t1": t1}); n += 1
+        if dn:
+            custs = sorted({t.get("attributes", {}).get("customer_id") for t in dn.get("txns", [])} - {cust, None})
+            evidence.append({"claim": f"Live graph (via TigerGraph MCP): device profile '{prof[:48]}' carries "
+                                      f"{len(dn.get('txns', []))} transaction(s) from {len(custs)} other customer(s) "
+                                      f"within ±30 days of the alert",
+                             "source": "graph", "ref": ref("device_neighbors"), "entity_ids": custs[:6], "side": "context"})
     return n
 
 

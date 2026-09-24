@@ -48,12 +48,10 @@
         ]
       },
       {
-        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
+        "claim": "Live graph (via TigerGraph MCP): device profile 'Trident/7.0 | Windows 10 | ie 11.0 for desktop |' carries 1 transaction(s) from 0 other customer(s) within \u00b130 days of the alert",
         "source": "graph",
-        "ref": "tigergraph:prior_cases_for_customer",
-        "entity_ids": [
-          "CASE-HHG-020"
-        ]
+        "ref": "mcp:tigergraph__run_installed_query(device_neighbors)",
+        "entity_ids": []
       },
       {
         "claim": "No reply from the customer within 24 hours",
@@ -137,7 +135,7 @@
     "activity_dates": []
   },
   "stop_reason": "No reply to the step up auth request within 24 hours; probability 46% stays uncertain and further graph steps are unlikely to change it, so the card is monitored and pending authorizations declined under R4 (policy 6).",
-  "tool_calls": 24,
+  "tool_calls": 23,
   "tokens": 1644,
-  "latency_s": 17.344
+  "latency_s": 2.507
 }

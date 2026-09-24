@@ -74,24 +74,26 @@
         ]
       },
       {
-        "claim": "TigerGraph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase reaches 1445 confirmed-fraud closed case(s)",
+        "claim": "Graph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase (via TigerGraph MCP) reaches 1445 confirmed-fraud closed case(s) through 1407 specific device(s)",
         "source": "graph",
-        "ref": "tigergraph:link_to_known_fraud",
+        "ref": "mcp:tigergraph__run_installed_query(link_to_known_fraud)",
         "entity_ids": [
-          "CC-1994",
-          "CC-1599",
-          "CC-1546",
-          "CC-1439",
-          "CC-1189",
-          "CC-1010"
+          "CC-0001",
+          "CC-0012",
+          "CC-0014",
+          "CC-0045",
+          "CC-0048",
+          "CC-0052"
         ]
       },
       {
-        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
+        "claim": "Live graph (via TigerGraph MCP): device profile 'SM-G610F Build/NRD90M | ? | chrome 66.0 for andr' carries 4 transaction(s) from 3 other customer(s) within \u00b130 days of the alert",
         "source": "graph",
-        "ref": "tigergraph:prior_cases_for_customer",
+        "ref": "mcp:tigergraph__run_installed_query(device_neighbors)",
         "entity_ids": [
-          "CASE-HHG-011"
+          "C03938",
+          "C05595",
+          "C05678"
         ]
       },
       {
@@ -191,7 +193,7 @@
     ]
   },
   "stop_reason": "Fraud probability 97% is at/above 0.85 with 3 independent inculpatory graph findings; further steps would not change the decision (policy 6).",
-  "tool_calls": 24,
+  "tool_calls": 23,
   "tokens": 2816,
-  "latency_s": 42.977
+  "latency_s": 3.25
 }

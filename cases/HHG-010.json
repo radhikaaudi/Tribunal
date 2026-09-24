@@ -47,12 +47,10 @@
         ]
       },
       {
-        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
+        "claim": "Live graph (via TigerGraph MCP): device profile 'Windows | Windows 10 | edge 16.0 | 1366x768' carries 1 transaction(s) from 0 other customer(s) within \u00b130 days of the alert",
         "source": "graph",
-        "ref": "tigergraph:prior_cases_for_customer",
-        "entity_ids": [
-          "CASE-HHG-010"
-        ]
+        "ref": "mcp:tigergraph__run_installed_query(device_neighbors)",
+        "entity_ids": []
       },
       {
         "claim": "No reply from the customer within 24 hours",
@@ -152,7 +150,7 @@
     "activity_dates": []
   },
   "stop_reason": "No reply to the step up auth request within 24 hours; probability 46% stays uncertain and further graph steps are unlikely to change it, so the card is monitored and pending authorizations declined under R4 (policy 6).",
-  "tool_calls": 24,
+  "tool_calls": 23,
   "tokens": 1908,
-  "latency_s": 35.75
+  "latency_s": 2.067
 }

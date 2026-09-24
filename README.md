@@ -72,7 +72,7 @@ Optional LLM for the case summary and SAR prose: `CLARA_LLM_PROVIDER=gemini` + `
 | `clara/knowledge.py` | the document side of GraphRAG: policy rules R1–R10, 3a/3b/§2/§4–6 and the five patterns, chunked from the dataset README |
 | `clara/memory.py` | the agent's own case memory: every finished case, retrievable by shared device / card / customer |
 | `clara/tg.py` | TigerGraph client: installed GSQL queries, policy search, `write_case` (InvestigationCase vertex + edges) |
-| `clara/mcp_tools.py` | TigerGraph MCP client/server wrapper (official `pyTigerGraph-mcp`, stdio) |
+| `clara/mcp_tools.py` | TigerGraph MCP client/server wrapper (official `pyTigerGraph-mcp`, stdio); the agent's live graph queries go through it |
 | `clara/narrate_real.py`, `clara/llm.py` | SAR narrative (FinCEN 5W1H) · optional Claude summary/SAR polish |
 | `graph/schema.gsql`, `graph/queries/*.gsql`, `graph/load.py` | graph schema, GSQL evidence queries, loader |
 | `app/streamlit_app.py` | analyst console: live belief meter, prosecution vs defence, evidence request, initial→final NBA, case memory, SAR |
@@ -103,6 +103,6 @@ Case memory in action: after HHG-014 is closed, a new alert on ring member C0990
 - Likelihood ratios are hand-set. The closed cases cannot calibrate them cleanly: confirmed frauds were mostly customer-reported while cleared cases were all high-score model alerts, so the two populations differ. On 160 closed cases re-run as risk-score alerts (`validate_on_closed.py`), DefAttack clears most historical frauds — without the customer's denial, a single stolen-card purchase usually looks ordinary. That is the case for asking the customer (R1), not for blocking.
 - Customer, step-up and analyst responses are simulated (as the challenge requires) and the assumption is recorded in each `evidence_requests` entry together with the graph evidence that motivated it.
 - Card-level identity (`-K1` / `-K2`) is not reconstructable from the transaction columns; investigation is at customer level and card IDs come from the case pack / closed cases.
-- The pandas probes and the GSQL queries implement the same traversals; the offline run uses pandas, and with TigerGraph configured the agent additionally runs the graph queries (direct REST and via MCP) and writes each case to the graph.
+- The pandas probes and the GSQL queries implement the same traversals. The belief is updated once, from the probes; the live graph step then calls TigerGraph **as tools through the TigerGraph MCP server** (`tigergraph__run_installed_query` over stdio: `link_to_known_fraud`, `device_neighbors`) and attaches what the graph returns as cited evidence (`ref: mcp:tigergraph__run_installed_query(...)`), falling back to direct REST if MCP is down. Case write-back (`InvestigationCase` + edges) uses the REST client. The LLM does not choose tools; tool order is fixed by the investigation loop.
 
 `legacy/` holds the first synthetic-data prototype and is not part of the submission pipeline.

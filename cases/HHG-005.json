@@ -47,24 +47,24 @@
         ]
       },
       {
-        "claim": "TigerGraph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase reaches 134 confirmed-fraud closed case(s)",
+        "claim": "Graph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase (via TigerGraph MCP) reaches 134 confirmed-fraud closed case(s) through 2 specific device(s)",
         "source": "graph",
-        "ref": "tigergraph:link_to_known_fraud",
+        "ref": "mcp:tigergraph__run_installed_query(link_to_known_fraud)",
         "entity_ids": [
-          "CC-1005",
-          "CC-0505",
-          "CC-3773",
-          "CC-2664",
-          "CC-4930",
-          "CC-4250"
+          "CC-0019",
+          "CC-0048",
+          "CC-0144",
+          "CC-0167",
+          "CC-0309",
+          "CC-0464"
         ]
       },
       {
-        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
+        "claim": "Live graph (via TigerGraph MCP): device profile 'iOS Device | iOS 9.3.5 | mobile safari 9.0 | 102' carries 2 transaction(s) from 1 other customer(s) within \u00b130 days of the alert",
         "source": "graph",
-        "ref": "tigergraph:prior_cases_for_customer",
+        "ref": "mcp:tigergraph__run_installed_query(device_neighbors)",
         "entity_ids": [
-          "CASE-HHG-005"
+          "C08299"
         ]
       },
       {
@@ -144,7 +144,7 @@
     "activity_dates": []
   },
   "stop_reason": "The step up auth response settled the question (policy 6): probability now 2%, verdict legitimate. Further graph steps would not change the actions.",
-  "tool_calls": 24,
+  "tool_calls": 23,
   "tokens": 1751,
-  "latency_s": 20.623
+  "latency_s": 1.991
 }

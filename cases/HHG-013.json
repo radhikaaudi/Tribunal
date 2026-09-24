@@ -47,24 +47,29 @@
         ]
       },
       {
-        "claim": "TigerGraph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase reaches 166 confirmed-fraud closed case(s)",
+        "claim": "Graph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase (via TigerGraph MCP) reaches 166 confirmed-fraud closed case(s) through 6 specific device(s)",
         "source": "graph",
-        "ref": "tigergraph:link_to_known_fraud",
+        "ref": "mcp:tigergraph__run_installed_query(link_to_known_fraud)",
         "entity_ids": [
-          "CC-1005",
-          "CC-1414",
-          "CC-0606",
-          "CC-1510",
-          "CC-1912",
+          "CC-0019",
+          "CC-0048",
+          "CC-0167",
+          "CC-0251",
+          "CC-0309",
           "CC-0322"
         ]
       },
       {
-        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
+        "claim": "Live graph (via TigerGraph MCP): device profile 'Windows | ? | chrome 66.0 | ?' carries 286 transaction(s) from 6 other customer(s) within \u00b130 days of the alert",
         "source": "graph",
-        "ref": "tigergraph:prior_cases_for_customer",
+        "ref": "mcp:tigergraph__run_installed_query(device_neighbors)",
         "entity_ids": [
-          "CASE-HHG-013"
+          "C08106",
+          "C09933",
+          "C09988",
+          "C11891",
+          "C11923",
+          "C13171"
         ]
       },
       {
@@ -144,7 +149,7 @@
     "activity_dates": []
   },
   "stop_reason": "The step up auth response settled the question (policy 6): probability now 2%, verdict legitimate. Further graph steps would not change the actions.",
-  "tool_calls": 24,
+  "tool_calls": 23,
   "tokens": 1782,
-  "latency_s": 45.347
+  "latency_s": 2.7
 }

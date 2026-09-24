@@ -31,24 +31,16 @@
         ]
       },
       {
-        "claim": "TigerGraph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase reaches 178 confirmed-fraud closed case(s)",
+        "claim": "Graph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase (via TigerGraph MCP) reaches 178 confirmed-fraud closed case(s) through 2 specific device(s)",
         "source": "graph",
-        "ref": "tigergraph:link_to_known_fraud",
+        "ref": "mcp:tigergraph__run_installed_query(link_to_known_fraud)",
         "entity_ids": [
-          "CC-1005",
-          "CC-3737",
-          "CC-2664",
-          "CC-2630",
-          "CC-1510",
-          "CC-1912"
-        ]
-      },
-      {
-        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
-        "source": "graph",
-        "ref": "tigergraph:prior_cases_for_customer",
-        "entity_ids": [
-          "CASE-HHG-009"
+          "CC-0019",
+          "CC-0048",
+          "CC-0167",
+          "CC-0177",
+          "CC-0241",
+          "CC-0243"
         ]
       },
       {
@@ -88,7 +80,7 @@
   "evidence_requests": [
     {
       "type": "customer_validation",
-      "asked_after_step": 4,
+      "asked_after_step": 3,
       "assumed_response": "Cardholder confirms they still hold the card and did not make or authorise the purchase (assumed: the dispute is unprompted and no recurring or familiar-merchant match exists)"
     }
   ],
@@ -128,7 +120,7 @@
     "activity_dates": []
   },
   "stop_reason": "The customer validation response settled the question (policy 6): probability now 85%, verdict fraud. Further graph steps would not change the actions.",
-  "tool_calls": 23,
+  "tool_calls": 22,
   "tokens": 1632,
-  "latency_s": 30.871
+  "latency_s": 1.735
 }
