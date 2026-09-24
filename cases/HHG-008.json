@@ -1,32 +1,18 @@
 {
   "case_id": "HHG-008",
-  "debate": {
-    "prosecution": [
-      "Cardholder reports they did not make the flagged purchase"
-    ],
-    "defense": [
-      "Flagged transaction is consistent with the card's history",
-      "Disputed amount $55.68 matches 8 prior charges to the same merchant domain \u2014 a recurring pattern",
-      "Purchaser domain hotmail.com was used on 358 prior transactions by this cardholder",
-      "Amount $55.68 and product sit within the cardholder's normal range ($10\u2013$161)",
-      "On verification the cardholder recognises the charge as their own recurring payment"
-    ],
-    "conclusion": "A legitimate explanation accounts for the alert; the fraud hypothesis did not survive.",
-    "missing_evidence": [
-      "customer_validation"
-    ]
-  },
   "case": {
-    "status": "closed_legitimate",
-    "verdict": "legitimate",
-    "fraud_probability": 0.023,
-    "pattern": "none",
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.848,
+    "pattern": "card_not_present_fraud",
     "pattern_description": "",
-    "affected_txn_ids": [],
-    "first_suspicious_txn_id": "",
+    "affected_txn_ids": [
+      "3558054"
+    ],
+    "first_suspicious_txn_id": "3558054",
     "connected_card_ids": [],
     "connected_device_profiles": [],
-    "exposure_usd": 0.0,
+    "exposure_usd": 55.68,
     "evidence": [
       {
         "claim": "Cardholder reports they did not make the flagged purchase",
@@ -34,124 +20,125 @@
         "ref": "trigger:customer_report",
         "entity_ids": [
           "3558054"
-        ],
-        "side": "prosecution"
+        ]
       },
       {
-        "claim": "Flagged transaction is consistent with the card's history",
+        "claim": "Amount $55.68 and product C sit within the customer's normal range ($10\u2013$161)",
         "source": "graph",
-        "ref": "query:history(C13171)",
+        "ref": "query:customer_history(C13171)",
         "entity_ids": [
           "3558054"
-        ],
-        "side": "defense"
+        ]
       },
       {
-        "claim": "Disputed amount $55.68 matches 8 prior charges to the same merchant domain \u2014 a recurring pattern",
+        "claim": "Customer has 19 closed case(s) on file: 18 confirmed fraud (card_not_present_new_device x12, card_not_present_fraud x6), 1 cleared",
         "source": "graph",
-        "ref": "query:recurring(C13171)",
+        "ref": "query:prior_cases_for_customer(C13171)",
         "entity_ids": [
-          "3081517",
-          "3087851",
-          "3136051",
-          "3205271",
-          "3255815"
-        ],
-        "side": "defense"
+          "CC-4485",
+          "CC-4819",
+          "CC-5010"
+        ]
       },
       {
-        "claim": "Purchaser domain hotmail.com was used on 358 prior transactions by this cardholder",
+        "claim": "TigerGraph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase reaches 1107 confirmed-fraud closed case(s)",
         "source": "graph",
-        "ref": "query:merchant_history(C13171)",
+        "ref": "tigergraph:link_to_known_fraud",
         "entity_ids": [
-          "3003521",
-          "3005005",
-          "3005024",
-          "3005101",
-          "3005123"
-        ],
-        "side": "defense"
+          "CC-1599",
+          "CC-1546",
+          "CC-1439",
+          "CC-1189",
+          "CC-1010",
+          "CC-1005"
+        ]
       },
       {
-        "claim": "Amount $55.68 and product sit within the cardholder's normal range ($10\u2013$161)",
+        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
         "source": "graph",
-        "ref": "query:history(C13171)",
+        "ref": "tigergraph:prior_cases_for_customer",
         "entity_ids": [
-          "3558054"
-        ],
-        "side": "defense"
+          "CASE-HHG-008"
+        ]
       },
       {
-        "claim": "On verification the cardholder recognises the charge as their own recurring payment",
+        "claim": "Cardholder confirms they still hold the card and did not make or authorise the purchase",
         "source": "customer",
         "ref": "evidence_request:1",
-        "entity_ids": [],
-        "side": "defense"
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy R1: Verify before you block on a weak signal. \u2014 Verify before you block on a weak signal. If the case rests on a single signal (including a risk score alone) and your assessed fraud probability is below 0.70, recommend `VERIFY_WITH_CUSTOMER` or `STEP_UP_AUTH` before a",
+        "source": "document",
+        "ref": "README.md#Fraud Policy R1: Verify before you block on a weak signal.",
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy 3a. A case is not a report \u2014 Two different things, and the agent produces both. **A case** (`CREATE_CASE`) is the bank's internal record of an investigation. Open one whenever fraud probability reaches 0.30, whenever you request evidence, or wheneve",
+        "source": "document",
+        "ref": "README.md#Fraud Policy 3a. A case is not a report",
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy R2: Customer denies the transaction. \u2014 Customer denies the transaction. Recommend `BLOCK_CARD` and `CREATE_CASE`. Add `FILE_REPORT` if exposure exceeds $1,000 or the case connects to a shared device profile or another card's fraud.",
+        "source": "document",
+        "ref": "README.md#Fraud Policy R2: Customer denies the transaction.",
+        "entity_ids": []
       }
     ],
     "similar_prior_cases": [
-      "CC-0003",
-      "CC-0009",
-      "CC-0010"
+      "CC-2454",
+      "CC-4510",
+      "CC-1180"
     ],
-    "summary": "Card C13171-K2 (customer C13171), trigger customer_report. Assessed legitimate at 2% confidence. Evidence did not support fraud; recommended to close/monitor per policy. A legitimate explanation accounts for the alert; the fraud hypothesis did not survive.",
+    "summary": "The case was triggered when the cardholder reported that they did not make the flagged purchase and confirmed they still hold the card. It was assumed from the customer that the dispute is unprompted and no recurring or familiar-merchant match exists. The decisive evidence was the customer's denial combined with a fraud probability of 0.848 and connection to prior confirmed-fraud cases. Consequently, the verdict is fraud, and the actions follow Fraud Policy R2, which dictates recommending BLOCK_CARD and CREATE_CASE when a customer denies the transaction.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-58054"
+    "graph_case_id": "CASE-HHG-008"
   },
   "evidence_requests": [
     {
       "type": "customer_validation",
       "asked_after_step": 5,
-      "assumed_response": "On verification the cardholder recognises the charge as their own recurring payment"
+      "assumed_response": "Cardholder confirms they still hold the card and did not make or authorise the purchase (assumed: the dispute is unprompted and no recurring or familiar-merchant match exists)"
     }
   ],
   "next_best_actions": {
     "initial": [
       {
-        "action": "CREATE_CASE",
-        "route": "auto",
-        "reason": "R7: dispute logged for the record"
-      },
-      {
         "action": "VERIFY_WITH_CUSTOMER",
         "route": "auto",
-        "reason": "R7: confirm the recurring charge with the cardholder"
+        "reason": "R1: assessed probability 0.48 rests on too little evidence to block; verify first"
       },
       {
-        "action": "WARN_CUSTOMER",
+        "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "R7: charge matches the cardholder's recurring pattern"
+        "reason": "3a: a case is opened whenever evidence is requested"
       }
     ],
     "final": [
       {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction; exposure $55.68 <= $2,500"
+      },
+      {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "R7: dispute logged for the record"
-      },
-      {
-        "action": "VERIFY_WITH_CUSTOMER",
-        "route": "auto",
-        "reason": "R7: confirm the recurring charge with the cardholder"
-      },
-      {
-        "action": "WARN_CUSTOMER",
-        "route": "auto",
-        "reason": "R7: charge matches the cardholder's recurring pattern"
+        "reason": "R2/3a: open the case and write it to the graph"
       }
     ],
-    "what_changed": "The simulated customer response moved confidence from 14% to 2%, which changed the recommended action."
+    "what_changed": "The assumed customer validation response moved the fraud probability from 0.48 to 0.85, so the recommendation changed from [VERIFY_WITH_CUSTOMER, CREATE_CASE] to [BLOCK_CARD, CREATE_CASE]."
   },
   "sar": {
     "file": false,
-    "reason": "No report: activity not confirmed or strongly suspected as fraud.",
+    "reason": "3a: no report \u2014 fraud confirmed but exposure $55.68 is not over $1,000, there is no shared device/region link to other customers' fraud, and the pattern (card_not_present_fraud) is documented. A case is opened without a report.",
     "narrative": "",
     "subjects": [],
     "total_amount_usd": 0,
     "activity_dates": []
   },
-  "stop_reason": "Fraud probability 2% at/below 0.15; cleared as legitimate (policy 6).",
-  "tool_calls": 14,
-  "tokens": 0,
-  "latency_s": 0.022
+  "stop_reason": "The customer validation response settled the question (policy 6): probability now 85%, verdict fraud. Further graph steps would not change the actions.",
+  "tool_calls": 23,
+  "tokens": 1738,
+  "latency_s": 33.776
 }

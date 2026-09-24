@@ -1,28 +1,11 @@
 {
   "case_id": "HHG-006",
-  "debate": {
-    "prosecution": [
-      "Cardholder reports they did not make the flagged purchase",
-      "Flagged transaction is unusual: amount $482.12 exceeds the card's 95th-pct $369.92",
-      "4 online purchases within a 48h window around the flagged one",
-      "Flagged transaction from a device marked New for this account",
-      "Cardholder reaffirms they did not make the purchase and still holds the card"
-    ],
-    "defense": [
-      "This device has been used on the account for 132 days (marked 'New') \u2014 it is not new to the cardholder",
-      "Purchaser domain gmail.com was used on 96 prior transactions by this cardholder"
-    ],
-    "conclusion": "The fraud hypothesis survived its strongest defense.",
-    "missing_evidence": [
-      "customer_validation"
-    ]
-  },
   "case": {
-    "status": "closed_fraud",
+    "status": "escalated",
     "verdict": "fraud",
-    "fraud_probability": 0.936,
-    "pattern": "card_not_present_new_device",
-    "pattern_description": "",
+    "fraud_probability": 0.933,
+    "pattern": "undocumented",
+    "pattern_description": "Threshold structuring: 4 online purchases within 30 minutes, each just under $500, apparently sized to stay below a $500 authorization limit. It affects a single card but matches five confirmed closed cases (CC-3748, CC-3841, CC-3907, CC-4086, CC-4124) and was found by a time-window scan of the card's online purchases around the alert.",
     "affected_txn_ids": [
       "3476602",
       "3476633",
@@ -31,9 +14,7 @@
     ],
     "first_suspicious_txn_id": "3476602",
     "connected_card_ids": [],
-    "connected_device_profiles": [
-      "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080"
-    ],
+    "connected_device_profiles": [],
     "exposure_usd": 1906.07,
     "evidence": [
       {
@@ -42,130 +23,120 @@
         "ref": "trigger:customer_report",
         "entity_ids": [
           "3476682"
-        ],
-        "side": "prosecution"
+        ]
       },
       {
-        "claim": "Flagged transaction is unusual: amount $482.12 exceeds the card's 95th-pct $369.92",
+        "claim": "4 online purchases in 30 minutes, each just under $500 ($478.95, $456.96, $488.04, $482.12) from 2 device profile(s) \u2014 amounts appear chosen to stay under a $500 authorization threshold",
         "source": "graph",
-        "ref": "query:history(C07297)",
-        "entity_ids": [
-          "3476682"
-        ],
-        "side": "prosecution"
-      },
-      {
-        "claim": "4 online purchases within a 48h window around the flagged one",
-        "source": "graph",
-        "ref": "query:window(C07297-K1,48h)",
+        "ref": "query:card_window(C07297-K1,1h)",
         "entity_ids": [
           "3476602",
           "3476633",
           "3476665",
           "3476682"
-        ],
-        "side": "prosecution"
+        ]
       },
       {
-        "claim": "Flagged transaction from a device marked New for this account",
+        "claim": "Flagged transaction came from a device marked New for this account (id_15)",
         "source": "graph",
         "ref": "query:identity(3476682)",
         "entity_ids": [
           "3476682"
-        ],
-        "side": "prosecution"
+        ]
       },
       {
-        "claim": "This device has been used on the account for 132 days (marked 'New') \u2014 it is not new to the cardholder",
+        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
         "source": "graph",
-        "ref": "query:device_history(C07297)",
+        "ref": "tigergraph:prior_cases_for_customer",
         "entity_ids": [
-          "3476682"
-        ],
-        "side": "defense"
+          "CASE-HHG-006"
+        ]
       },
       {
-        "claim": "Purchaser domain gmail.com was used on 96 prior transactions by this cardholder",
-        "source": "graph",
-        "ref": "query:merchant_history(C07297)",
-        "entity_ids": [
-          "3012743",
-          "3015809",
-          "3015958",
-          "3021030",
-          "3021986"
-        ],
-        "side": "defense"
+        "claim": "Fraud Policy R2: Customer denies the transaction. \u2014 Customer denies the transaction. Recommend `BLOCK_CARD` and `CREATE_CASE`. Add `FILE_REPORT` if exposure exceeds $1,000 or the case connects to a shared device profile or another card's fraud.",
+        "source": "document",
+        "ref": "README.md#Fraud Policy R2: Customer denies the transaction.",
+        "entity_ids": []
       },
       {
-        "claim": "Cardholder reaffirms they did not make the purchase and still holds the card",
-        "source": "customer",
-        "ref": "evidence_request:1",
-        "entity_ids": [],
-        "side": "prosecution"
+        "claim": "Fraud Policy 3a. A case is not a report \u2014 Two different things, and the agent produces both. **A case** (`CREATE_CASE`) is the bank's internal record of an investigation. Open one whenever fraud probability reaches 0.30, whenever you request evidence, or wheneve",
+        "source": "document",
+        "ref": "README.md#Fraud Policy 3a. A case is not a report",
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy R9: Undocumented patterns. \u2014 Undocumented patterns. When activity fits none of the known patterns but the evidence shows coordinated or repeated abuse across customers, recommend `CREATE_CASE`, `FILE_REPORT`, and `ESCALATE_TO_ANALYST`, and describe ",
+        "source": "document",
+        "ref": "README.md#Fraud Policy R9: Undocumented patterns.",
+        "entity_ids": []
       }
     ],
     "similar_prior_cases": [
-      "CC-0347",
-      "CC-5124",
-      "CC-2580"
+      "CC-3748",
+      "CC-3841",
+      "CC-4124"
     ],
-    "summary": "Card C07297-K1 (customer C07297), trigger customer_report. Assessed fraud at 94% confidence, pattern card_not_present_new_device, exposure $1,906.07. Nearest prior case: CC-0347. The fraud hypothesis survived its strongest defense.",
+    "summary": "The case was triggered when the cardholder reported they did not make the flagged purchase, alongside 4 online purchases completed within 30 minutes that each stayed just under $500 to avoid an authorization threshold, originating from a new device profile (id_15). Decisive evidence included the customer's denial and the coordinated sub-$500 amounts across multiple device profiles. It was assumed the customer was telling the truth regarding the disputed charges. The verdict is fraud, and the actions of blocking the card, creating an internal case, filing a report, and escalating to an analyst follow directly from Fraud Policies R2, 3a, and R9 due to the customer denial, exposure exceeding $1,000, and an undocumented coordinated pattern.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-76682"
+    "graph_case_id": "CASE-HHG-006"
   },
-  "evidence_requests": [
-    {
-      "type": "customer_validation",
-      "asked_after_step": 6,
-      "assumed_response": "Cardholder reaffirms they did not make the purchase and still holds the card"
-    }
-  ],
+  "evidence_requests": [],
   "next_best_actions": {
     "initial": [
       {
         "action": "BLOCK_CARD",
         "route": "L1",
-        "reason": "R2: unauthorized use confirmed"
+        "reason": "R2: customer denied the transaction; exposure $1,906.07 <= $2,500"
       },
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "R2/3a: open and record the case"
+        "reason": "R2/3a: open the case and write it to the graph"
       },
       {
         "action": "FILE_REPORT",
         "route": "L2",
-        "reason": "R2/R6: confirmed fraud meeting SAR criteria"
+        "reason": "3a: fraud confirmed/strongly suspected and R9: undocumented coordinated pattern"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R9: pattern fits none of the known typologies"
       }
     ],
     "final": [
       {
         "action": "BLOCK_CARD",
         "route": "L1",
-        "reason": "R2: unauthorized use confirmed"
+        "reason": "R2: customer denied the transaction; exposure $1,906.07 <= $2,500"
       },
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "R2/3a: open and record the case"
+        "reason": "R2/3a: open the case and write it to the graph"
       },
       {
         "action": "FILE_REPORT",
         "route": "L2",
-        "reason": "R2/R6: confirmed fraud meeting SAR criteria"
+        "reason": "3a: fraud confirmed/strongly suspected and R9: undocumented coordinated pattern"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R9: pattern fits none of the known typologies"
       }
     ],
-    "what_changed": "The simulated customer response moved confidence from 71% to 94%, which changed the recommended action."
+    "what_changed": "nothing"
   },
   "sar": {
     "file": true,
-    "reason": "R2/R6: fraud card_not_present_new_device with exposure $1,906.07",
-    "narrative": "On the dates in question, card C07297-K1 held by customer C07297 was involved in 4 transaction(s) between 2016-11-21 and 2016-11-21 totaling $1,906.07, flagged as suspicious. The activity comprised online transactions in billing region 264.0 ($478.95, $456.96, $488.04, $482.12). The pattern observed is card-not-present purchases from a device newly seen on the account. The transactions share the device profile 'Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080'. The cardholder, contacted during the investigation, did not confirm the activity. The activity is suspicious because it is inconsistent with the cardholder's established behaviour and matches a known fraud typology (card_not_present_new_device). The card has been recommended for blocking and reissue; connected cards, where present, were placed under monitoring. Total suspicious amount: $1,906.07.",
+    "reason": "3a: undocumented fraud confirmed or strongly suspected and R9: undocumented coordinated pattern",
+    "narrative": "This report concerns customer C07297, card C07297-K1. On 2016-11-21, 4 transaction(s) (3476602, 3476633, 3476665, 3476682) totalling $1,906.07 were identified as suspicious. The activity was conducted online, billed to region(s) 264, 476, with amounts of $478.95, $456.96, $488.04, $482.12. The 4 purchases were made within 30 minutes and each was just under $500, indicating amounts deliberately sized to stay below a $500 authorization threshold. They came from 2 device profile(s): Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080; iOS Device | iOS 11.2.1 | mobile safari 11.0 | 2208x1242. Supporting detail: Flagged transaction came from a device marked New for this account (id_15). The cardholder reported the transaction as unauthorized. The activity is suspicious because it is inconsistent with the cardholder's established behaviour and matches a coordinated pattern not covered by the bank's documented typologies, as in prior confirmed cases CC-3748, CC-3841. Recommended actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST. Total suspicious amount: $1,906.07.",
     "subjects": [
       "C07297",
       "C07297-K1",
-      "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1920x1080"
+      "CC-3748",
+      "CC-3841"
     ],
     "total_amount_usd": 1906.07,
     "activity_dates": [
@@ -173,8 +144,8 @@
       "2016-11-21"
     ]
   },
-  "stop_reason": "Fraud probability 94% at/above 0.85 with 5 independent graph evidence items; further steps would not change the decision (policy 6).",
-  "tool_calls": 14,
-  "tokens": 0,
-  "latency_s": 0.027
+  "stop_reason": "Fraud probability 93% is at/above 0.85 with 1 independent inculpatory graph findings; further steps would not change the decision (policy 6).",
+  "tool_calls": 24,
+  "tokens": 2463,
+  "latency_s": 14.916
 }

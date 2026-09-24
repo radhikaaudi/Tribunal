@@ -1,0 +1,9 @@
+// Keyword retrieval over policy / pattern / analyst-note chunks (GraphRAG text side).
+CREATE OR REPLACE QUERY policy_search(STRING keyword, INT k = 5) FOR GRAPH CLARA {
+  STRING pat = "%" + lower(keyword) + "%";
+  Docs = {PolicyDoc.*};
+  R = SELECT p FROM Docs:p
+      WHERE lower(p.text) LIKE pat OR lower(p.section) LIKE pat
+      LIMIT k;
+  PRINT R AS docs;
+}

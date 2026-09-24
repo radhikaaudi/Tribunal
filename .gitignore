@@ -1,2 +1,11 @@
 # Data files (kept locally, not in git — some exceed GitHub's 100MB limit)
 dataset/
+.venv/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+.idea/
+memory/mcp_server.log
+drive-download-*/
+*.zip

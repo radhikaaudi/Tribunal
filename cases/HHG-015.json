@@ -1,175 +1,173 @@
 {
   "case_id": "HHG-015",
-  "debate": {
-    "prosecution": [
-      "Bank model risk score 0.77 on the flagged transaction (a reason to look, not a verdict)",
-      "Flagged transaction is unusual: amount $599.94 exceeds the card's 95th-pct $450.48",
-      "Flagged transaction from a device marked New for this account",
-      "Distinctive device profile shared with 1 other card(s) within 30 days (C05704-K2)",
-      "Shares a device with known-fraud customer(s) ['c01155', 'c05292', 'c05704']"
-    ],
-    "defense": [
-      "Purchaser domain anonymous.com was used on 17 prior transactions by this cardholder"
-    ],
-    "conclusion": "The fraud hypothesis survived its strongest defense.",
-    "missing_evidence": []
-  },
   "case": {
-    "status": "closed_fraud",
-    "verdict": "fraud",
-    "fraud_probability": 0.921,
+    "status": "escalated",
+    "verdict": "uncertain",
+    "fraud_probability": 0.464,
     "pattern": "card_not_present_new_device",
     "pattern_description": "",
     "affected_txn_ids": [
       "3464869"
     ],
     "first_suspicious_txn_id": "3464869",
-    "connected_card_ids": [
-      "C05704-K2"
-    ],
-    "connected_device_profiles": [
-      "Trident/7.0 | Windows 8.1 | ie 11.0 for desktop | 1680x1050"
-    ],
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
     "exposure_usd": 599.94,
     "evidence": [
       {
-        "claim": "Bank model risk score 0.77 on the flagged transaction (a reason to look, not a verdict)",
+        "claim": "Bank model risk score 0.77 on the flagged transaction opened the investigation; it is not used as evidence (in closed cases every cleared alert scored above 0.7 versus 24% of confirmed frauds)",
         "source": "graph",
-        "ref": "field:risk_score",
+        "ref": "Transaction.risk_score",
         "entity_ids": [
           "3464869"
-        ],
-        "side": "prosecution"
+        ]
       },
       {
-        "claim": "Flagged transaction is unusual: amount $599.94 exceeds the card's 95th-pct $450.48",
+        "claim": "Flagged transaction is unusual: amount $599.94 exceeds the customer's 95th-pct $444.96",
         "source": "graph",
-        "ref": "query:history(C03042)",
+        "ref": "query:customer_history(C03042)",
         "entity_ids": [
           "3464869"
-        ],
-        "side": "prosecution"
+        ]
       },
       {
-        "claim": "Flagged transaction from a device marked New for this account",
+        "claim": "Flagged transaction came from a device marked New for this account (id_15)",
         "source": "graph",
         "ref": "query:identity(3464869)",
         "entity_ids": [
           "3464869"
-        ],
-        "side": "prosecution"
+        ]
       },
       {
-        "claim": "Distinctive device profile shared with 1 other card(s) within 30 days (C05704-K2)",
+        "claim": "Customer has 3 closed case(s) on file: 2 confirmed fraud (card_not_present_new_device x2), 1 cleared",
         "source": "graph",
-        "ref": "query:device_neighbors('Trident/7.0 | Windows 8.1 | ie 11.0 for ...')",
+        "ref": "query:prior_cases_for_customer(C03042)",
         "entity_ids": [
-          "C05704"
-        ],
-        "side": "prosecution"
+          "CC-0615",
+          "CC-1313",
+          "CC-3886"
+        ]
       },
       {
-        "claim": "Shares a device with known-fraud customer(s) ['c01155', 'c05292', 'c05704']",
+        "claim": "TigerGraph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase reaches 8 confirmed-fraud closed case(s)",
         "source": "graph",
-        "ref": "query:link_to_known_fraud",
+        "ref": "tigergraph:link_to_known_fraud",
         "entity_ids": [
-          "C01155",
-          "C05292",
-          "C05704",
-          "C11227",
-          "C11413"
-        ],
-        "side": "prosecution"
+          "CC-4250",
+          "CC-2569",
+          "CC-3036",
+          "CC-2353",
+          "CC-4071",
+          "CC-3249"
+        ]
       },
       {
-        "claim": "Purchaser domain anonymous.com was used on 17 prior transactions by this cardholder",
+        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
         "source": "graph",
-        "ref": "query:merchant_history(C03042)",
+        "ref": "tigergraph:prior_cases_for_customer",
         "entity_ids": [
-          "3011702",
-          "3018410",
-          "3023497",
-          "3023553",
-          "3034574"
-        ],
-        "side": "defense"
+          "CASE-HHG-015"
+        ]
+      },
+      {
+        "claim": "No reply from the customer within 24 hours",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy R1: Verify before you block on a weak signal. \u2014 Verify before you block on a weak signal. If the case rests on a single signal (including a risk score alone) and your assessed fraud probability is below 0.70, recommend `VERIFY_WITH_CUSTOMER` or `STEP_UP_AUTH` before a",
+        "source": "document",
+        "ref": "README.md#Fraud Policy R1: Verify before you block on a weak signal.",
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy 3a. A case is not a report \u2014 Two different things, and the agent produces both. **A case** (`CREATE_CASE`) is the bank's internal record of an investigation. Open one whenever fraud probability reaches 0.30, whenever you request evidence, or wheneve",
+        "source": "document",
+        "ref": "README.md#Fraud Policy 3a. A case is not a report",
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy R8: Escalate when uncertain and exposed. \u2014 Escalate when uncertain and exposed. If the verdict is `uncertain` and exposure exceeds $500, or the evidence conflicts, recommend `ESCALATE_TO_ANALYST`.",
+        "source": "document",
+        "ref": "README.md#Fraud Policy R8: Escalate when uncertain and exposed.",
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy R4: No reply within 24 hours. \u2014 No reply within 24 hours. Recommend `MONITOR_CARD` and `DECLINE_TRANSACTION` for pending authorizations. Escalate if exposure exceeds $500.",
+        "source": "document",
+        "ref": "README.md#Fraud Policy R4: No reply within 24 hours.",
+        "entity_ids": []
       }
     ],
     "similar_prior_cases": [
+      "CC-3886",
       "CC-4140",
-      "CC-4295",
-      "CC-3887"
+      "CC-4295"
     ],
-    "summary": "Card C03042-K1 (customer C03042), trigger risk_score. Assessed fraud at 92% confidence, pattern card_not_present_new_device, exposure $599.94, linked to other cards by shared origin. Nearest prior case: CC-4140. The fraud hypothesis survived its strongest defense.",
+    "summary": "An investigation was triggered by a bank risk score of 0.77, an unusual transaction amount of $599.94 exceeding the customer's 95th percentile, and a new device ID. It was assumed the customer would provide no reply within 24 hours due to conflicting evidence and a missing step-up authentication. The verdict is uncertain with a fraud probability of 0.464. Consequently, actions to monitor the card, decline the transaction, create a case, and escalate to an analyst follow from Fraud Policies R4 and R8 because the verdict is uncertain, there was no reply within 24 hours, and exposure exceeds $500.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-64869"
+    "graph_case_id": "CASE-HHG-015"
   },
-  "evidence_requests": [],
+  "evidence_requests": [
+    {
+      "type": "step_up_auth",
+      "asked_after_step": 6,
+      "assumed_response": "No reply from the customer within 24 hours (assumed because the graph evidence leans only 2.6x toward fraud \u2014 too weak to predict a denial, too strong to predict a confirmation)"
+    }
+  ],
   "next_best_actions": {
     "initial": [
       {
-        "action": "BLOCK_CARD",
-        "route": "L1",
-        "reason": "R2: unauthorized use confirmed"
+        "action": "STEP_UP_AUTH",
+        "route": "auto",
+        "reason": "R1: assessed probability 0.46 rests on too little evidence to block; verify first"
       },
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "R2/3a: open and record the case"
+        "reason": "3a: a case is opened whenever evidence is requested"
       },
       {
-        "action": "FILE_REPORT",
-        "route": "L2",
-        "reason": "R2/R6: confirmed fraud meeting SAR criteria"
-      },
-      {
-        "action": "MONITOR_CONNECTED_CARDS",
+        "action": "ESCALATE_TO_ANALYST",
         "route": "auto",
-        "reason": "R6: monitor cards sharing the origin"
+        "reason": "R8: uncertain with exposure $599.94 over $500"
       }
     ],
     "final": [
       {
-        "action": "BLOCK_CARD",
+        "action": "MONITOR_CARD",
+        "route": "auto",
+        "reason": "R4: no reply within 24 hours; raise monitoring for 72h"
+      },
+      {
+        "action": "DECLINE_TRANSACTION",
         "route": "L1",
-        "reason": "R2: unauthorized use confirmed"
+        "reason": "R4: decline pending authorizations while unverified"
       },
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "R2/3a: open and record the case"
+        "reason": "3a: case stays open pending the customer's reply"
       },
       {
-        "action": "FILE_REPORT",
-        "route": "L2",
-        "reason": "R2/R6: confirmed fraud meeting SAR criteria"
-      },
-      {
-        "action": "MONITOR_CONNECTED_CARDS",
+        "action": "ESCALATE_TO_ANALYST",
         "route": "auto",
-        "reason": "R6: monitor cards sharing the origin"
+        "reason": "R4/R8: uncertain with exposure $599.94 over $500"
       }
     ],
-    "what_changed": "nothing"
+    "what_changed": "The assumed step up auth response moved the fraud probability from 0.46 to 0.46, so the recommendation changed from [STEP_UP_AUTH, CREATE_CASE, ESCALATE_TO_ANALYST] to [MONITOR_CARD, DECLINE_TRANSACTION, CREATE_CASE, ESCALATE_TO_ANALYST]."
   },
   "sar": {
-    "file": true,
-    "reason": "R2/R6: fraud card_not_present_new_device with exposure $599.94 and shared-origin links to other cards",
-    "narrative": "On the dates in question, card C03042-K1 held by customer C03042 was involved in 1 transaction(s) between 2016-11-17 and 2016-11-17 totaling $599.94, flagged as suspicious. The activity comprised online transactions in billing region 327.0 ($599.94). The pattern observed is card-not-present purchases from a device newly seen on the account. The transactions share the device profile 'Trident/7.0 | Windows 8.1 | ie 11.0 for desktop | 1680x1050'. This device profile also appears on other card(s): C05704-K2, indicating a common actor across cardholders. The cardholder, contacted during the investigation, did not confirm the activity. The activity is suspicious because it is inconsistent with the cardholder's established behaviour and matches a known fraud typology (card_not_present_new_device). The card has been recommended for blocking and reissue; connected cards, where present, were placed under monitoring. Total suspicious amount: $599.94.",
-    "subjects": [
-      "C03042",
-      "C03042-K1",
-      "C05704-K2",
-      "Trident/7.0 | Windows 8.1 | ie 11.0 for desktop | 1680x1050"
-    ],
-    "total_amount_usd": 599.94,
-    "activity_dates": [
-      "2016-11-17",
-      "2016-11-17"
-    ]
+    "file": false,
+    "reason": "3a: no report \u2014 activity is not confirmed or strongly suspected fraud.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
   },
-  "stop_reason": "Fraud probability 92% at/above 0.85 with 6 independent graph evidence items; further steps would not change the decision (policy 6).",
-  "tool_calls": 14,
-  "tokens": 0,
-  "latency_s": 0.039
+  "stop_reason": "No reply to the step up auth request within 24 hours; probability 46% stays uncertain and further graph steps are unlikely to change it, so the card is monitored and pending authorizations declined under R4 (policy 6).",
+  "tool_calls": 24,
+  "tokens": 2073,
+  "latency_s": 63.621
 }

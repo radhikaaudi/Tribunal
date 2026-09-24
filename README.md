@@ -1,106 +1,108 @@
-# CLARA — Confidence-Led Adaptive Risk Agent
+# DefAttack — Agentic Fraud Investigation
 
-> An agentic fraud investigator for the **TigerGraph Agentic Fraud Investigation — Hacker House Goa 2026** challenge, running on the real HHGOA / IEEE-CIS dataset.
+An agentic fraud investigator for the **TigerGraph Agentic Fraud Investigation — Hacker House Goa 2026** challenge, running on the real HHGOA / IEEE-CIS dataset.
 
-CLARA takes a case from the case pack, investigates it against the transaction graph and the bank's closed cases, works out **what kind of fraud it is (if any)**, **how far it goes**, and **what to do next under the Fraud Policy** — and it **knows when to stop**. It treats an investigation as an explicit uncertainty-reduction loop: a fraud belief (log-odds) starts from a base rate nudged by the risk score / customer report — *never* the risk score as a verdict — and moves by auditable Bayesian updates as evidence arrives. It stops the moment the decision is settled (policy §6), then recommends a policy-bound next-best-action with the correct approval route, and files a SAR only when policy 3a calls for one.
+> Naming: the application is **DefAttack** (prosecution *attacks* the alert, defence *defends* the cardholder). The Python package is `clara/` and the TigerGraph graph is `CLARA`, from the project's first name.
 
-Output: **one `cases/HHG-XXX.json` per case, in the exact submission format** (case + evidence_requests + next_best_actions.initial/final + sar + stop_reason).
+DefAttack takes an alert (risk score, customer report or analyst request), investigates it over the transaction graph and the bank's closed cases, decides **what kind of fraud it is (if any)**, **how far it goes** and **what to do next under the Fraud Policy**, and **knows when it needs more evidence and when to stop**. The investigation is an explicit uncertainty-reduction loop: a fraud belief (log-odds) is moved by auditable likelihood-ratio updates from a *prosecutor* pass (evidence for fraud) and a *defender* pass (legitimate explanations), then a policy-bound next-best-action is chosen before and after a (simulated) customer / step-up response.
+
+Output: `cases/HHG-001.json … HHG-020.json` in the exact README answer format (case + evidence_requests + next_best_actions.initial/final + sar + stop_reason + tool_calls/tokens/latency).
 
 ---
 
 ## Quickstart
 
 ```bash
-cd clara
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt pyarrow
 
-python data/build_cache.py     # one-time: dataset/*.csv (675MB) -> slim parquet (~15s)
-python run_cases.py            # investigate all 20 cases -> cases/HHG-XXX.json
-streamlit run app/streamlit_app.py   # analyst console (belief meter, evidence, NBA, SAR)
+# put the HHGOA files in dataset/  (transactions.csv, identity.csv, closed_cases_history.csv, case_pack.csv, README.md)
+python data/build_cache.py            # one-time: 708MB CSV -> dataset/_slim.parquet (~15s)
+python run_cases.py                   # investigate all 20 -> cases/HHG-XXX.json (+ memory/agent_cases.jsonl)
+python validate_answers.py            # format + policy checks on every answer file
+streamlit run app/streamlit_app.py    # analyst console
 ```
 
-`.env` is optional (works offline with template SAR narratives). Add an LLM key to
-polish narratives, or TigerGraph creds to run against a live instance.
+TigerGraph (Savanna or Community Edition 4.x), credentials in `.env` (see `.env.example`):
+
+```bash
+python graph/load.py --reset          # schema + subset load (~54k txns, 5,565 closed cases, policy chunks) + install queries
+python run_cases.py                   # now also writes every case to the graph (written_to_graph=true)
+python -m clara.mcp_tools --serve     # TigerGraph MCP server (pyTigerGraph-mcp) — also wired in .mcp.json
+```
+
+Optional LLM for the case summary and SAR prose: `CLARA_LLM_PROVIDER=gemini` + `GEMINI_API_KEY` (Google AI Studio, models `gemini-flash-lite-latest` → `gemini-3-flash-preview` (automatic fallback)), or `anthropic` + `ANTHROPIC_API_KEY`. Calls are paced and retried for free-tier rate limits.
 
 ---
 
 ## How it works
 
 ```
- case (risk_score | customer_report | analyst_request)
-        │
-        ▼  base-rate belief, nudged by the trigger (score is a reason to look, not a verdict)
-   ┌─────────────┐   run evidence probes over the graph      ┌────────────────────────┐
-   │ investigator│ ────────────────────────────────────────▶ │ signals.py probes:      │
-   │  (belief +  │   each fires -> belief.update(LR)          │ card-testing, CNP burst,│
-   │   policy)   │ ◀──────────────────────────────────────── │ new device, out-of-     │
-   └──────┬──────┘   stop at 0.85/0.15 w/ >=2 evidence (§6)   │ region, shared-device   │
-          │                                                   │ ring, link-to-known-    │
-          │  R1: verify before block on a weak signal         │ fraud, recurring-match  │
-          │  simulate customer/step-up response (stubbed)     └────────────┬────────────┘
-          ▼                                                                │
-   policy_real.py (R1-R10, routes, SAR 3a)                       realdata.py  ──▶ TigerGraph
-   narrate_real.py (SAR 5W1H narrative)                          (pandas graph | GSQL+vectors+MCP)
-          │
-          ▼
-   case + initial/final NBA + SAR + similar prior cases + case written to graph
+ trigger (risk_score | customer_report | analyst_request)
+    │   the risk score opens the case but is NOT evidence (see "calibration" below)
+    ▼
+ PROSECUTOR probes (graph)            DEFENDER probes (graph)             CONTEXT
+ card testing (R5) · structuring      recurring charge (R7) · familiar     customer's closed cases
+ CNP burst · new device / proxy       specific device · familiar merchant  agent's own earlier cases
+ out-of-region clone vs trip          amount/product in range · tenure     (case memory)
+ account takeover · device-ring
+ neighbours (R6) · path to known fraud
+    │  each finding = claim + ref + entity IDs + likelihood ratio -> Bayesian log-odds update
+    ▼
+ belief p_graph ──► INITIAL next-best-action (R1: verify / step-up before any block on thin evidence)
+    │
+    ├─ 0.15 < p < 0.85 → request evidence (customer_validation | step_up_auth); the simulated reply
+    │   follows what the graph predicts: denial (net LR ≥ 4) · no reply in 24h (2–4, R4) · confirm (< 2, R3)
+    ▼
+ p_final ──► verdict (≥2 independent inculpatory findings for fraud, policy 6) → pattern → exposure
+    ▼
+ FINAL next-best-action + approval route (policy §2) · SAR only under 3a · stop_reason (policy 6)
+    ▼
+ explanation grounded in policy chunks (GraphRAG) · case written to memory + TigerGraph
 ```
 
-**Design rule:** the LLM only narrates; every decision (verdict thresholds, actions,
-routes, SAR) is a deterministic function of the evidence — auditable and reproducible.
+**Design rule:** decisions (verdict thresholds, actions, routes, SAR) are deterministic functions of the evidence and the policy — auditable and reproducible. The LLM, when enabled, only writes the summary and SAR prose from the retrieved evidence + policy chunks; it cannot change a decision.
 
 | File | Role |
 |---|---|
-| `clara/realdata.py` | loads the slim parquet + closed cases + case pack; device/region indexes; fraud-memory; **specific-vs-generic device-profile** rule |
-| `clara/signals.py` | evidence probes for the five patterns + shared-device rings + known-fraud links + recurring-charge (R7) |
-| `clara/belief.py` | log-odds belief; `update(LR)` |
-| `clara/policy_real.py` | the Fraud Policy: actions, approval routes, SAR criteria (3a), thresholds R1–R10, §6 |
-| `clara/investigator.py` | the loop: probes → belief → pattern → simulated response → initial/final NBA → SAR → answer JSON |
-| `clara/narrate_real.py` | FinCEN-style SAR narrative (5W1H) + case summary |
-| `run_cases.py` | run all 20 → `cases/HHG-XXX.json` |
-| `app/streamlit_app.py` | analyst console (demo) |
-| `graph/` | TigerGraph schema + GSQL queries + loader for the production/graded path |
+| `clara/investigator.py` | the loop: probes → belief → evidence request → verdict → pattern → initial/final NBA → SAR → answer JSON → write-back |
+| `clara/signals.py` | the evidence probes (all anchored in time on the flagged transaction) |
+| `clara/realdata.py` | dataset loader, device/customer indexes, closed-case memory + hybrid retrieval |
+| `clara/policy_real.py` | action identifiers, approval routes, thresholds, SAR criteria (3a) |
+| `clara/knowledge.py` | the document side of GraphRAG: policy rules R1–R10, 3a/3b/§2/§4–6 and the five patterns, chunked from the dataset README |
+| `clara/memory.py` | the agent's own case memory: every finished case, retrievable by shared device / card / customer |
+| `clara/tg.py` | TigerGraph client: installed GSQL queries, policy search, `write_case` (InvestigationCase vertex + edges) |
+| `clara/mcp_tools.py` | TigerGraph MCP client/server wrapper (official `pyTigerGraph-mcp`, stdio) |
+| `clara/narrate_real.py`, `clara/llm.py` | SAR narrative (FinCEN 5W1H) · optional Claude summary/SAR polish |
+| `graph/schema.gsql`, `graph/queries/*.gsql`, `graph/load.py` | graph schema, GSQL evidence queries, loader |
+| `app/streamlit_app.py` | analyst console: live belief meter, prosecution vs defence, evidence request, initial→final NBA, case memory, SAR |
+| `validate_answers.py`, `validate_on_closed.py` | answer-format/policy validator · accuracy check against closed cases |
 
-### Key modelling decisions (from reading the data)
-- **Investigate at `customer_id`** — `card1` is 1:1 with customer; the `-K1/-K2` card_id suffix isn't reconstructable from transactions, so it's used as a label only.
-- **The risk score is evidence, not the answer** — belief starts at a 0.25 base rate; a high score is a mild nudge. Half the cases resolve as legitimate, as the README warns.
-- **Device profiles: specific vs generic** — a generic OS string ("Windows | …", shared by hundreds) never links accounts; a specific hardware/build string ("SM-G935F Build/… | Android 7.0 | …") does. Many cards on one such profile in a 30-day window is a device farm (→ `undocumented` / R6/R9).
-- **A fraud verdict needs ≥2 independent inculpatory signals** (policy §6); single-signal cases go to VERIFY/ESCALATE under R1/R8.
+## What we learned from the data (and built into the agent)
+
+- **`customer_id` is an issuer group, not a person.** Some "customers" have 10,000+ transactions across 30+ regions, so per-customer history probes are weak and exact-amount "recurring" matches happen by chance. R7 is only claimed with a same-merchant proxy (non-free-mail domain), same amount, same day-of-month in ≥3 months.
+- **The risk score is anti-informative among alerts.** In the closed cases every cleared alert scored > 0.7 (mean 0.88) versus 24% of confirmed frauds (mean 0.47). The score opens an investigation and moves nothing.
+- **Two undocumented patterns live in the closed cases** and in the exam: (1) *threshold structuring* — four online purchases in ~40 minutes each just under $500 (CC-3748 …; HHG-006), (2) a *device farm* — one `SM-G935F … Android 7.0` profile behind an anonymous proxy, marked New, used by 28 customers in three weeks (CC-2649 …; HHG-014). Both are detected by probes, described in `pattern_description`, and routed under R9.
+- **Generic fingerprints never link accounts.** OS-only DeviceInfo strings and browser engines (`Windows`, `iOS Device`, `Trident/7.0`, `rv:…`) are shared by hundreds; only hardware/build strings form rings.
+- **Evidence must be anchored in time.** An earlier version reported "card testing" on HHG-011 from an August episode; probes now look only around the alert, which revealed the real story — a four-card SM-G610F device ring within three days.
 
 ## Results on the 20 cases
-9 legitimate · 7 fraud · 4 uncertain · 5 SARs — including HHG-014 (analyst-flagged **device ring → undocumented pattern**) and HHG-010 (risk alert where the NBA evolves **VERIFY → BLOCK** as the simulated customer denial moves confidence 61% → 93%).
 
----
+9 fraud · 7 legitimate · 4 uncertain · 3 SARs. Highlights:
 
-## TigerGraph (the mandatory tech)
+- **HHG-006** — customer report → four purchases just under $500 in 30 min → `undocumented` (threshold structuring), exposure $1,906.07, SAR, R9 escalation.
+- **HHG-014** — analyst request → device-neighbour traversal finds a 28-customer device farm linked to four confirmed closed cases → `undocumented`, 27 connected cards monitored (R6), SAR.
+- **HHG-011** — customer report → shared device with three other cards in three days, two with confirmed fraud → R6 shared origin → SAR + `MONITOR_CONNECTED_CARDS`.
+- **HHG-010 / HHG-015** — high-score, high-exposure online alerts with only a new device + unusual amount: STEP_UP_AUTH first (R1), no reply assumed → `uncertain`, MONITOR + DECLINE (R4) and ESCALATE (R8).
+- **HHG-012 / HHG-017** — suspicious-looking alerts that the defender explains (familiar amount/product, habitual purchase size) → verification → cleared under R3.
 
-The investigation currently runs on a pandas graph-client over the real data (fast to
-iterate, fully offline). `graph/` contains the TigerGraph path to load the same data and
-run the same evidence as GSQL:
+Case memory in action: after HHG-014 is closed, a new alert on ring member C09906 retrieves HHG-014 from memory and inherits the ring finding.
 
-```bash
-# TigerGraph Community Edition 4.2+ (graph + native vectors, free), TG_* in .env
-python graph/install.py --reset    # schema + load + install GSQL queries
-```
+## Honest limitations
 
-- **Schema** (`graph/schema.gsql`) follows the dataset's suggested schema: `Customer, Card, Transaction, DeviceProfile, EmailDomain, BillingRegion, ClosedCase` + edges, with a native **vector attribute** on `ClosedCase` for hybrid case-memory retrieval (TG 4.2+).
-- **Evidence queries** (`graph/queries/`) map 1:1 to `signals.py` (device-neighbours, card-window, region-history, path-to-known-fraud, `vectorSearch` over closed cases).
-- **MCP**: expose the installed queries via `tigergraph-mcp` (`run_installed_query`, `search_top_k_similarity`) so the agent calls the graph as tools.
-- **Write-back**: each finished case becomes a graph vertex — the memory the next case retrieves.
+- Likelihood ratios are hand-set. The closed cases cannot calibrate them cleanly: confirmed frauds were mostly customer-reported while cleared cases were all high-score model alerts, so the two populations differ. On 160 closed cases re-run as risk-score alerts (`validate_on_closed.py`), DefAttack clears most historical frauds — without the customer's denial, a single stolen-card purchase usually looks ordinary. That is the case for asking the customer (R1), not for blocking.
+- Customer, step-up and analyst responses are simulated (as the challenge requires) and the assumption is recorded in each `evidence_requests` entry together with the graph evidence that motivated it.
+- Card-level identity (`-K1` / `-K2`) is not reconstructable from the transaction columns; investigation is at customer level and card IDs come from the case pack / closed cases.
+- The pandas probes and the GSQL queries implement the same traversals; the offline run uses pandas, and with TigerGraph configured the agent additionally runs the graph queries (direct REST and via MCP) and writes each case to the graph.
 
-> The load path is provided and mirrors the pandas client; finalize the vector upsert on
-> a live 4.2+ instance. Load the closed-case narratives, the policy, and the FinCEN/FATF
-> references into TigerGraph vector search for GraphRAG grounding.
-
-## Answer format
-Each `cases/HHG-XXX.json` has the three required parts — `case` (status, verdict,
-fraud_probability, pattern, affected_txn_ids, connected_card_ids, exposure, evidence with
-citations, similar_prior_cases, summary, written_to_graph), `evidence_requests`,
-`next_best_actions.initial/final` + `what_changed`, and `sar` — plus `stop_reason`,
-`tool_calls`, `tokens`, `latency_s`. All IDs are real dataset IDs.
-
-## Limitations (honest)
-- Likelihood ratios are hand-calibrated against the closed-case base rates, not learned; the closed cases are the place to tune them further.
-- Customer/step-up responses are simulated (as the challenge requires); the assumption is recorded in `evidence_requests` and driven by the graph evidence.
-- The TigerGraph load path needs a live 4.2+ instance to finalize the vector upsert.
+`legacy/` holds the first synthetic-data prototype and is not part of the submission pipeline.

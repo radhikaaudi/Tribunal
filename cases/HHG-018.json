@@ -1,24 +1,10 @@
 {
   "case_id": "HHG-018",
-  "debate": {
-    "prosecution": [
-      "Cardholder reports they did not make the flagged purchase",
-      "Cardholder reaffirms they did not make the purchase and still holds the card"
-    ],
-    "defense": [
-      "Flagged transaction is consistent with the card's history",
-      "Amount $39.08 and product sit within the cardholder's normal range ($26\u2013$445)"
-    ],
-    "conclusion": "The fraud hypothesis survived its strongest defense.",
-    "missing_evidence": [
-      "customer_validation"
-    ]
-  },
   "case": {
-    "status": "open",
+    "status": "closed_fraud",
     "verdict": "fraud",
-    "fraud_probability": 0.82,
-    "pattern": "card_not_present_fraud",
+    "fraud_probability": 0.848,
+    "pattern": "account_takeover",
     "pattern_description": "",
     "affected_txn_ids": [
       "3491361"
@@ -34,49 +20,86 @@
         "ref": "trigger:customer_report",
         "entity_ids": [
           "3491361"
-        ],
-        "side": "prosecution"
+        ]
       },
       {
-        "claim": "Flagged transaction is consistent with the card's history",
+        "claim": "Amount $39.08 and product W sit within the customer's normal range ($26\u2013$445)",
         "source": "graph",
-        "ref": "query:history(C02354)",
+        "ref": "query:customer_history(C02354)",
         "entity_ids": [
           "3491361"
-        ],
-        "side": "defense"
+        ]
       },
       {
-        "claim": "Amount $39.08 and product sit within the cardholder's normal range ($26\u2013$445)",
+        "claim": "Customer has 20 closed case(s) on file: 19 confirmed fraud (account_takeover x11, out_of_region_use x7, card_not_present_fraud x1), 1 cleared",
         "source": "graph",
-        "ref": "query:history(C02354)",
+        "ref": "query:prior_cases_for_customer(C02354)",
         "entity_ids": [
-          "3491361"
-        ],
-        "side": "defense"
+          "CC-4942",
+          "CC-5441",
+          "CC-5558"
+        ]
       },
       {
-        "claim": "Cardholder reaffirms they did not make the purchase and still holds the card",
+        "claim": "TigerGraph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase reaches 580 confirmed-fraud closed case(s)",
+        "source": "graph",
+        "ref": "tigergraph:link_to_known_fraud",
+        "entity_ids": [
+          "CC-1005",
+          "CC-0319",
+          "CC-0033",
+          "CC-0020",
+          "CC-3773",
+          "CC-3737"
+        ]
+      },
+      {
+        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
+        "source": "graph",
+        "ref": "tigergraph:prior_cases_for_customer",
+        "entity_ids": [
+          "CASE-HHG-018"
+        ]
+      },
+      {
+        "claim": "Cardholder confirms they still hold the card and did not make or authorise the purchase",
         "source": "customer",
         "ref": "evidence_request:1",
-        "entity_ids": [],
-        "side": "prosecution"
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy R1: Verify before you block on a weak signal. \u2014 Verify before you block on a weak signal. If the case rests on a single signal (including a risk score alone) and your assessed fraud probability is below 0.70, recommend `VERIFY_WITH_CUSTOMER` or `STEP_UP_AUTH` before a",
+        "source": "document",
+        "ref": "README.md#Fraud Policy R1: Verify before you block on a weak signal.",
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy 3a. A case is not a report \u2014 Two different things, and the agent produces both. **A case** (`CREATE_CASE`) is the bank's internal record of an investigation. Open one whenever fraud probability reaches 0.30, whenever you request evidence, or wheneve",
+        "source": "document",
+        "ref": "README.md#Fraud Policy 3a. A case is not a report",
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy R2: Customer denies the transaction. \u2014 Customer denies the transaction. Recommend `BLOCK_CARD` and `CREATE_CASE`. Add `FILE_REPORT` if exposure exceeds $1,000 or the case connects to a shared device profile or another card's fraud.",
+        "source": "document",
+        "ref": "README.md#Fraud Policy R2: Customer denies the transaction.",
+        "entity_ids": []
       }
     ],
     "similar_prior_cases": [
-      "CC-4837",
-      "CC-1640",
-      "CC-1735"
+      "CC-3634",
+      "CC-3433",
+      "CC-1481"
     ],
-    "summary": "Card C02354-K2 (customer C02354), trigger customer_report. Assessed fraud at 82% confidence, pattern card_not_present_fraud, exposure $39.08. Nearest prior case: CC-4837. The fraud hypothesis survived its strongest defense.",
+    "summary": "This case was triggered when the cardholder reported they did not make the flagged purchase. Decisive evidence includes the customer confirming they still hold the card and did not make or authorize the purchase, alongside an assessed fraud probability of 0.848. It was assumed from the customer that the dispute is unprompted and no recurring or familiar-merchant match exists. The verdict is fraud, and the actions of blocking the card and creating a case follow from Fraud Policy R2, which mandates these steps when a customer denies a transaction.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-91361"
+    "graph_case_id": "CASE-HHG-018"
   },
   "evidence_requests": [
     {
       "type": "customer_validation",
-      "asked_after_step": 3,
-      "assumed_response": "Cardholder reaffirms they did not make the purchase and still holds the card"
+      "asked_after_step": 5,
+      "assumed_response": "Cardholder confirms they still hold the card and did not make or authorise the purchase (assumed: the dispute is unprompted and no recurring or familiar-merchant match exists)"
     }
   ],
   "next_best_actions": {
@@ -84,38 +107,38 @@
       {
         "action": "VERIFY_WITH_CUSTOMER",
         "route": "auto",
-        "reason": "R1: single/weak signal below 0.70, verify before blocking"
+        "reason": "R1: assessed probability 0.48 rests on too little evidence to block; verify first"
       },
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "3a: open a case on a dispute / evidence request / prob >= 0.30"
+        "reason": "3a: a case is opened whenever evidence is requested"
       }
     ],
     "final": [
       {
         "action": "BLOCK_CARD",
         "route": "L1",
-        "reason": "R2: unauthorized use confirmed"
+        "reason": "R2: customer denied the transaction; exposure $39.08 <= $2,500"
       },
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "R2/3a: open and record the case"
+        "reason": "R2/3a: open the case and write it to the graph"
       }
     ],
-    "what_changed": "The simulated customer response moved confidence from 43% to 82%, which changed the recommended action."
+    "what_changed": "The assumed customer validation response moved the fraud probability from 0.48 to 0.85, so the recommendation changed from [VERIFY_WITH_CUSTOMER, CREATE_CASE] to [BLOCK_CARD, CREATE_CASE]."
   },
   "sar": {
     "file": false,
-    "reason": "No report: confirmed fraud but exposure $39.08 is under $1,000 and no shared origin (3a).",
+    "reason": "3a: no report \u2014 fraud confirmed but exposure $39.08 is not over $1,000, there is no shared device/region link to other customers' fraud, and the pattern (account_takeover) is documented. A case is opened without a report.",
     "narrative": "",
     "subjects": [],
     "total_amount_usd": 0,
     "activity_dates": []
   },
-  "stop_reason": "A verification response settled the question (policy 6).",
-  "tool_calls": 14,
-  "tokens": 0,
-  "latency_s": 0.02
+  "stop_reason": "The customer validation response settled the question (policy 6): probability now 85%, verdict fraud. Further graph steps would not change the actions.",
+  "tool_calls": 23,
+  "tokens": 1732,
+  "latency_s": 23.379
 }

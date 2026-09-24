@@ -1,0 +1,7 @@
+// Case memory: the agent's own previously written investigations with a given pattern.
+CREATE OR REPLACE QUERY similar_investigations(STRING pattern_name, INT k = 5) FOR GRAPH CLARA {
+  Cases = {InvestigationCase.*};
+  R = SELECT c FROM Cases:c WHERE c.pattern == pattern_name
+      ORDER BY c.written_at DESC LIMIT k;
+  PRINT R AS investigations;
+}

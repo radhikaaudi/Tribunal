@@ -12,3 +12,9 @@ pyTigerGraph>=1.6
 # LLM narrative (provider-agnostic; install what you use)
 anthropic>=0.40        # default provider
 # openai>=1.40         # uncomment if using OpenAI
+
+# TigerGraph MCP (official server: `tigergraph-mcp` console script) + MCP client SDK
+pyTigerGraph>=2.0
+pyTigerGraph-mcp>=1.0
+mcp>=1.9,<2          # pyTigerGraph-mcp 1.0.1 breaks on mcp 2.x (Server.list_tools removed)
+requests

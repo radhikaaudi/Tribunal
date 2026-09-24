@@ -1,129 +1,143 @@
 {
   "case_id": "HHG-020",
-  "debate": {
-    "prosecution": [
-      "Bank model risk score 0.52 on the flagged transaction (a reason to look, not a verdict)",
-      "Flagged transaction from a device marked New for this account"
-    ],
-    "defense": [
-      "Flagged transaction is consistent with the card's history",
-      "Purchaser domain yahoo.com was used on 20 prior transactions by this cardholder",
-      "Amount $125.08 and product sit within the cardholder's normal range ($25\u2013$585)"
-    ],
-    "conclusion": "A legitimate explanation accounts for the alert; the fraud hypothesis did not survive.",
-    "missing_evidence": []
-  },
   "case": {
-    "status": "closed_legitimate",
-    "verdict": "legitimate",
-    "fraud_probability": 0.126,
-    "pattern": "none",
+    "status": "open",
+    "verdict": "uncertain",
+    "fraud_probability": 0.464,
+    "pattern": "card_not_present_new_device",
     "pattern_description": "",
-    "affected_txn_ids": [],
-    "first_suspicious_txn_id": "",
-    "connected_card_ids": [],
-    "connected_device_profiles": [
-      "Trident/7.0 | Windows 10 | ie 11.0 for desktop | 1920x1080"
+    "affected_txn_ids": [
+      "3509359"
     ],
-    "exposure_usd": 0.0,
+    "first_suspicious_txn_id": "3509359",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 125.08,
     "evidence": [
       {
-        "claim": "Bank model risk score 0.52 on the flagged transaction (a reason to look, not a verdict)",
+        "claim": "Bank model risk score 0.52 on the flagged transaction opened the investigation; it is not used as evidence (in closed cases every cleared alert scored above 0.7 versus 24% of confirmed frauds)",
         "source": "graph",
-        "ref": "field:risk_score",
+        "ref": "Transaction.risk_score",
         "entity_ids": [
           "3509359"
-        ],
-        "side": "prosecution"
+        ]
       },
       {
-        "claim": "Flagged transaction is consistent with the card's history",
+        "claim": "Flagged transaction is unusual: product code R never used by this customer before",
         "source": "graph",
-        "ref": "query:history(C12265)",
+        "ref": "query:customer_history(C12265)",
         "entity_ids": [
           "3509359"
-        ],
-        "side": "defense"
+        ]
       },
       {
-        "claim": "Flagged transaction from a device marked New for this account",
+        "claim": "Flagged transaction came from a device marked New for this account (id_15)",
         "source": "graph",
         "ref": "query:identity(3509359)",
         "entity_ids": [
           "3509359"
-        ],
-        "side": "prosecution"
+        ]
       },
       {
-        "claim": "Purchaser domain yahoo.com was used on 20 prior transactions by this cardholder",
+        "claim": "Customer has 2 closed case(s) on file: 2 confirmed fraud (account_takeover x2), 0 cleared",
         "source": "graph",
-        "ref": "query:merchant_history(C12265)",
+        "ref": "query:prior_cases_for_customer(C12265)",
         "entity_ids": [
-          "3029549",
-          "3067945",
-          "3071655",
-          "3091289",
-          "3159395"
-        ],
-        "side": "defense"
+          "CC-2277",
+          "CC-2447"
+        ]
       },
       {
-        "claim": "Amount $125.08 and product sit within the cardholder's normal range ($25\u2013$585)",
+        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
         "source": "graph",
-        "ref": "query:history(C12265)",
+        "ref": "tigergraph:prior_cases_for_customer",
         "entity_ids": [
-          "3509359"
-        ],
-        "side": "defense"
+          "CASE-HHG-020"
+        ]
+      },
+      {
+        "claim": "No reply from the customer within 24 hours",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy R1: Verify before you block on a weak signal. \u2014 Verify before you block on a weak signal. If the case rests on a single signal (including a risk score alone) and your assessed fraud probability is below 0.70, recommend `VERIFY_WITH_CUSTOMER` or `STEP_UP_AUTH` before a",
+        "source": "document",
+        "ref": "README.md#Fraud Policy R1: Verify before you block on a weak signal.",
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy 3a. A case is not a report \u2014 Two different things, and the agent produces both. **A case** (`CREATE_CASE`) is the bank's internal record of an investigation. Open one whenever fraud probability reaches 0.30, whenever you request evidence, or wheneve",
+        "source": "document",
+        "ref": "README.md#Fraud Policy 3a. A case is not a report",
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy R4: No reply within 24 hours. \u2014 No reply within 24 hours. Recommend `MONITOR_CARD` and `DECLINE_TRANSACTION` for pending authorizations. Escalate if exposure exceeds $500.",
+        "source": "document",
+        "ref": "README.md#Fraud Policy R4: No reply within 24 hours.",
+        "entity_ids": []
       }
     ],
     "similar_prior_cases": [
-      "CC-0003",
-      "CC-0009",
-      "CC-0010"
+      "CC-2979",
+      "CC-0883",
+      "CC-2495"
     ],
-    "summary": "Card C12265-K2 (customer C12265), trigger risk_score. Assessed legitimate at 13% confidence. Evidence did not support fraud; recommended to close/monitor per policy. A legitimate explanation accounts for the alert; the fraud hypothesis did not survive.",
+    "summary": "The investigation was triggered by an unusual product code never used before and a new device ID. Step-up authentication was assumed to result in no reply from the customer within 24 hours. The verdict is uncertain with a fraud probability of 0.464 due to missing decisive evidence. Consequently, Fraud Policy R4 actions of monitoring the card and declining pending authorizations were followed because of the lack of a customer reply within 24 hours.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-9359"
+    "graph_case_id": "CASE-HHG-020"
   },
-  "evidence_requests": [],
+  "evidence_requests": [
+    {
+      "type": "step_up_auth",
+      "asked_after_step": 5,
+      "assumed_response": "No reply from the customer within 24 hours (assumed because the graph evidence leans only 2.6x toward fraud \u2014 too weak to predict a denial, too strong to predict a confirmation)"
+    }
+  ],
   "next_best_actions": {
     "initial": [
       {
-        "action": "ALLOW_TRANSACTION",
+        "action": "STEP_UP_AUTH",
         "route": "auto",
-        "reason": "evidence does not support fraud"
+        "reason": "R1: assessed probability 0.46 rests on too little evidence to block; verify first"
       },
       {
-        "action": "CLOSE_NO_FRAUD",
+        "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "R3: cleared as legitimate"
+        "reason": "3a: a case is opened whenever evidence is requested"
       }
     ],
     "final": [
       {
-        "action": "ALLOW_TRANSACTION",
+        "action": "MONITOR_CARD",
         "route": "auto",
-        "reason": "evidence does not support fraud"
+        "reason": "R4: no reply within 24 hours; raise monitoring for 72h"
       },
       {
-        "action": "CLOSE_NO_FRAUD",
+        "action": "DECLINE_TRANSACTION",
+        "route": "L1",
+        "reason": "R4: decline pending authorizations while unverified"
+      },
+      {
+        "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "R3: cleared as legitimate"
+        "reason": "3a: case stays open pending the customer's reply"
       }
     ],
-    "what_changed": "nothing"
+    "what_changed": "The assumed step up auth response moved the fraud probability from 0.46 to 0.46, so the recommendation changed from [STEP_UP_AUTH, CREATE_CASE] to [MONITOR_CARD, DECLINE_TRANSACTION, CREATE_CASE]."
   },
   "sar": {
     "file": false,
-    "reason": "No report: activity not confirmed or strongly suspected as fraud.",
+    "reason": "3a: no report \u2014 activity is not confirmed or strongly suspected fraud.",
     "narrative": "",
     "subjects": [],
     "total_amount_usd": 0,
     "activity_dates": []
   },
-  "stop_reason": "Fraud probability 13% at/below 0.15; cleared as legitimate (policy 6).",
-  "tool_calls": 14,
-  "tokens": 0,
-  "latency_s": 0.013
+  "stop_reason": "No reply to the step up auth request within 24 hours; probability 46% stays uncertain and further graph steps are unlikely to change it, so the card is monitored and pending authorizations declined under R4 (policy 6).",
+  "tool_calls": 24,
+  "tokens": 1644,
+  "latency_s": 17.344
 }

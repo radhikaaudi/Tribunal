@@ -1,0 +1,35 @@
+// Confirmed-fraud closed cases (and agent investigations) reachable from a customer
+// through a shared *specific* device profile:
+//   Customer -OWNS- Card -MADE- Txn -FROM_DEVICE- DeviceProfile -FROM_DEVICE- other Txn
+//     -CC_INVOLVES- ClosedCase          (3 hops from the customer's transactions)
+//     -MADE- Card -CC_ON_CARD|CC_CONNECTED_TO- ClosedCase
+// Hub devices (generic platforms / used by many customers) are skipped.
+CREATE OR REPLACE QUERY link_to_known_fraud(VERTEX<Customer> customer, INT max_device_customers = 150) FOR GRAPH CLARA {
+  OrAccum @mine;
+  SetAccum<VERTEX<DeviceProfile>> @via_device;
+  SetAccum<VERTEX<Transaction>> @via_txn;
+  SetAccum<VERTEX<Card>> @via_card;
+
+  Start = {customer};
+  K = SELECT k FROM Start:s -(OWNS:e)- Card:k;
+  MyT = SELECT t FROM K:k -(MADE:e)- Transaction:t ACCUM t.@mine += TRUE;
+  D = SELECT d FROM MyT:t -(FROM_DEVICE:e)- DeviceProfile:d
+      WHERE d.is_generic == FALSE AND d.n_customers <= max_device_customers;
+  OT = SELECT t FROM D:d -(FROM_DEVICE:e)- Transaction:t
+       WHERE t.@mine == FALSE
+       ACCUM t.@via_device += d;
+  CC1 = SELECT c FROM OT:t -(CC_INVOLVES:e)- ClosedCase:c
+        WHERE c.outcome == "confirmed_fraud"
+        ACCUM c.@via_device += t.@via_device, c.@via_txn += t;
+  OK = SELECT k FROM OT:t -(MADE:e)- Card:k
+       ACCUM k.@via_device += t.@via_device;
+  CC2 = SELECT c FROM OK:k -((CC_ON_CARD|CC_CONNECTED_TO):e)- ClosedCase:c
+        WHERE c.outcome == "confirmed_fraud"
+        ACCUM c.@via_device += k.@via_device, c.@via_card += k;
+  CC = CC1 UNION CC2;
+  IC = SELECT c FROM D:d -(CASE_DEVICE:e)- InvestigationCase:c
+       ACCUM c.@via_device += d;
+  PRINT D AS devices;
+  PRINT CC AS closed_cases;
+  PRINT IC AS investigations;
+}

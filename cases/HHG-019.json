@@ -1,143 +1,150 @@
 {
   "case_id": "HHG-019",
-  "debate": {
-    "prosecution": [
-      "Bank model risk score 0.9 on the flagged transaction (a reason to look, not a verdict)",
-      "Flagged transaction from a device marked New for this account"
-    ],
-    "defense": [
-      "Flagged transaction is consistent with the card's history",
-      "Purchaser domain verizon.net was used on 3 prior transactions by this cardholder",
-      "Amount $99.92 and product sit within the cardholder's normal range ($31\u2013$756)",
-      "Customer confirms they made the transaction"
-    ],
-    "conclusion": "A legitimate explanation accounts for the alert; the fraud hypothesis did not survive.",
-    "missing_evidence": [
-      "customer_validation"
-    ]
-  },
   "case": {
     "status": "closed_legitimate",
     "verdict": "legitimate",
-    "fraud_probability": 0.012,
+    "fraud_probability": 0.024,
     "pattern": "none",
     "pattern_description": "",
     "affected_txn_ids": [],
     "first_suspicious_txn_id": "",
     "connected_card_ids": [],
-    "connected_device_profiles": [
-      "Windows | other | chrome 61.0 | 1280x720"
-    ],
+    "connected_device_profiles": [],
     "exposure_usd": 0.0,
     "evidence": [
       {
-        "claim": "Bank model risk score 0.9 on the flagged transaction (a reason to look, not a verdict)",
+        "claim": "Bank model risk score 0.9 on the flagged transaction opened the investigation; it is not used as evidence (in closed cases every cleared alert scored above 0.7 versus 24% of confirmed frauds)",
         "source": "graph",
-        "ref": "field:risk_score",
+        "ref": "Transaction.risk_score",
         "entity_ids": [
           "3503878"
-        ],
-        "side": "prosecution"
+        ]
       },
       {
-        "claim": "Flagged transaction is consistent with the card's history",
-        "source": "graph",
-        "ref": "query:history(C07987)",
-        "entity_ids": [
-          "3503878"
-        ],
-        "side": "defense"
-      },
-      {
-        "claim": "Flagged transaction from a device marked New for this account",
+        "claim": "Flagged transaction came from a device marked New for this account (id_15)",
         "source": "graph",
         "ref": "query:identity(3503878)",
         "entity_ids": [
           "3503878"
-        ],
-        "side": "prosecution"
+        ]
       },
       {
-        "claim": "Purchaser domain verizon.net was used on 3 prior transactions by this cardholder",
+        "claim": "Amount $99.92 and product R sit within the customer's normal range ($31\u2013$555)",
         "source": "graph",
-        "ref": "query:merchant_history(C07987)",
-        "entity_ids": [
-          "3017822",
-          "3043766",
-          "3048987"
-        ],
-        "side": "defense"
-      },
-      {
-        "claim": "Amount $99.92 and product sit within the cardholder's normal range ($31\u2013$756)",
-        "source": "graph",
-        "ref": "query:history(C07987)",
+        "ref": "query:customer_history(C07987)",
         "entity_ids": [
           "3503878"
-        ],
-        "side": "defense"
+        ]
+      },
+      {
+        "claim": "Customer has 4 closed case(s) on file: 3 confirmed fraud (out_of_region_use x2, card_not_present_fraud x1), 1 cleared",
+        "source": "graph",
+        "ref": "query:prior_cases_for_customer(C07987)",
+        "entity_ids": [
+          "CC-2087",
+          "CC-2860",
+          "CC-5026"
+        ]
+      },
+      {
+        "claim": "TigerGraph traversal Customer\u2192Card\u2192Transaction\u2192DeviceProfile\u2192Transaction\u2190ClosedCase reaches 304 confirmed-fraud closed case(s)",
+        "source": "graph",
+        "ref": "tigergraph:link_to_known_fraud",
+        "entity_ids": [
+          "CC-1005",
+          "CC-3141",
+          "CC-2830",
+          "CC-2664",
+          "CC-2419",
+          "CC-4300"
+        ]
+      },
+      {
+        "claim": "Graph case memory holds 1 earlier investigation(s) on this customer",
+        "source": "graph",
+        "ref": "tigergraph:prior_cases_for_customer",
+        "entity_ids": [
+          "CASE-HHG-019"
+        ]
       },
       {
         "claim": "Customer confirms they made the transaction",
         "source": "customer",
         "ref": "evidence_request:1",
-        "entity_ids": [],
-        "side": "defense"
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy R1: Verify before you block on a weak signal. \u2014 Verify before you block on a weak signal. If the case rests on a single signal (including a risk score alone) and your assessed fraud probability is below 0.70, recommend `VERIFY_WITH_CUSTOMER` or `STEP_UP_AUTH` before a",
+        "source": "document",
+        "ref": "README.md#Fraud Policy R1: Verify before you block on a weak signal.",
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy 3a. A case is not a report \u2014 Two different things, and the agent produces both. **A case** (`CREATE_CASE`) is the bank's internal record of an investigation. Open one whenever fraud probability reaches 0.30, whenever you request evidence, or wheneve",
+        "source": "document",
+        "ref": "README.md#Fraud Policy 3a. A case is not a report",
+        "entity_ids": []
+      },
+      {
+        "claim": "Fraud Policy R3: Customer confirms the transaction. \u2014 Customer confirms the transaction. Recommend `CLOSE_NO_FRAUD`. Note the confirmation in the case file.",
+        "source": "document",
+        "ref": "README.md#Fraud Policy R3: Customer confirms the transaction.",
+        "entity_ids": []
       }
     ],
     "similar_prior_cases": [
-      "CC-0003",
-      "CC-0009",
-      "CC-0010"
+      "CC-0539",
+      "CC-1006",
+      "CC-0445"
     ],
-    "summary": "Card C07987-K2 (customer C07987), trigger risk_score. Assessed legitimate at 1% confidence. Evidence did not support fraud; recommended to close/monitor per policy. A legitimate explanation accounts for the alert; the fraud hypothesis did not survive.",
+    "summary": "An investigation was triggered by a bank model risk score of 0.9 and a flagged transaction originating from a device marked new for the account. The decisive evidence was the customer confirming they made the transaction, along with the amount and product sitting within their normal range. It was assumed the customer made the transaction because no graph evidence beyond the alert pointed to fraud. The verdict is legitimate and actions follow Fraud Policy R3, which dictates that when a customer confirms the transaction, the case is recommended to be closed as no fraud and the confirmation noted.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-3878"
+    "graph_case_id": "CASE-HHG-019"
   },
   "evidence_requests": [
     {
-      "type": "customer_validation",
-      "asked_after_step": 5,
-      "assumed_response": "Customer confirms they made the transaction"
+      "type": "step_up_auth",
+      "asked_after_step": 6,
+      "assumed_response": "Customer confirms they made the transaction (assumed because no graph evidence beyond the alert points to fraud; 158 closed cases with the same profile \u2014 'new phone' \u2014 were cleared after the cardholder confirmed)"
     }
   ],
   "next_best_actions": {
     "initial": [
       {
-        "action": "ALLOW_TRANSACTION",
+        "action": "STEP_UP_AUTH",
         "route": "auto",
-        "reason": "evidence does not support fraud"
+        "reason": "R1: assessed probability 0.23 rests on too little evidence to block; verify first"
       },
       {
-        "action": "CLOSE_NO_FRAUD",
+        "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "R3: cleared as legitimate"
+        "reason": "3a: a case is opened whenever evidence is requested"
       }
     ],
     "final": [
       {
         "action": "ALLOW_TRANSACTION",
         "route": "auto",
-        "reason": "evidence does not support fraud"
+        "reason": "R3: customer confirmed the transaction"
       },
       {
         "action": "CLOSE_NO_FRAUD",
         "route": "auto",
-        "reason": "R3: cleared as legitimate"
+        "reason": "R3: case closed as legitimate; confirmation noted in the case file"
       }
     ],
-    "what_changed": "The simulated customer response moved confidence from 20% to 1%, which changed the recommended action."
+    "what_changed": "The assumed step up auth response moved the fraud probability from 0.23 to 0.02, so the recommendation changed from [STEP_UP_AUTH, CREATE_CASE] to [ALLOW_TRANSACTION, CLOSE_NO_FRAUD]."
   },
   "sar": {
     "file": false,
-    "reason": "No report: activity not confirmed or strongly suspected as fraud.",
+    "reason": "3a: no report \u2014 activity is not confirmed or strongly suspected fraud.",
     "narrative": "",
     "subjects": [],
     "total_amount_usd": 0,
     "activity_dates": []
   },
-  "stop_reason": "Fraud probability 1% at/below 0.15; cleared as legitimate (policy 6).",
-  "tool_calls": 14,
-  "tokens": 0,
-  "latency_s": 0.015
+  "stop_reason": "The step up auth response settled the question (policy 6): probability now 2%, verdict legitimate. Further graph steps would not change the actions.",
+  "tool_calls": 24,
+  "tokens": 1761,
+  "latency_s": 32.073
 }

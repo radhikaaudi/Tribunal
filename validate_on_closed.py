@@ -32,7 +32,7 @@ def run_one(ds, row):
     case_row = {"case_id": row.case_id, "customer_id": row.customer_id, "card_id": row.card_id,
                 "flagged_txn_id": tid, "trigger_type": "risk_score",
                 "risk_score": float(f["risk_score"])}
-    return investigate(ds, case_row)["case"]["verdict"]
+    return investigate(ds, case_row, write_back=False)["case"]["verdict"]
 
 
 def main():

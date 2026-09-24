@@ -1,5 +1,5 @@
 """
-Run CLARA on all 20 case-pack cases and write one answer file per case.
+Run DefAttack on all 20 case-pack cases and write one answer file per case.
 
   python run_cases.py                 # -> cases/HHG-XXX.json  (submission format)
 
@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 
 from clara.investigator import investigate
 from clara.realdata import load
+from clara import memory
 
 load_dotenv()
 
@@ -19,11 +20,12 @@ load_dotenv()
 def main():
     ds = load()
     os.makedirs("cases", exist_ok=True)
+    memory.reset()   # rebuild the agent's case memory in case order
     rows = []
     for _, case in ds.case_pack.iterrows():
         ans = investigate(ds, case)
         with open(os.path.join("cases", f"{ans['case_id']}.json"), "w") as f:
-            json.dump(ans, f, indent=2, default=str)
+            json.dump({k: v for k, v in ans.items() if k != "debate"}, f, indent=2, default=str)
         c = ans["case"]
         rows.append({
             "case": ans["case_id"], "trigger": case["trigger_type"],
@@ -32,6 +34,7 @@ def main():
             "initial": "|".join(a["action"] for a in ans["next_best_actions"]["initial"]),
             "final": "|".join(a["action"] for a in ans["next_best_actions"]["final"]),
             "sar": ans["sar"]["file"], "similar": ",".join(c["similar_prior_cases"][:2]),
+            "graph": c["written_to_graph"], "req": len(ans["evidence_requests"]), "status": c["status"],
         })
     import pandas as pd
     df = pd.DataFrame(rows)

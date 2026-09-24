@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "tigergraph": {
+      "command": ".venv/bin/python",
+      "args": ["-m", "clara.mcp_tools", "--serve"]
+    }
+  }
+}

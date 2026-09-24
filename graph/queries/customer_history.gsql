@@ -1,0 +1,8 @@
+// All cards and transactions of one customer.
+CREATE OR REPLACE QUERY customer_history(VERTEX<Customer> customer) FOR GRAPH CLARA {
+  Start = {customer};
+  K = SELECT k FROM Start:s -(OWNS:e)- Card:k;
+  T = SELECT t FROM K:k -(MADE:e)- Transaction:t;
+  PRINT K AS cards;
+  PRINT T AS txns;
+}

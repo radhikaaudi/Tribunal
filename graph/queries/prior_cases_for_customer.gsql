@@ -1,0 +1,12 @@
+// Closed cases and agent investigations touching any of this customer's cards/transactions.
+CREATE OR REPLACE QUERY prior_cases_for_customer(VERTEX<Customer> customer) FOR GRAPH CLARA {
+  Start = {customer};
+  K = SELECT k FROM Start:s -(OWNS:e)- Card:k;
+  T = SELECT t FROM K:k -(MADE:e)- Transaction:t;
+  CC1 = SELECT c FROM K:k -((CC_ON_CARD|CC_CONNECTED_TO):e)- ClosedCase:c;
+  CC2 = SELECT c FROM T:t -(CC_INVOLVES:e)- ClosedCase:c;
+  CC = CC1 UNION CC2;
+  IC = SELECT c FROM K:k -(CASE_ON_CARD:e)- InvestigationCase:c;
+  PRINT CC AS closed_cases;
+  PRINT IC AS investigations;
+}

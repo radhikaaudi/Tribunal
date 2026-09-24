@@ -1,0 +1,8 @@
+// Other transactions (any customer) seen on one device profile inside [t0, t1].
+CREATE OR REPLACE QUERY device_neighbors(VERTEX<DeviceProfile> profile, DATETIME t0, DATETIME t1) FOR GRAPH CLARA {
+  Start = {profile};
+  T = SELECT t FROM Start:d -(FROM_DEVICE:e)- Transaction:t
+      WHERE t.ts >= t0 AND t.ts <= t1;
+  PRINT Start AS device;
+  PRINT T AS txns;
+}
